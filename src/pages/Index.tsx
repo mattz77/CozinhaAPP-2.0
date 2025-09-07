@@ -2,9 +2,10 @@ import Navigation from "@/components/ui/navigation";
 import HeroSection from "@/components/ui/hero-section";
 import SectionCard from "@/components/ui/section-card";
 import InfoSection from "@/components/ui/info-section";
-import interiorImage from "@/assets/restaurant-interior.jpg";
-import wineCellarImage from "@/assets/wine-cellar.jpg";
-import barImage from "@/assets/restaurant-bar.jpg";
+import soupImage from "@/assets/food-soup.jpg";
+import breadImage from "@/assets/food-bread.jpg";
+import pizzaImage from "@/assets/food-pizza.jpg";
+import deliveryImage from "@/assets/food-delivery.jpg";
 
 const Index = () => {
   return (
@@ -18,7 +19,7 @@ const Index = () => {
           <SectionCard
             title="COMO FUNCIONA"
             description="Peça sua comida favorita de forma rápida e prática através do nosso app. Escolha entre centenas de pratos deliciosos, acompanhe o preparo em tempo real e receba tudo quentinho na sua casa."
-            image={interiorImage}
+            image={deliveryImage}
           />
         </div>
       </section>
@@ -29,7 +30,7 @@ const Index = () => {
           <SectionCard
             title="NOSSO CARDÁPIO"
             description="Pratos cuidadosamente preparados com ingredientes frescos e selecionados. Do café da manhã ao jantar, temos opções para todos os gostos: massas, carnes, saladas, sobremesas e muito mais."
-            image={wineCellarImage}
+            image={pizzaImage}
             reverse
           />
         </div>

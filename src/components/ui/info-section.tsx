@@ -85,7 +85,7 @@ const InfoSection = () => {
                  <p className="text-sm">Entrega em até 45 minutos</p>
                </div>
                <Button
-                 className="bg-primary text-primary-foreground hover:bg-primary/90 glow-gold"
+                 className="bg-primary text-primary-foreground hover:bg-primary/90 glow-red"
                >
                  FAZER PEDIDO
                </Button>

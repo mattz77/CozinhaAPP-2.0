@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-restaurant.jpg";
+import heroImage from "@/assets/food-soup.jpg";
 
 const HeroSection = () => {
   return (
@@ -16,7 +16,7 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 text-center max-w-4xl mx-auto px-4 animate-fade-in">
-        <h1 className="font-heading text-6xl md:text-8xl lg:text-9xl font-bold text-primary mb-6 glow-gold">
+        <h1 className="font-heading text-6xl md:text-8xl lg:text-9xl font-bold text-primary mb-6 glow-red">
           CozinhaApp
         </h1>
         <p className="font-elegant text-xl md:text-2xl text-foreground mb-8 max-w-2xl mx-auto">
@@ -25,7 +25,7 @@ const HeroSection = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 font-elegant px-8 py-6 text-lg glow-gold"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 font-elegant px-8 py-6 text-lg glow-red"
           >
             VER CARDÁPIO
           </Button>

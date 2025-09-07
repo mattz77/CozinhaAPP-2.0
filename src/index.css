@@ -6,81 +6,73 @@
 
 @layer base {
   :root {
-    /* Core Brand Colors */
-    --background: 210 11% 6%;
-    --foreground: 46 18% 85%;
+    /* Core Brand Colors - Black, Red, Yellow Theme */
+    --background: 0 0% 8%;
+    --foreground: 0 0% 98%;
 
     /* Card & Surface Colors */
-    --card: 210 11% 8%;
-    --card-foreground: 46 18% 85%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 210 11% 8%;
-    --popover-foreground: 46 18% 85%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Primary Brand - Elegant Gold */
-    --primary: 38 92% 65%;
-    --primary-foreground: 210 11% 6%;
+    /* Primary Brand - Vibrant Red */
+    --primary: 350 85% 55%;
+    --primary-foreground: 0 0% 98%;
 
-    /* Secondary - Warm Neutral */
-    --secondary: 215 15% 15%;
-    --secondary-foreground: 46 18% 85%;
+    /* Secondary - Golden Yellow */
+    --secondary: 45 93% 58%;
+    --secondary-foreground: 0 0% 8%;
 
     /* Muted Tones */
-    --muted: 215 15% 12%;
-    --muted-foreground: 215 15% 45%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 65%;
 
-    /* Accent - Sophisticated Orange */
-    --accent: 20 85% 58%;
-    --accent-foreground: 210 11% 6%;
+    /* Accent - Red */
+    --accent: 350 85% 55%;
+    --accent-foreground: 0 0% 98%;
 
     /* System Colors */
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 46 18% 85%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
     /* Borders & Inputs */
-    --border: 215 15% 18%;
-    --input: 215 15% 15%;
-    --ring: 38 92% 65%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 350 85% 55%;
 
     /* Design Elements */
     --radius: 0.75rem;
 
-    /* Custom Design Tokens */
-    --gold-glow: 38 92% 65%;
-    --warm-accent: 20 85% 58%;
-    --elegant-surface: 210 11% 10%;
-    --luxury-gradient: linear-gradient(135deg, hsl(38 92% 65% / 0.1), hsl(20 85% 58% / 0.1));
-    --shadow-elegant: 0 25px 50px -12px hsl(210 11% 4% / 0.8);
-    --shadow-glow: 0 0 40px hsl(38 92% 65% / 0.3);
+    /* Custom Design Tokens - Food Theme */
+    --elegant: 0 0% 10%;
+    --luxury-gradient: linear-gradient(135deg, hsl(350 85% 55% / 0.3), hsl(0 0% 0% / 0.7));
+    --glow-red: 0 0 20px hsl(350 85% 55% / 0.5);
+    --glow-yellow: 0 0 20px hsl(45 93% 58% / 0.5);
+    --shadow-elegant: 0 25px 50px -12px hsl(0 0% 0% / 0.8);
     --transition-elegant: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    /* Dark mode uses same sophisticated palette */
-    --background: 210 11% 4%;
-    --foreground: 46 18% 90%;
-    --card: 210 11% 6%;
-    --card-foreground: 46 18% 90%;
-    --muted: 215 15% 8%;
-    --muted-foreground: 215 15% 50%;
-    --border: 215 15% 12%;
-    --input: 215 15% 10%;
+    /* Dark mode - Enhanced black theme */
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
   }
 }
 
@@ -136,8 +128,14 @@
     background: var(--luxury-gradient);
   }
 
-  /* Golden Glow Effect */
-  .glow-gold {
-    box-shadow: var(--shadow-glow);
+  /* Red & Yellow Glow Effects */
+  .glow-red {
+    box-shadow: var(--glow-red);
+    text-shadow: var(--glow-red);
+  }
+
+  .glow-yellow {
+    box-shadow: var(--glow-yellow);
+    text-shadow: var(--glow-yellow);
   }
 }
