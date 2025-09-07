@@ -25,12 +25,12 @@ const InfoSection = () => {
               <h3 className="font-heading text-xl font-bold text-foreground mb-4">
                 Localização
               </h3>
-              <p className="font-elegant text-muted-foreground mb-4">
-                R. Dr. Mário Ferraz, 528<br />
-                Jardim Paulistano<br />
-                CEP: 01453-011<br />
-                São Paulo - SP - Brasil
-              </p>
+               <p className="font-elegant text-muted-foreground mb-4">
+                 Rua CozinhaApp, 10<br />
+                 Centro<br />
+                 CEP: 01234-567<br />
+                 São Paulo - SP - Brasil
+               </p>
               <Button
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
@@ -75,20 +75,20 @@ const InfoSection = () => {
               <h3 className="font-heading text-xl font-bold text-foreground mb-4">
                 Contato & Reservas
               </h3>
-              <div className="space-y-3 font-elegant text-muted-foreground mb-6">
-                <p>(11) 3078-1089</p>
-                <p>(11) 3078-0484</p>
-                <div className="flex items-center justify-center text-sm">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span>Capacidade: 110 lugares</span>
-                </div>
-                <p className="text-sm">Serviço de Valet na porta</p>
-              </div>
-              <Button
-                className="bg-primary text-primary-foreground hover:bg-primary/90 glow-gold"
-              >
-                FAZER RESERVA
-              </Button>
+               <div className="space-y-3 font-elegant text-muted-foreground mb-6">
+                 <p>(11) 9999-9999</p>
+                 <p>contato@cozinhaapp.com</p>
+                 <div className="flex items-center justify-center text-sm">
+                   <Users className="w-4 h-4 mr-2" />
+                   <span>Delivery em toda São Paulo</span>
+                 </div>
+                 <p className="text-sm">Entrega em até 45 minutos</p>
+               </div>
+               <Button
+                 className="bg-primary text-primary-foreground hover:bg-primary/90 glow-gold"
+               >
+                 FAZER PEDIDO
+               </Button>
             </CardContent>
           </Card>
         </div>

@@ -7,13 +7,10 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { label: "GASTRONOMIA", href: "#gastronomia" },
-    { label: "AMBIENTE", href: "#ambiente" },
-    { label: "ADEGA", href: "#adega" },
-    { label: "BAR", href: "#bar" },
-    { label: "EVENTOS", href: "#eventos" },
+    { label: "INÍCIO", href: "#inicio" },
+    { label: "CARDÁPIO", href: "#cardapio" },
+    { label: "AGENDAMENTOS", href: "#agendamentos" },
     { label: "CONTATO", href: "#contato" },
-    { label: "RESERVAS", href: "#reservas" },
   ];
 
   return (
@@ -23,7 +20,7 @@ const Navigation = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <h1 className="font-heading text-3xl font-bold text-primary">
-              loup
+              CozinhaApp
             </h1>
           </div>
 

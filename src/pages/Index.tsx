@@ -12,74 +12,51 @@ const Index = () => {
       <Navigation />
       <HeroSection />
       
-      {/* Gastronomia Section */}
-      <section id="gastronomia" className="py-20">
+      {/* Como Funciona Section */}
+      <section id="inicio" className="py-20">
         <div className="container mx-auto px-4">
           <SectionCard
-            title="GASTRONOMIA"
-            description="Nossa culinária combina técnicas clássicas com ingredientes sazonais, criando pratos que despertam todos os sentidos. Cada criação é uma obra de arte gastronômica, elaborada com paixão e precisão pelos nossos chefs experientes."
+            title="COMO FUNCIONA"
+            description="Peça sua comida favorita de forma rápida e prática através do nosso app. Escolha entre centenas de pratos deliciosos, acompanhe o preparo em tempo real e receba tudo quentinho na sua casa."
             image={interiorImage}
           />
         </div>
       </section>
 
-      {/* Ambiente Section */}
-      <section id="ambiente" className="py-20 bg-elegant">
+      {/* Cardápio Section */}
+      <section id="cardapio" className="py-20 bg-elegant">
         <div className="container mx-auto px-4">
           <SectionCard
-            title="AMBIENTE"
-            description="Um espaço sofisticado e acolhedor, onde cada detalhe foi pensado para proporcionar momentos únicos. Nossa decoração elegante e iluminação intimista criam a atmosfera perfeita para jantares especiais e celebrações memoráveis."
-            image={interiorImage}
-            reverse
-          />
-        </div>
-      </section>
-
-      {/* Adega Section */}
-      <section id="adega" className="py-20">
-        <div className="container mx-auto px-4">
-          <SectionCard
-            title="ADEGA"
-            description="Nossa seleção de vinhos foi cuidadosamente curada para harmonizar perfeitamente com nossos pratos. Contamos com rótulos nacionais e internacionais, desde joias raras até descobertas surpreendentes que complementam sua experiência gastronômica."
+            title="NOSSO CARDÁPIO"
+            description="Pratos cuidadosamente preparados com ingredientes frescos e selecionados. Do café da manhã ao jantar, temos opções para todos os gostos: massas, carnes, saladas, sobremesas e muito mais."
             image={wineCellarImage}
-          />
-        </div>
-      </section>
-
-      {/* Bar Section */}
-      <section id="bar" className="py-20 bg-elegant">
-        <div className="container mx-auto px-4">
-          <SectionCard
-            title="BAR"
-            description="Nosso bar oferece uma carta de coquetéis autorais e clássicos, preparados com ingredientes premium e técnicas refinadas. Um espaço perfeito para um aperitivo antes do jantar ou para prolongar a noite com amigos."
-            image={barImage}
             reverse
           />
         </div>
       </section>
 
-      {/* Eventos Section */}
-      <section id="eventos" className="py-20">
+      {/* Delivery Section */}
+      <section id="agendamentos" className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="font-heading text-4xl lg:text-5xl font-bold text-primary mb-6">
-              EVENTOS
+              DELIVERY RÁPIDO
             </h2>
             <p className="font-elegant text-lg text-muted-foreground max-w-3xl mx-auto mb-12">
-              Transformamos ocasiões especiais em experiências inesquecíveis. Nosso espaço e equipe estão preparados para receber seus eventos corporativos, celebrações familiares e momentos únicos com toda a sofisticação que você merece.
+              Entregamos em toda São Paulo com agilidade e segurança. Acompanhe seu pedido em tempo real e receba sua refeição sempre no prazo combinado.
             </p>
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div className="space-y-4">
-                <h3 className="font-heading text-2xl font-bold text-primary">Eventos Corporativos</h3>
-                <p className="font-elegant text-muted-foreground">Reuniões de negócios e celebrações empresariais</p>
+                <h3 className="font-heading text-2xl font-bold text-primary">Entrega Rápida</h3>
+                <p className="font-elegant text-muted-foreground">Até 45 minutos na sua porta</p>
               </div>
               <div className="space-y-4">
-                <h3 className="font-heading text-2xl font-bold text-primary">Celebrações Familiares</h3>
-                <p className="font-elegant text-muted-foreground">Aniversários, comemorações e encontros especiais</p>
+                <h3 className="font-heading text-2xl font-bold text-primary">Acompanhamento</h3>
+                <p className="font-elegant text-muted-foreground">Monitore seu pedido em tempo real</p>
               </div>
               <div className="space-y-4">
-                <h3 className="font-heading text-2xl font-bold text-primary">Eventos Privados</h3>
-                <p className="font-elegant text-muted-foreground">Jantares exclusivos e ocasiões íntimas</p>
+                <h3 className="font-heading text-2xl font-bold text-primary">Cobertura Total</h3>
+                <p className="font-elegant text-muted-foreground">Atendemos toda a Grande São Paulo</p>
               </div>
             </div>
           </div>
@@ -91,12 +68,12 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-background border-t border-border py-12">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="font-heading text-3xl font-bold text-primary mb-4">loup</h3>
+          <h3 className="font-heading text-3xl font-bold text-primary mb-4">CozinhaApp</h3>
           <p className="font-elegant text-muted-foreground mb-4">
-            Experiência gastronômica sofisticada
+            Delivery de comida gourmet
           </p>
           <p className="font-elegant text-sm text-muted-foreground">
-            © 2024 Loup Restaurant. Todos os direitos reservados.
+            © 2024 CozinhaApp. Todos os direitos reservados.
           </p>
         </div>
       </footer>
