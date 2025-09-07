@@ -2,41 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Lou Restaurant Design System - Sophisticated & Elegant */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Brand Colors */
+    --background: 210 11% 6%;
+    --foreground: 46 18% 85%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card & Surface Colors */
+    --card: 210 11% 8%;
+    --card-foreground: 46 18% 85%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 210 11% 8%;
+    --popover-foreground: 46 18% 85%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary Brand - Elegant Gold */
+    --primary: 38 92% 65%;
+    --primary-foreground: 210 11% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Warm Neutral */
+    --secondary: 215 15% 15%;
+    --secondary-foreground: 46 18% 85%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted Tones */
+    --muted: 215 15% 12%;
+    --muted-foreground: 215 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Sophisticated Orange */
+    --accent: 20 85% 58%;
+    --accent-foreground: 210 11% 6%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* System Colors */
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 46 18% 85%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders & Inputs */
+    --border: 215 15% 18%;
+    --input: 215 15% 15%;
+    --ring: 38 92% 65%;
 
-    --radius: 0.5rem;
+    /* Design Elements */
+    --radius: 0.75rem;
+
+    /* Custom Design Tokens */
+    --gold-glow: 38 92% 65%;
+    --warm-accent: 20 85% 58%;
+    --elegant-surface: 210 11% 10%;
+    --luxury-gradient: linear-gradient(135deg, hsl(38 92% 65% / 0.1), hsl(20 85% 58% / 0.1));
+    --shadow-elegant: 0 25px 50px -12px hsl(210 11% 4% / 0.8);
+    --shadow-glow: 0 0 40px hsl(38 92% 65% / 0.3);
+    --transition-elegant: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,41 +72,15 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Dark mode uses same sophisticated palette */
+    --background: 210 11% 4%;
+    --foreground: 46 18% 90%;
+    --card: 210 11% 6%;
+    --card-foreground: 46 18% 90%;
+    --muted: 215 15% 8%;
+    --muted-foreground: 215 15% 50%;
+    --border: 215 15% 12%;
+    --input: 215 15% 10%;
   }
 }
 
@@ -100,6 +90,54 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Custom Typography */
+  .font-heading {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .font-elegant {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  /* Elegant Animations */
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hover-lift {
+    transition: var(--transition-elegant);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-elegant);
+  }
+
+  /* Luxury Gradient Overlay */
+  .luxury-gradient {
+    background: var(--luxury-gradient);
+  }
+
+  /* Golden Glow Effect */
+  .glow-gold {
+    box-shadow: var(--shadow-glow);
   }
 }
