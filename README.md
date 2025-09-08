@@ -1,73 +1,133 @@
-# Welcome to your Lovable project
+# 🍴 CozinhaApp Gastronomia
 
-## Project info
+Uma aplicação moderna de delivery de comida gourmet desenvolvida com React e TypeScript.
 
-**URL**: https://lovable.dev/projects/5dccb637-5549-4fda-8380-a5241da4c3a6
+## 📋 Sobre o Projeto
 
-## How can I edit this code?
+O CozinhaApp é uma plataforma web responsiva que oferece uma experiência gastronômica completa, permitindo que os usuários explorem cardápios, façam pedidos e desfrutem de comida gourmet no conforto de suas casas.
 
-There are several ways of editing your application.
+### ✨ Funcionalidades
 
-**Use Lovable**
+- 🏠 **Página inicial** com hero section atrativa
+- 📱 **Design responsivo** para todos os dispositivos
+- 🍽️ **Seção de cardápio** com pratos cuidadosamente selecionados
+- 📅 **Sistema de agendamentos** para pedidos
+- 📞 **Informações de contato** e redes sociais
+- 🎨 **Interface moderna** com animações suaves
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5dccb637-5549-4fda-8380-a5241da4c3a6) and start prompting.
+## 🛠️ Tecnologias Utilizadas
 
-Changes made via Lovable will be committed automatically to this repo.
+- **React 18** - Biblioteca para interfaces de usuário
+- **TypeScript** - Superset do JavaScript com tipagem estática
+- **Vite** - Build tool e servidor de desenvolvimento
+- **Tailwind CSS** - Framework CSS utilitário
+- **shadcn/ui** - Componentes de interface modernos
+- **Lucide React** - Ícones SVG otimizados
+- **PostCSS** - Processador CSS
 
-**Use your preferred IDE**
+## 🚀 Como Executar o Projeto
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Pré-requisitos
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js (versão 18 ou superior)
+- npm ou yarn
 
-Follow these steps:
+### Instalação
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/mattz77/CozinhaAPP-2.0.git
+   cd CozinhaAPP-2.0
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. **Instale as dependências**
+   ```bash
+   npm install
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. **Inicie o servidor de desenvolvimento**
+   ```bash
+   npm run dev
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+4. **Acesse a aplicação**
+   - Abra seu navegador em: `http://localhost:3000`
+
+### Scripts Disponíveis
+
+- `npm run dev` - Inicia o servidor de desenvolvimento na porta 3000
+- `npm run build` - Cria build de produção
+- `npm run preview` - Visualiza o build de produção
+- `npm run lint` - Executa o linter ESLint
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+├── components/
+│   └── ui/           # Componentes de interface reutilizáveis
+├── pages/            # Páginas da aplicação
+├── assets/           # Imagens e recursos estáticos
+├── hooks/            # Custom hooks do React
+├── lib/              # Utilitários e configurações
+└── main.tsx          # Ponto de entrada da aplicação
 ```
 
-**Edit a file directly in GitHub**
+## 🎨 Design System
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+O projeto utiliza um design system consistente com:
+- **Cores primárias**: Gradientes vermelho/laranja
+- **Tipografia**: Playfair Display (títulos) e Inter (texto)
+- **Componentes**: Baseados no shadcn/ui
+- **Animações**: Transições suaves e efeitos hover
 
-**Use GitHub Codespaces**
+## 📱 Responsividade
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+A aplicação é totalmente responsiva e otimizada para:
+- 📱 Dispositivos móveis (320px+)
+- 📱 Tablets (768px+)
+- 💻 Desktops (1024px+)
+- 🖥️ Telas grandes (1440px+)
 
-## What technologies are used for this project?
+## 🔧 Configuração
 
-This project is built with:
+### Porta do Servidor
+O servidor de desenvolvimento está configurado para rodar na porta **3000** por padrão.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Variáveis de Ambiente
+Crie um arquivo `.env.local` se necessário:
+```env
+VITE_API_URL=your_api_url_here
+```
 
-## How can I deploy this project?
+## 📦 Deploy
 
-Simply open [Lovable](https://lovable.dev/projects/5dccb637-5549-4fda-8380-a5241da4c3a6) and click on Share -> Publish.
+### Vercel (Recomendado)
+1. Conecte seu repositório GitHub à Vercel
+2. Configure as variáveis de ambiente se necessário
+3. Deploy automático a cada push na branch main
 
-## Can I connect a custom domain to my Lovable project?
+### Netlify
+1. Conecte o repositório ao Netlify
+2. Configure o build command: `npm run build`
+3. Configure o publish directory: `dist`
 
-Yes, you can!
+## 🤝 Contribuição
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 👨‍💻 Desenvolvedor
+
+**Mateus Oliveira** - [@mattz77](https://github.com/mattz77)
+
+---
+
+⭐ Se este projeto foi útil para você, considere dar uma estrela!
