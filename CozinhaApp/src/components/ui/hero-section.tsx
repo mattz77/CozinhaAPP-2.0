@@ -1,13 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCartSync } from "@/hooks/useCartSync";
+import { usePratos } from "@/hooks/useApi";
 import { AgendamentoModal } from "@/components/auth/AgendamentoModal";
 import { useState } from "react";
 import heroImage from "@/assets/food-soup.jpg";
 
 const HeroSection = () => {
   const { isAuthenticated } = useAuth();
-  const { openCart } = useCartSync();
+  const { openCart, items, totalItems } = useCartSync();
+  const { data: pratos = [] } = usePratos();
   const [isAgendamentoModalOpen, setIsAgendamentoModalOpen] = useState(false);
 
   // Função para rolar para a seção do cardápio
@@ -30,8 +32,6 @@ const HeroSection = () => {
     }
 
     // Se estiver logado, verificar se há itens no carrinho
-    const { items, totalItems } = useCartSync();
-    
     if (totalItems > 0) {
       // Se há itens no carrinho, abrir o carrinho
       openCart();
@@ -204,6 +204,7 @@ const HeroSection = () => {
       <AgendamentoModal 
         isOpen={isAgendamentoModalOpen}
         onClose={() => setIsAgendamentoModalOpen(false)}
+        pratos={pratos}
       />
     </section>
   );
