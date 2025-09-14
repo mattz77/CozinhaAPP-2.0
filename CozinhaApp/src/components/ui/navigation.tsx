@@ -11,6 +11,9 @@ import { Cart } from "@/components/ui/Cart";
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const { user, isAuthenticated, logout } = useAuth();
   const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem, syncKey } = useCartSync();
   const [key, setKey] = useState(0); // Força re-render quando necessário
@@ -20,6 +23,35 @@ const Navigation = () => {
     console.log('🔄 Navigation: Estado de autenticação mudou:', { isAuthenticated, user: user?.nomeCompleto });
     setKey(prev => prev + 1);
   }, [isAuthenticated, user]);
+
+  // Header inteligente com scroll behavior
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Header fica mais opaco quando scroll > 100px
+      if (currentScrollY > 100) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+      
+      // Header se esconde quando scroll para baixo > 200px
+      if (currentScrollY > lastScrollY && currentScrollY > 200) {
+        setIsHidden(true);
+      } else {
+        setIsHidden(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollY]);
 
   // Escuta eventos para controlar modal de login e atualizações do carrinho
   useEffect(() => {
@@ -66,7 +98,23 @@ const Navigation = () => {
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+      <nav 
+        className={cn(
+          "fixed top-0 w-full z-50 backdrop-blur-md border-b transition-all duration-300",
+          isScrolled 
+            ? "bg-background/95 border-border shadow-lg" 
+            : "bg-background/80 border-border/50",
+          isHidden && "transform -translate-y-full"
+        )}
+        style={{
+          background: isScrolled 
+            ? 'rgba(0, 0, 0, 0.95)' 
+            : 'rgba(0, 0, 0, 0.8)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: `1px solid ${isScrolled ? 'rgba(245, 196, 66, 0.1)' : 'rgba(245, 196, 66, 0.05)'}`,
+          boxShadow: isScrolled ? '0 4px 20px rgba(0, 0, 0, 0.3)' : 'none'
+        }}
+      >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
