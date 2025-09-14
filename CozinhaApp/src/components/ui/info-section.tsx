@@ -11,7 +11,7 @@ const InfoSection = () => {
             Informações
           </h2>
           <p className="font-elegant text-lg text-muted-foreground max-w-2xl mx-auto">
-            Encontre-nos no coração do Jardim Paulistano
+            Encontre-nos no coração de Osasco
           </p>
         </div>
 
@@ -26,15 +26,15 @@ const InfoSection = () => {
                 Localização
               </h3>
                <p className="font-elegant text-muted-foreground mb-4">
-                 Rua CozinhaApp, 10<br />
-                 Centro<br />
-                 CEP: 01234-567<br />
-                 São Paulo - SP - Brasil
+                 R. Lázaro Suave, 233<br />
+                 Bussocaba<br />
+                 CEP: 06040-470<br />
+                 Osasco - SP - Brasil
                </p>
               <Button
                 variant="outline"
                 className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                onClick={() => window.open('https://www.google.com.br/maps/place/R.+Dr.+Mario+Ferraz,+528+-+Jardim+Paulistano,+S%C3%A3o+Paulo+-+SP,+01453-011/@-23.5850283,-46.6874428,17z', '_blank')}
+                onClick={() => window.open('https://www.google.com/maps/place/R.+L%C3%A1zaro+Suave,+233+-+Bussocaba,+Osasco+-+SP,+06040-470/@-23.5670697,-46.7828337,17z/data=!3m1!4b1!4m6!3m5!1s0x94ce55571398a1df:0x451be45dff4c8815!8m2!3d-23.5669404!4d-46.7831942!16s%2Fg%2F11s13bs2q_?entry=ttu&g_ep=EgoyMDI1MDkxMC4wIKXMDSoASAFQAw%3D%3D', '_blank')}
               >
                 VER NO MAPA
               </Button>
