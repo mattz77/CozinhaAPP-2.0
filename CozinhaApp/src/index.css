@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Lou Restaurant Design System - Sophisticated & Elegant */
+
+@layer base {
+  :root {
+    /* Core Brand Colors - Black, Red, Yellow Theme */
+    --background: 0 0% 8%;
+    --foreground: 0 0% 98%;
+
+    /* Card & Surface Colors */
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary Brand - Vibrant Red */
+    --primary: 350 85% 55%;
+    --primary-foreground: 0 0% 98%;
+
+    /* Secondary - Golden Yellow */
+    --secondary: 45 93% 58%;
+    --secondary-foreground: 0 0% 8%;
+
+    /* Muted Tones */
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 65%;
+
+    /* Accent - Red */
+    --accent: 350 85% 55%;
+    --accent-foreground: 0 0% 98%;
+
+    /* System Colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Borders & Inputs */
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 350 85% 55%;
+
+    /* Design Elements */
+    --radius: 0.75rem;
+
+    /* Custom Design Tokens - Food Theme */
+    --elegant: 0 0% 10%;
+    --luxury-gradient: linear-gradient(135deg, hsl(350 85% 55% / 0.3), hsl(0 0% 0% / 0.7));
+    --glow-red: 0 0 20px hsl(350 85% 55% / 0.5);
+    --glow-yellow: 0 0 20px hsl(45 93% 58% / 0.5);
+    --shadow-elegant: 0 25px 50px -12px hsl(0 0% 0% / 0.8);
+    --transition-elegant: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark mode - Enhanced black theme */
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Custom Typography */
+  .font-heading {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .font-elegant {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  /* Elegant Animations */
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hover-lift {
+    transition: var(--transition-elegant);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-elegant);
+  }
+
+  /* Luxury Gradient Overlay */
+  .luxury-gradient {
+    background: var(--luxury-gradient);
+  }
+
+  /* Red & Yellow Glow Effects */
+  .glow-red {
+    box-shadow: var(--glow-red);
+    text-shadow: var(--glow-red);
+  }
+
+  .glow-yellow {
+    box-shadow: var(--glow-yellow);
+    text-shadow: var(--glow-yellow);
+  }
+}

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ee5a24;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="url(#grad1)" stroke="#fff" stroke-width="2"/>
+  
+  <!-- Fork -->
+  <g transform="translate(8, 6)">
+    <!-- Fork handle -->
+    <rect x="0" y="8" width="2" height="12" fill="#fff" rx="1"/>
+    <!-- Fork prongs -->
+    <rect x="-1" y="0" width="1" height="8" fill="#fff"/>
+    <rect x="0" y="0" width="1" height="8" fill="#fff"/>
+    <rect x="1" y="0" width="1" height="8" fill="#fff"/>
+    <rect x="2" y="0" width="1" height="8" fill="#fff"/>
+  </g>
+  
+  <!-- Knife -->
+  <g transform="translate(18, 6)">
+    <!-- Knife handle -->
+    <rect x="0" y="8" width="2" height="12" fill="#fff" rx="1"/>
+    <!-- Knife blade -->
+    <polygon points="0,0 6,0 0,8" fill="#fff"/>
+  </g>
+</svg>
