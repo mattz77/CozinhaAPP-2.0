@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Facebook, Instagram, User, LogOut, ChefHat, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/hooks/useCart";
+import { useCartSync } from "@/hooks/useCartSync";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { UserDropdown } from "@/components/auth/UserDropdown";
 import { Cart } from "@/components/ui/Cart";
@@ -12,7 +12,7 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
-  const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem } = useCart();
+  const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem, syncKey } = useCartSync();
   const [key, setKey] = useState(0); // Força re-render quando necessário
 
   // Força re-render quando o estado de autenticação mudar
@@ -21,7 +21,7 @@ const Navigation = () => {
     setKey(prev => prev + 1);
   }, [isAuthenticated, user]);
 
-  // Escuta eventos para controlar modal de login
+  // Escuta eventos para controlar modal de login e atualizações do carrinho
   useEffect(() => {
     const handleOpenAuthModal = () => {
       console.log('🔐 Navigation: Abrindo modal de login via evento');
@@ -33,12 +33,19 @@ const Navigation = () => {
       setShowAuthModal(false);
     };
 
+    const handleCartUpdated = () => {
+      console.log('🛒 Navigation: Carrinho atualizado, forçando re-render');
+      setKey(prev => prev + 1);
+    };
+
     window.addEventListener('openAuthModal', handleOpenAuthModal);
     window.addEventListener('loginSuccess', handleLoginSuccess);
+    window.addEventListener('cartUpdated', handleCartUpdated);
     
     return () => {
       window.removeEventListener('openAuthModal', handleOpenAuthModal);
       window.removeEventListener('loginSuccess', handleLoginSuccess);
+      window.removeEventListener('cartUpdated', handleCartUpdated);
     };
   }, []);
 
@@ -216,7 +223,6 @@ const Navigation = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          setShowProfile(true);
                           setIsOpen(false);
                         }}
                         className="flex-1 text-sm"
@@ -228,7 +234,7 @@ const Navigation = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          handleLogout();
+                          logout();
                           setIsOpen(false);
                         }}
                         className="flex-1 text-sm text-muted-foreground hover:text-destructive"

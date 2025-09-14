@@ -4,6 +4,7 @@ using CozinhaApp.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CozinhaApp.API.Migrations
 {
     [DbContext(typeof(CozinhaAppContext))]
-    partial class CozinhaAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250914202453_AddCarrinhoTables")]
+    partial class AddCarrinhoTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,7 +153,7 @@ namespace CozinhaApp.API.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Carrinhos", (string)null);
+                    b.ToTable("Carrinhos");
                 });
 
             modelBuilder.Entity("CozinhaApp.API.Models.Categoria", b =>
@@ -183,7 +186,7 @@ namespace CozinhaApp.API.Migrations
                     b.HasIndex("Nome")
                         .IsUnique();
 
-                    b.ToTable("Categorias", (string)null);
+                    b.ToTable("Categorias");
 
                     b.HasData(
                         new
@@ -272,7 +275,7 @@ namespace CozinhaApp.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Clientes", (string)null);
+                    b.ToTable("Clientes");
                 });
 
             modelBuilder.Entity("CozinhaApp.API.Models.ItemCarrinho", b =>
@@ -315,7 +318,7 @@ namespace CozinhaApp.API.Migrations
                     b.HasIndex("CarrinhoId", "PratoId")
                         .IsUnique();
 
-                    b.ToTable("ItensCarrinho", (string)null);
+                    b.ToTable("ItensCarrinho");
                 });
 
             modelBuilder.Entity("CozinhaApp.API.Models.ItemPedido", b =>
@@ -348,7 +351,7 @@ namespace CozinhaApp.API.Migrations
 
                     b.HasIndex("PratoId");
 
-                    b.ToTable("ItensPedido", (string)null);
+                    b.ToTable("ItensPedido");
                 });
 
             modelBuilder.Entity("CozinhaApp.API.Models.Pedido", b =>
@@ -413,7 +416,7 @@ namespace CozinhaApp.API.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("Pedidos", (string)null);
+                    b.ToTable("Pedidos");
                 });
 
             modelBuilder.Entity("CozinhaApp.API.Models.Prato", b =>
@@ -466,7 +469,7 @@ namespace CozinhaApp.API.Migrations
 
                     b.HasIndex("Nome");
 
-                    b.ToTable("Pratos", (string)null);
+                    b.ToTable("Pratos");
 
                     b.HasData(
                         new

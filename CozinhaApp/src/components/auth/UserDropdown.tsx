@@ -10,14 +10,12 @@ import {
   ChevronDown,
   Mail,
   MapPin,
-  Calendar,
-  Lock,
-  Edit,
-  X
+  Calendar
 } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { useDropdown } from '@/hooks/useDropdown';
 import { cn } from '@/lib/utils';
+import { ProfileModal } from './ProfileModal';
 
 interface UserDropdownProps {
   className?: string;
@@ -166,104 +164,10 @@ export const UserDropdown: React.FC<UserDropdownProps> = ({ className }) => {
       </div>
 
       {/* Modal de perfil completo */}
-      {showProfileModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-background rounded-lg shadow-xl">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-4 right-4 z-10 hover:bg-destructive/10 hover:text-destructive"
-              onClick={() => setShowProfileModal(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            
-            <div className="p-6">
-              {/* Header do perfil */}
-              <div className="text-center mb-6">
-                <Avatar className="h-20 w-20 mx-auto mb-4">
-                  <AvatarImage src={user.avatarUrl || undefined} alt={user.nomeCompleto} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-medium">
-                    {getInitials(user.nomeCompleto)}
-                  </AvatarFallback>
-                </Avatar>
-                <h2 className="text-2xl font-bold text-foreground mb-2">
-                  {user.nomeCompleto}
-                </h2>
-                <p className="text-muted-foreground mb-2">
-                  {user.email}
-                </p>
-                <Badge variant="outline">
-                  Membro desde {formatDate(user.dataCriacao)}
-                </Badge>
-              </div>
-
-              {/* Informações detalhadas */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground flex items-center">
-                      <Mail className="h-4 w-4 mr-2" />
-                      Email
-                    </label>
-                    <div className="p-3 bg-muted rounded-md text-sm">
-                      {user.email}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground flex items-center">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Data de Nascimento
-                    </label>
-                    <div className="p-3 bg-muted rounded-md text-sm">
-                      {user.dataNascimento ? formatDate(user.dataNascimento) : 'Não informado'}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground flex items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Endereço
-                    </label>
-                    <div className="p-3 bg-muted rounded-md text-sm">
-                      {user.endereco || 'Não informado'}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground flex items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Cidade
-                    </label>
-                    <div className="p-3 bg-muted rounded-md text-sm">
-                      {user.cidade || 'Não informado'}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Botões de ação */}
-                <div className="flex justify-end space-x-2 pt-4 border-t">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowProfileModal(false)}
-                  >
-                    Fechar
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={handleLogout}
-                    disabled={isLoading}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sair da Conta
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ProfileModal 
+        isOpen={showProfileModal} 
+        onClose={() => setShowProfileModal(false)} 
+      />
     </>
   );
 };

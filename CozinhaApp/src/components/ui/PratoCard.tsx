@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Clock, DollarSign, Star, Heart, ShoppingCart } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCart } from '@/hooks/useCart';
+import { useCartSync } from '@/hooks/useCartSync';
 
 interface PratoCardProps {
   prato: {
@@ -23,7 +23,7 @@ interface PratoCardProps {
 
 export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
   const { isAuthenticated } = useAuth();
-  const { addItem, openCart } = useCart();
+  const { addItem, openCart } = useCartSync();
   const [isLiked, setIsLiked] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
 

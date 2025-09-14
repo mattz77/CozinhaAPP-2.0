@@ -96,3 +96,44 @@ export interface CreatePedidoDto {
   clienteId: number;
   itensPedido: CreateItemPedidoDto[];
 }
+
+// Tipos para Carrinho
+export interface ItemCarrinhoResponseDto {
+  id: number;
+  pratoId: number;
+  pratoNome: string;
+  pratoImagemUrl?: string;
+  precoUnitario: number;
+  quantidade: number;
+  subtotal: number;
+  observacoes?: string;
+  dataAdicao: string;
+}
+
+export interface CarrinhoResponseDto {
+  id: number;
+  userId: string;
+  dataCriacao: string;
+  dataAtualizacao: string;
+  itens: ItemCarrinhoResponseDto[];
+  totalItens: number;
+  valorTotal: number;
+}
+
+export interface AddItemCarrinhoDto {
+  pratoId: number;
+  quantidade: number;
+  observacoes?: string;
+}
+
+export interface UpdateItemCarrinhoDto {
+  quantidade: number;
+  observacoes?: string;
+}
+
+export interface CarrinhoStatsDto {
+  totalItens: number;
+  valorTotal: number;
+  quantidadeItensUnicos: number;
+  ultimaAtualizacao?: string;
+}

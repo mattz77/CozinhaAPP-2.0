@@ -148,3 +148,49 @@ public class ItemPedido
     public int PratoId { get; set; }
     public Prato Prato { get; set; } = null!;
 }
+
+public class Carrinho
+{
+    public int Id { get; set; }
+    
+    [Required]
+    public string UserId { get; set; } = string.Empty;
+    
+    public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
+    
+    public DateTime DataAtualizacao { get; set; } = DateTime.UtcNow;
+    
+    // Relacionamento com usuário autenticado
+    public ApplicationUser? User { get; set; }
+    
+    // Itens do carrinho
+    public List<ItemCarrinho> Itens { get; set; } = new();
+}
+
+public class ItemCarrinho
+{
+    public int Id { get; set; }
+    
+    [Required]
+    public int CarrinhoId { get; set; }
+    
+    [Required]
+    public int PratoId { get; set; }
+    
+    [Required]
+    [Range(1, int.MaxValue)]
+    public int Quantidade { get; set; }
+    
+    [Required]
+    [Range(0.01, double.MaxValue)]
+    public decimal PrecoUnitario { get; set; }
+    
+    [StringLength(200)]
+    public string? Observacoes { get; set; }
+    
+    public DateTime DataAdicao { get; set; } = DateTime.UtcNow;
+    
+    // Relacionamentos
+    public Carrinho Carrinho { get; set; } = null!;
+    public Prato Prato { get; set; } = null!;
+}

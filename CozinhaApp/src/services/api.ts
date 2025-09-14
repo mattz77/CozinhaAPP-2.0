@@ -6,7 +6,12 @@ import {
   CreateCategoriaDto, 
   CreatePratoDto, 
   CreateClienteDto, 
-  CreatePedidoDto 
+  CreatePedidoDto,
+  CarrinhoResponseDto,
+  ItemCarrinhoResponseDto,
+  AddItemCarrinhoDto,
+  UpdateItemCarrinhoDto,
+  CarrinhoStatsDto
 } from '../types';
 import { API_CONFIG } from '../constants/api';
 
@@ -223,6 +228,91 @@ export const clientesService = {
     });
     if (!response.ok) {
       throw new Error('Erro ao criar cliente');
+    }
+    return response.json();
+  },
+};
+
+// Serviço para Carrinho
+export const carrinhoService = {
+  async getCarrinho(token: string): Promise<CarrinhoResponseDto> {
+    const response = await fetch(`${API_BASE_URL}/carrinho`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao buscar carrinho');
+    }
+    return response.json();
+  },
+
+  async adicionarItem(data: AddItemCarrinhoDto, token: string): Promise<ItemCarrinhoResponseDto> {
+    const response = await fetch(`${API_BASE_URL}/carrinho/item`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao adicionar item ao carrinho');
+    }
+    return response.json();
+  },
+
+  async atualizarItem(itemId: number, data: UpdateItemCarrinhoDto, token: string): Promise<ItemCarrinhoResponseDto> {
+    const response = await fetch(`${API_BASE_URL}/carrinho/item/${itemId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao atualizar item do carrinho');
+    }
+    return response.json();
+  },
+
+  async removerItem(itemId: number, token: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/carrinho/item/${itemId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao remover item do carrinho');
+    }
+  },
+
+  async limparCarrinho(token: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/carrinho`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao limpar carrinho');
+    }
+  },
+
+  async getStats(token: string): Promise<CarrinhoStatsDto> {
+    const response = await fetch(`${API_BASE_URL}/carrinho/stats`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao buscar estatísticas do carrinho');
     }
     return response.json();
   },

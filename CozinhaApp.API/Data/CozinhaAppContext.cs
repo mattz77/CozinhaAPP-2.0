@@ -15,6 +15,8 @@ public class CozinhaAppContext : IdentityDbContext<ApplicationUser>
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Pedido> Pedidos { get; set; }
     public DbSet<ItemPedido> ItensPedido { get; set; }
+    public DbSet<Carrinho> Carrinhos { get; set; }
+    public DbSet<ItemCarrinho> ItensCarrinho { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -126,6 +128,54 @@ public class CozinhaAppContext : IdentityDbContext<ApplicationUser>
             // Índices
             entity.HasIndex(e => e.PedidoId);
             entity.HasIndex(e => e.PratoId);
+        });
+
+        // Configuração da entidade Carrinho
+        modelBuilder.Entity<Carrinho>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired().HasMaxLength(450);
+            entity.Property(e => e.DataCriacao).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.DataAtualizacao).HasDefaultValueSql("GETUTCDATE()");
+            
+            // Relacionamento com ApplicationUser
+            entity.HasOne(c => c.User)
+                  .WithMany()
+                  .HasForeignKey(c => c.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            
+            // Índices
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasIndex(e => e.DataCriacao);
+        });
+
+        // Configuração da entidade ItemCarrinho
+        modelBuilder.Entity<ItemCarrinho>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.PrecoUnitario).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.Observacoes).HasMaxLength(200);
+            entity.Property(e => e.DataAdicao).HasDefaultValueSql("GETUTCDATE()");
+            
+            // Relacionamento com Carrinho
+            entity.HasOne(ic => ic.Carrinho)
+                  .WithMany(c => c.Itens)
+                  .HasForeignKey(ic => ic.CarrinhoId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            
+            // Relacionamento com Prato
+            entity.HasOne(ic => ic.Prato)
+                  .WithMany()
+                  .HasForeignKey(ic => ic.PratoId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            
+            // Índices
+            entity.HasIndex(e => e.CarrinhoId);
+            entity.HasIndex(e => e.PratoId);
+            entity.HasIndex(e => e.DataAdicao);
+            
+            // Índice único para evitar duplicatas
+            entity.HasIndex(e => new { e.CarrinhoId, e.PratoId }).IsUnique();
         });
 
         // Dados iniciais (Seed Data)
