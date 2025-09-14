@@ -1,7 +1,34 @@
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCartSync } from "@/hooks/useCartSync";
 import heroImage from "@/assets/food-soup.jpg";
 
 const HeroSection = () => {
+  const { isAuthenticated } = useAuth();
+  const { openCart } = useCartSync();
+
+  // Função para rolar para a seção do cardápio
+  const scrollToCardapio = () => {
+    const cardapioSection = document.getElementById('cardapio');
+    if (cardapioSection) {
+      cardapioSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
+  // Função para fazer pedido
+  const handleFazerPedido = () => {
+    if (!isAuthenticated) {
+      // Disparar evento para abrir modal de login
+      window.dispatchEvent(new CustomEvent('openAuthModal'));
+    } else {
+      // Se estiver logado, abrir o carrinho
+      openCart();
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -53,6 +80,7 @@ const HeroSection = () => {
           <Button
             size="lg"
             className="group relative bg-gradient-to-r from-primary via-yellow-400 to-primary text-primary-foreground font-elegant px-12 py-6 text-lg rounded-2xl shadow-2xl hover:shadow-primary/30 transition-all duration-500 hover:scale-105 overflow-hidden"
+            onClick={scrollToCardapio}
           >
             {/* Efeito de brilho animado */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
@@ -70,6 +98,7 @@ const HeroSection = () => {
             variant="outline"
             size="lg"
             className="group relative border-2 border-primary text-primary hover:text-primary-foreground font-elegant px-12 py-6 text-lg rounded-2xl shadow-2xl hover:shadow-primary/30 transition-all duration-500 hover:scale-105 backdrop-blur-sm bg-white/5 hover:bg-gradient-to-r hover:from-primary hover:to-yellow-400 overflow-hidden"
+            onClick={handleFazerPedido}
           >
             {/* Efeito de preenchimento animado */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary to-yellow-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></div>
