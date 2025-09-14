@@ -15,10 +15,10 @@ import {
 
 // Hooks para Categorias
 export const useCategorias = () => {
-  const { token, isAuthenticated } = useAuth();
+  const { token } = useAuth();
   
   return useQuery({
-    queryKey: ['categorias', { auth: isAuthenticated }],
+    queryKey: ['categorias'],
     queryFn: () => categoriasService.getAll(token),
     staleTime: 10 * 60 * 1000, // 10 minutos
     cacheTime: 30 * 60 * 1000, // 30 minutos
@@ -31,10 +31,10 @@ export const useCategorias = () => {
 
 // Hooks para Pratos
 export const usePratos = () => {
-  const { token, isAuthenticated } = useAuth();
+  const { token } = useAuth();
   
   return useQuery({
-    queryKey: ['pratos', { auth: isAuthenticated }],
+    queryKey: ['pratos'],
     queryFn: () => pratosService.getAll(token),
     staleTime: 10 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,

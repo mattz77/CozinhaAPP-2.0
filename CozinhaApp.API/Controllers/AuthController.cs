@@ -12,11 +12,15 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly ILogger<AuthController> _logger;
+    private readonly ILoggingService _loggingService;
+    private readonly DebugLoggingService _debugLogger;
 
-    public AuthController(IAuthService authService, ILogger<AuthController> logger)
+    public AuthController(IAuthService authService, ILogger<AuthController> logger, ILoggingService loggingService)
     {
         _authService = authService;
         _logger = logger;
+        _loggingService = loggingService;
+        _debugLogger = new DebugLoggingService();
     }
 
     /// <summary>
@@ -28,26 +32,43 @@ public class AuthController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("📝 Recebida requisição de login para: {Email}", loginDto.Email);
+            _loggingService.LogApi("Recebida requisição de login", new { Email = loginDto.Email });
 
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("❌ ModelState inválido: {Errors}", 
-                    string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
-                return BadRequest(ModelState);
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                _loggingService.LogApi("ModelState inválido", new { Errors = errors });
+                return BadRequest(new { message = "Dados inválidos", errors = errors });
             }
 
             var result = await _authService.LoginAsync(loginDto);
-            _logger.LogInformation("✅ Login realizado com sucesso para: {Email}", loginDto.Email);
+            
+            _loggingService.LogApi("Login realizado com sucesso", new { 
+                Email = loginDto.Email, 
+                UserId = result.User.Id,
+                TokenLength = result.Token.Length,
+                RefreshTokenLength = result.RefreshToken.Length,
+                ResultType = result.GetType().Name,
+                HasToken = !string.IsNullOrEmpty(result.Token),
+                HasRefreshToken = !string.IsNullOrEmpty(result.RefreshToken),
+                HasUser = result.User != null
+            });
+            
+            _loggingService.LogApi("Retornando resultado Ok", new { 
+                StatusCode = 200,
+                ContentType = "application/json"
+            });
+            
             return Ok(result);
         }
         catch (UnauthorizedAccessException)
         {
+            _loggingService.LogApi("Login falhou: Credenciais inválidas", new { Email = loginDto.Email });
             return Unauthorized(new { message = "Credenciais inválidas" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro durante login");
+            _loggingService.LogError("Erro durante login", ex, new { Email = loginDto.Email });
             return StatusCode(500, new { message = "Erro interno do servidor" });
         }
     }
@@ -189,5 +210,45 @@ public class AuthController : ControllerBase
             _logger.LogError(ex, "Erro durante logout");
             return StatusCode(500, new { message = "Erro interno do servidor" });
         }
+    }
+
+    /// <summary>
+    /// Endpoint de teste para verificar serialização
+    /// </summary>
+    [HttpGet("test")]
+    [AllowAnonymous]
+    public ActionResult TestSerialization()
+    {
+        _debugLogger.Log("Teste de serialização simples iniciado");
+        
+        try
+        {
+            var result = "Teste funcionando!";
+            _debugLogger.Log("Teste de serialização simples concluído", new { Result = result });
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _debugLogger.Log("Erro no teste de serialização simples", new { Error = ex.Message, StackTrace = ex.StackTrace });
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Endpoint de teste para verificar serialização JSON
+    /// </summary>
+    [HttpGet("test-json")]
+    [AllowAnonymous]
+    public ActionResult TestJsonSerialization()
+    {
+        var testData = new
+        {
+            message = "Teste de serialização JSON",
+            timestamp = DateTime.UtcNow,
+            success = true
+        };
+
+        _loggingService.LogApi("Teste de serialização JSON", testData);
+        return Ok(testData);
     }
 }

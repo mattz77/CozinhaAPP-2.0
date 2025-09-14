@@ -76,7 +76,7 @@ public class SecurityMiddleware
                 };
                 
                 var jsonResponse = JsonSerializer.Serialize(errorResponse);
-                context.Response.WriteAsync(jsonResponse);
+                _ = context.Response.WriteAsync(jsonResponse);
                 return;
             }
 

@@ -42,6 +42,7 @@ public class AuditLoggingMiddleware
             LogResponse(context, requestId, stopwatch.ElapsedMilliseconds);
 
             // Copiar resposta para o stream original
+            responseBody.Seek(0, SeekOrigin.Begin);
             await responseBody.CopyToAsync(originalBodyStream);
         }
         catch (Exception ex)

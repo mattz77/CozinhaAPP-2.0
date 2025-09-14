@@ -26,78 +26,91 @@ public class AuthService : IAuthService
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
     private readonly IClienteService _clienteService;
+    private readonly ILoggingService _loggingService;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IConfiguration configuration,
         ILogger<AuthService> logger,
-        IClienteService clienteService)
+        IClienteService clienteService,
+        ILoggingService loggingService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
         _logger = logger;
         _clienteService = clienteService;
+        _loggingService = loggingService;
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
     {
         try
         {
-            _logger.LogInformation("🔄 Iniciando processo de login para email: {Email}", loginDto.Email);
+            _loggingService.LogAuth("Iniciando processo de login", new { Email = loginDto.Email });
             
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
-            _logger.LogInformation("👤 Busca de usuário: {Found}", user != null ? "Encontrado" : "Não encontrado");
+            _loggingService.LogAuth("Busca de usuário", new { Email = loginDto.Email, Found = user != null });
             
             if (user == null || !user.Ativo)
             {
-                _logger.LogWarning("❌ Login falhou: Usuário não encontrado ou inativo. Email: {Email}", loginDto.Email);
+                _loggingService.LogAuth("Login falhou: Usuário não encontrado ou inativo", new { Email = loginDto.Email });
                 throw new UnauthorizedAccessException("Credenciais inválidas");
             }
 
-            _logger.LogInformation("🔐 Verificando senha para usuário: {Email}", user.Email);
+            _loggingService.LogAuth("Verificando senha", new { Email = user.Email });
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             
             if (!result.Succeeded)
             {
-                _logger.LogWarning("❌ Login falhou: Senha incorreta para usuário {Email}", loginDto.Email);
+                _loggingService.LogAuth("Login falhou: Senha incorreta", new { Email = loginDto.Email });
                 throw new UnauthorizedAccessException("Credenciais inválidas");
             }
 
-            _logger.LogInformation("✅ Senha verificada com sucesso para {Email}", loginDto.Email);
+            _loggingService.LogAuth("Senha verificada com sucesso", new { Email = loginDto.Email });
 
             // Atualizar último login
             user.UltimoLogin = DateTime.UtcNow;
             await _userManager.UpdateAsync(user);
 
-            _logger.LogInformation("🔑 Gerando token JWT para usuário: {Email}", user.Email);
+            _loggingService.LogAuth("Gerando token JWT", new { Email = user.Email });
             var token = await GenerateJwtTokenAsync(user);
-            _logger.LogInformation("✅ Token JWT gerado com sucesso");
+            _loggingService.LogAuth("Token JWT gerado com sucesso", new { TokenLength = token.Length });
 
-            _logger.LogInformation("🔄 Gerando refresh token");
+            _loggingService.LogAuth("Gerando refresh token");
             var refreshToken = GenerateRefreshToken();
-            _logger.LogInformation("✅ Refresh token gerado");
+            _loggingService.LogAuth("Refresh token gerado", new { TokenLength = refreshToken.Length });
 
-            _logger.LogInformation("💾 Salvando refresh token para usuário: {Email}", user.Email);
+            _loggingService.LogAuth("Salvando refresh token", new { Email = user.Email });
             await _userManager.SetAuthenticationTokenAsync(user, "CozinhaApp", "RefreshToken", refreshToken);
-            _logger.LogInformation("✅ Refresh token salvo");
+            _loggingService.LogAuth("Refresh token salvo");
 
-            _logger.LogInformation("🔍 Buscando dados do cliente para userId: {UserId}", user.Id);
+            _loggingService.LogAuth("Buscando dados do cliente", new { UserId = user.Id });
             var cliente = await _clienteService.GetClienteByUserIdAsync(user.Id);
-            _logger.LogInformation("👤 Dados do cliente: {Found}", cliente != null ? "Encontrado" : "Não encontrado");
+            _loggingService.LogAuth("Dados do cliente", new { Found = cliente != null, ClienteId = cliente?.Id });
 
-            return new AuthResponseDto
+            var authResponse = new AuthResponseDto
             {
                 Token = token,
                 RefreshToken = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddHours(24),
                 User = MapToUserDto(user, cliente)
             };
+
+            _loggingService.LogAuth("Login realizado com sucesso", new { 
+                Email = loginDto.Email, 
+                UserId = user.Id,
+                TokenLength = token.Length,
+                RefreshTokenLength = refreshToken.Length,
+                UserName = user.NomeCompleto
+            });
+
+            return authResponse;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro durante login para email: {Email}", loginDto.Email);
+            _loggingService.LogError("Erro durante login", ex, new { Email = loginDto.Email });
             throw;
         }
     }

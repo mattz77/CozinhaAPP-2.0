@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/useToast';
+import { loggingService } from '@/services/loggingService';
 
 const testUsers = [
   {
@@ -37,19 +38,33 @@ export const TestLoginSelector: React.FC = () => {
 
   const handleTestLogin = async (user: typeof testUsers[0]) => {
     try {
-      console.log('🔄 TestLogin: Tentando login com:', user.email);
+      loggingService.logAuth('Tentando login de teste', { 
+        email: user.email, 
+        name: user.name, 
+        role: user.role 
+      });
+      
       await login({
         email: user.email,
         password: user.password
       });
-      console.log('✅ TestLogin: Login realizado com sucesso');
+      
+      loggingService.logAuth('Login de teste realizado com sucesso', { 
+        email: user.email, 
+        name: user.name 
+      });
+      
       toast.success(
         'Login de teste realizado!',
         `Bem-vindo, ${user.name} (${user.role})`,
         3000
       );
     } catch (error) {
-      console.error('❌ TestLogin: Erro no login:', error);
+      loggingService.logError('Erro no login de teste', error as Error, { 
+        email: user.email, 
+        name: user.name 
+      });
+      
       toast.error(
         'Erro no login de teste',
         'Verifique se a API está rodando e tente novamente',

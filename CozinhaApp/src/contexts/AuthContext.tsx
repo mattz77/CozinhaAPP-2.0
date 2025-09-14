@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from 'react';
 import { AuthContextType, UserDto, LoginDto, RegisterDto, ChangePasswordDto } from '../types/auth';
 import { authService } from '../services/authService';
+import { loggingService } from '../services/loggingService';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -79,7 +80,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: LoginDto): Promise<void> => {
     try {
-      console.log('🔄 AuthContext: Iniciando login...', {
+      loggingService.logAuth('Iniciando login no AuthContext', {
         email: credentials.email,
         currentUser: user?.nomeCompleto,
         isAuthenticated: !!token
@@ -87,19 +88,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setIsLoading(true);
 
-      console.log('📤 AuthContext: Chamando authService.login...');
+      loggingService.logAuth('Chamando authService.login');
       const authResponse = await authService.login(credentials);
       
       // Validação da resposta
       if (!authResponse || !authResponse.token || !authResponse.refreshToken || !authResponse.user) {
-        console.error('❌ AuthContext: Resposta inválida da API:', authResponse);
+        loggingService.logError('Resposta inválida da API', undefined, authResponse);
         throw new Error('Resposta inválida do servidor');
       }
       
-      console.log('✅ AuthContext: Login bem-sucedido, dados recebidos:', {
+      loggingService.logAuth('Login bem-sucedido, dados recebidos', {
         token: 'presente',
         refreshToken: 'presente',
-        user: authResponse.user.nomeCompleto
+        user: authResponse.user.nomeCompleto,
+        tokenLength: authResponse.token.length,
+        refreshTokenLength: authResponse.refreshToken.length
       });
       
       // Primeiro salva no storage para garantir persistência
@@ -107,28 +110,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         sessionStorage.setItem('authToken', authResponse.token);
         sessionStorage.setItem('refreshToken', authResponse.refreshToken);
         sessionStorage.setItem('user', JSON.stringify(authResponse.user));
-        console.log('✅ AuthContext: Dados salvos no storage');
+        loggingService.logAuth('Dados salvos no storage');
       } catch (storageError) {
-        console.error('❌ AuthContext: Erro ao salvar no storage:', storageError);
+        loggingService.logError('Erro ao salvar no storage', storageError as Error);
         throw new Error('Erro ao salvar dados de autenticação');
       }
       
       // Depois atualiza o estado
-      console.log('🔄 AuthContext: Atualizando estado...');
+      loggingService.logAuth('Atualizando estado do AuthContext');
       setToken(authResponse.token);
       setRefreshToken(authResponse.refreshToken);
       setUser(authResponse.user);
       
       // Força atualização do estado de autenticação
       const isAuthenticatedNow = !!(authResponse.token && authResponse.user);
-      console.log('✅ AuthContext: Estado atualizado:', {
+      loggingService.logAuth('Estado atualizado com sucesso', {
         isAuthenticated: isAuthenticatedNow,
         user: authResponse.user.nomeCompleto,
         hasToken: !!authResponse.token
       });
       
+      // Emitir evento para fechar modal de login
+      window.dispatchEvent(new CustomEvent('loginSuccess'));
+      
     } catch (error) {
-      console.error('❌ AuthContext: Erro no login:', error);
+      loggingService.logError('Erro no login do AuthContext', error as Error, { email: credentials.email });
       
       // Limpa dados em caso de erro
       clearAuthData();

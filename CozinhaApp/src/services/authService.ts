@@ -1,4 +1,5 @@
 import { API_CONFIG } from '../constants/api';
+import { loggingService } from './loggingService';
 import { 
   LoginDto, 
   RegisterDto, 
@@ -15,8 +16,10 @@ const API_BASE_URL = import.meta.env.DEV ? '/api' : API_CONFIG.BASE_URL;
 export const authService = {
   async login(credentials: LoginDto): Promise<AuthResponseDto> {
     try {
-      console.log('🌐 AuthService: Fazendo requisição para:', `${API_BASE_URL}/auth/login`);
-      console.log('📤 AuthService: Dados enviados:', credentials);
+      loggingService.logApi('Fazendo requisição de login', { 
+        url: `${API_BASE_URL}/auth/login`,
+        email: credentials.email 
+      });
       
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -27,11 +30,22 @@ export const authService = {
         body: JSON.stringify(credentials),
       });
 
-      console.log('📥 AuthService: Resposta recebida:', response.status, response.statusText);
+      loggingService.logApi('Resposta recebida', { 
+        status: response.status, 
+        statusText: response.statusText,
+        ok: response.ok 
+      });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('❌ AuthService: Erro na resposta:', errorData);
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          loggingService.logError('Erro ao fazer parse da resposta de erro', parseError as Error);
+          errorData = { message: 'Erro desconhecido' };
+        }
+        
+        loggingService.logError('Erro na resposta da API', undefined, errorData);
         
         // Tratamento específico de erros
         if (response.status === 401) {
@@ -39,7 +53,7 @@ export const authService = {
         } else if (response.status === 400) {
           throw new Error(errorData.message || 'Dados de login inválidos.');
         } else if (response.status === 500) {
-          console.error('Erro interno do servidor:', errorData);
+          loggingService.logError('Erro interno do servidor', undefined, errorData);
           throw new Error('Erro interno do servidor. Por favor, tente novamente.');
         }
         
@@ -47,10 +61,18 @@ export const authService = {
       }
 
       const data = await response.json();
-      console.log('✅ AuthService: Dados de login recebidos:', data);
+      loggingService.logApi('Dados de login recebidos com sucesso', { 
+        hasToken: !!data.token,
+        hasRefreshToken: !!data.refreshToken,
+        hasUser: !!data.user,
+        tokenLength: data.token?.length,
+        refreshTokenLength: data.refreshToken?.length,
+        userName: data.user?.nomeCompleto
+      });
+      
       return data;
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
+      loggingService.logError('Erro ao fazer login', error as Error, { email: credentials.email });
       throw error;
     }
   },

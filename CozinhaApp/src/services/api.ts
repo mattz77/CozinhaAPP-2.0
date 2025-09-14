@@ -14,8 +14,19 @@ const API_BASE_URL = API_CONFIG.BASE_URL;
 
 // Serviço para Categorias
 export const categoriasService = {
-  async getAll(): Promise<Categoria[]> {
-    const response = await fetch(`${API_BASE_URL}/categorias`);
+  async getAll(token?: string): Promise<Categoria[]> {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/categorias`, {
+      headers,
+    });
+    
     if (!response.ok) {
       throw new Error('Erro ao buscar categorias');
     }
@@ -69,9 +80,19 @@ export const categoriasService = {
 
 // Serviço para Pratos
 export const pratosService = {
-  async getAll(): Promise<Prato[]> {
+  async getAll(token?: string): Promise<Prato[]> {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     try {
-      const response = await fetch(`${API_BASE_URL}/pratos/with-categories`);
+      const response = await fetch(`${API_BASE_URL}/pratos/with-categories`, {
+        headers,
+      });
       if (!response.ok) {
         console.error('Erro na API de pratos:', response.status, response.statusText);
         throw new Error(`Erro ao buscar pratos: ${response.status} ${response.statusText}`);

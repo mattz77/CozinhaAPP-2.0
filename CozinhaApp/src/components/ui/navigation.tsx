@@ -5,13 +5,12 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { AuthModal } from "@/components/auth/AuthModal";
-import { UserProfile } from "@/components/auth/UserProfile";
+import { UserDropdown } from "@/components/auth/UserDropdown";
 import { Cart } from "@/components/ui/Cart";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem } = useCart();
   const [key, setKey] = useState(0); // Força re-render quando necessário
@@ -22,15 +21,25 @@ const Navigation = () => {
     setKey(prev => prev + 1);
   }, [isAuthenticated, user]);
 
-  // Escuta evento para abrir modal de login
+  // Escuta eventos para controlar modal de login
   useEffect(() => {
     const handleOpenAuthModal = () => {
       console.log('🔐 Navigation: Abrindo modal de login via evento');
       setShowAuthModal(true);
     };
 
+    const handleLoginSuccess = () => {
+      console.log('✅ Navigation: Login bem-sucedido, fechando modal');
+      setShowAuthModal(false);
+    };
+
     window.addEventListener('openAuthModal', handleOpenAuthModal);
-    return () => window.removeEventListener('openAuthModal', handleOpenAuthModal);
+    window.addEventListener('loginSuccess', handleLoginSuccess);
+    
+    return () => {
+      window.removeEventListener('openAuthModal', handleOpenAuthModal);
+      window.removeEventListener('loginSuccess', handleLoginSuccess);
+    };
   }, []);
 
   // Log para debug
@@ -47,14 +56,6 @@ const Navigation = () => {
     { label: "CONTATO", href: "#contato" },
   ];
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      setShowProfile(false);
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error);
-    }
-  };
 
   return (
     <>
@@ -103,42 +104,7 @@ const Navigation = () => {
               )}
 
               {isAuthenticated ? (
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                      {user?.avatarUrl ? (
-                        <img 
-                          src={user.avatarUrl} 
-                          alt={user.nomeCompleto}
-                          className="w-full h-full rounded-full object-cover"
-                        />
-                      ) : (
-                        <User className="h-4 w-4 text-primary-foreground" />
-                      )}
-                    </div>
-                    <span className="text-sm font-medium text-foreground">
-                      {user?.nomeCompleto.split(' ')[0]}
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowProfile(true)}
-                    className="text-sm"
-                  >
-                    <User className="h-4 w-4 mr-2" />
-                    Perfil
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="text-sm text-muted-foreground hover:text-destructive"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sair
-                  </Button>
-                </div>
+                <UserDropdown />
               ) : (
                 <Button
                   variant="outline"
@@ -317,23 +283,6 @@ const Navigation = () => {
         <AuthModal onClose={() => setShowAuthModal(false)} />
       )}
 
-      {/* User Profile Modal */}
-      {showProfile && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute -top-12 right-0 text-white hover:text-gray-300"
-              onClick={() => setShowProfile(false)}
-            >
-              <X className="h-4 w-4 mr-2" />
-              Fechar
-            </Button>
-            <UserProfile />
-          </div>
-        </div>
-      )}
 
       {/* Cart */}
       <Cart
