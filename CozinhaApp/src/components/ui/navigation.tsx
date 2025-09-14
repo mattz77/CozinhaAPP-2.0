@@ -175,7 +175,7 @@ const Navigation = () => {
               {/* Social Links */}
               <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-border">
                 <a
-                  href="https://www.facebook.com/louprestaurante"
+                  href="https://www.facebook.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors duration-300"
@@ -183,7 +183,7 @@ const Navigation = () => {
                   <Facebook size={20} />
                 </a>
                 <a
-                  href="https://www.instagram.com/louprestaurante/"
+                  href="https://www.instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors duration-300"
@@ -311,7 +311,7 @@ const Navigation = () => {
               {/* Mobile Social Links */}
               <div className="flex items-center space-x-4 pt-4">
                 <a
-                  href="https://www.facebook.com/louprestaurante"
+                  href="https://www.facebook.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors duration-300"
@@ -319,7 +319,7 @@ const Navigation = () => {
                   <Facebook size={20} />
                 </a>
                 <a
-                  href="https://www.instagram.com/louprestaurante/"
+                  href="https://www.instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors duration-300"
