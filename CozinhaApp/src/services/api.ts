@@ -11,7 +11,11 @@ import {
   ItemCarrinhoResponseDto,
   AddItemCarrinhoDto,
   UpdateItemCarrinhoDto,
-  CarrinhoStatsDto
+  CarrinhoStatsDto,
+  CreateAgendamentoDto,
+  UpdateAgendamentoDto,
+  AgendamentoResponseDto,
+  AgendamentoStatsDto
 } from '../types';
 import { API_CONFIG } from '../constants/api';
 
@@ -313,6 +317,90 @@ export const carrinhoService = {
     });
     if (!response.ok) {
       throw new Error('Erro ao buscar estatísticas do carrinho');
+    }
+    return response.json();
+  },
+};
+
+// Serviço para Agendamentos
+export const agendamentosService = {
+  async getAgendamentos(token: string): Promise<AgendamentoResponseDto[]> {
+    const response = await fetch(`${API_BASE_URL}/agendamentos`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao buscar agendamentos');
+    }
+    return response.json();
+  },
+
+  async getAgendamento(id: number, token: string): Promise<AgendamentoResponseDto> {
+    const response = await fetch(`${API_BASE_URL}/agendamentos/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao buscar agendamento');
+    }
+    return response.json();
+  },
+
+  async createAgendamento(agendamento: CreateAgendamentoDto, token: string): Promise<AgendamentoResponseDto> {
+    const response = await fetch(`${API_BASE_URL}/agendamentos`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(agendamento),
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao criar agendamento');
+    }
+    return response.json();
+  },
+
+  async updateAgendamento(id: number, agendamento: UpdateAgendamentoDto, token: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/agendamentos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(agendamento),
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao atualizar agendamento');
+    }
+  },
+
+  async cancelAgendamento(id: number, token: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/agendamentos/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao cancelar agendamento');
+    }
+  },
+
+  async getStats(token: string): Promise<AgendamentoStatsDto> {
+    const response = await fetch(`${API_BASE_URL}/agendamentos/stats`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao buscar estatísticas de agendamentos');
     }
     return response.json();
   },

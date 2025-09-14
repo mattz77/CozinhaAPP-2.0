@@ -17,6 +17,8 @@ public class CozinhaAppContext : IdentityDbContext<ApplicationUser>
     public DbSet<ItemPedido> ItensPedido { get; set; }
     public DbSet<Carrinho> Carrinhos { get; set; }
     public DbSet<ItemCarrinho> ItensCarrinho { get; set; }
+    public DbSet<Agendamento> Agendamentos { get; set; }
+    public DbSet<ItemAgendamento> ItensAgendamento { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -176,6 +178,60 @@ public class CozinhaAppContext : IdentityDbContext<ApplicationUser>
             
             // Índice único para evitar duplicatas
             entity.HasIndex(e => new { e.CarrinhoId, e.PratoId }).IsUnique();
+        });
+
+        // Configuração da entidade Agendamento
+        modelBuilder.Entity<Agendamento>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.UserId).IsRequired();
+            entity.Property(e => e.DataAgendamento).IsRequired();
+            entity.Property(e => e.Status).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.ValorTotal).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.Observacoes).HasMaxLength(500);
+            entity.Property(e => e.EnderecoEntrega).HasMaxLength(200);
+            entity.Property(e => e.TelefoneContato).HasMaxLength(20);
+            entity.Property(e => e.MetodoPagamento).HasMaxLength(100);
+            entity.Property(e => e.DataCriacao).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.DataAtualizacao).HasDefaultValueSql("GETUTCDATE()");
+            
+            // Relacionamento com ApplicationUser
+            entity.HasOne(a => a.User)
+                  .WithMany()
+                  .HasForeignKey(a => a.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            
+            // Índices
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.DataAgendamento);
+            entity.HasIndex(e => e.Status);
+        });
+
+        // Configuração da entidade ItemAgendamento
+        modelBuilder.Entity<ItemAgendamento>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.AgendamentoId).IsRequired();
+            entity.Property(e => e.PratoId).IsRequired();
+            entity.Property(e => e.Quantidade).IsRequired();
+            entity.Property(e => e.PrecoUnitario).HasColumnType("decimal(10,2)");
+            entity.Property(e => e.Observacoes).HasMaxLength(200);
+            
+            // Relacionamento com Agendamento
+            entity.HasOne(ia => ia.Agendamento)
+                  .WithMany(a => a.Itens)
+                  .HasForeignKey(ia => ia.AgendamentoId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            
+            // Relacionamento com Prato
+            entity.HasOne(ia => ia.Prato)
+                  .WithMany()
+                  .HasForeignKey(ia => ia.PratoId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            
+            // Índices
+            entity.HasIndex(e => e.AgendamentoId);
+            entity.HasIndex(e => e.PratoId);
         });
 
         // Dados iniciais (Seed Data)

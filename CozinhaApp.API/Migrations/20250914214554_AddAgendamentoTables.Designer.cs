@@ -4,6 +4,7 @@ using CozinhaApp.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CozinhaApp.API.Migrations
 {
     [DbContext(typeof(CozinhaAppContext))]
-    partial class CozinhaAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250914214554_AddAgendamentoTables")]
+    partial class AddAgendamentoTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

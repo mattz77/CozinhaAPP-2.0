@@ -194,3 +194,74 @@ public class ItemCarrinho
     public Carrinho Carrinho { get; set; } = null!;
     public Prato Prato { get; set; } = null!;
 }
+
+public class Agendamento
+{
+    public int Id { get; set; }
+    
+    [Required]
+    public string UserId { get; set; } = string.Empty;
+    
+    [Required]
+    public DateTime DataAgendamento { get; set; }
+    
+    [Required]
+    [StringLength(200)]
+    public string Status { get; set; } = "Pendente"; // Pendente, Confirmado, Preparando, Pronto, Entregue, Cancelado
+    
+    [Required]
+    [Range(0.01, double.MaxValue)]
+    public decimal ValorTotal { get; set; }
+    
+    [StringLength(500)]
+    public string? Observacoes { get; set; }
+    
+    [StringLength(200)]
+    public string? EnderecoEntrega { get; set; }
+    
+    [StringLength(20)]
+    public string? TelefoneContato { get; set; }
+    
+    public bool PagamentoAntecipado { get; set; } = false;
+    
+    [StringLength(100)]
+    public string? MetodoPagamento { get; set; }
+    
+    public DateTime? DataPagamento { get; set; }
+    
+    public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
+    
+    public DateTime DataAtualizacao { get; set; } = DateTime.UtcNow;
+    
+    // Relacionamento com usuário
+    public ApplicationUser? User { get; set; }
+    
+    // Itens do agendamento
+    public List<ItemAgendamento> Itens { get; set; } = new();
+}
+
+public class ItemAgendamento
+{
+    public int Id { get; set; }
+    
+    [Required]
+    public int AgendamentoId { get; set; }
+    
+    [Required]
+    public int PratoId { get; set; }
+    
+    [Required]
+    [Range(1, int.MaxValue)]
+    public int Quantidade { get; set; }
+    
+    [Required]
+    [Range(0.01, double.MaxValue)]
+    public decimal PrecoUnitario { get; set; }
+    
+    [StringLength(200)]
+    public string? Observacoes { get; set; }
+    
+    // Relacionamentos
+    public Agendamento Agendamento { get; set; } = null!;
+    public Prato Prato { get; set; } = null!;
+}

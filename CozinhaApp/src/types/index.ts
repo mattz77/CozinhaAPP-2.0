@@ -137,3 +137,70 @@ export interface CarrinhoStatsDto {
   quantidadeItensUnicos: number;
   ultimaAtualizacao?: string;
 }
+
+// Tipos para Agendamentos
+export interface CreateItemAgendamentoDto {
+  pratoId: number;
+  quantidade: number;
+  observacoes?: string;
+}
+
+export interface CreateAgendamentoDto {
+  dataAgendamento: string;
+  observacoes?: string;
+  enderecoEntrega?: string;
+  telefoneContato?: string;
+  pagamentoAntecipado: boolean;
+  metodoPagamento?: string;
+  itens: CreateItemAgendamentoDto[];
+}
+
+export interface UpdateAgendamentoDto {
+  status?: string;
+  observacoes?: string;
+  enderecoEntrega?: string;
+  telefoneContato?: string;
+  metodoPagamento?: string;
+}
+
+export interface ItemAgendamentoResponseDto {
+  id: number;
+  pratoId: number;
+  pratoNome: string;
+  pratoImagemUrl?: string;
+  quantidade: number;
+  precoUnitario: number;
+  subtotal: number;
+  observacoes?: string;
+}
+
+export interface AgendamentoResponseDto {
+  id: number;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  dataAgendamento: string;
+  status: string;
+  valorTotal: number;
+  observacoes?: string;
+  enderecoEntrega?: string;
+  telefoneContato?: string;
+  pagamentoAntecipado: boolean;
+  metodoPagamento?: string;
+  dataPagamento?: string;
+  dataCriacao: string;
+  dataAtualizacao: string;
+  itens: ItemAgendamentoResponseDto[];
+}
+
+export interface AgendamentoStatsDto {
+  totalAgendamentos: number;
+  agendamentosPendentes: number;
+  agendamentosConfirmados: number;
+  agendamentosPreparando: number;
+  agendamentosProntos: number;
+  agendamentosEntregues: number;
+  agendamentosCancelados: number;
+  valorTotalAgendamentos: number;
+  valorMedioAgendamento: number;
+}

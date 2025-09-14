@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCartSync } from "@/hooks/useCartSync";
+import { AgendamentoModal } from "@/components/auth/AgendamentoModal";
+import { useState } from "react";
 import heroImage from "@/assets/food-soup.jpg";
 
 const HeroSection = () => {
   const { isAuthenticated } = useAuth();
   const { openCart } = useCartSync();
+  const [isAgendamentoModalOpen, setIsAgendamentoModalOpen] = useState(false);
 
   // Função para rolar para a seção do cardápio
   const scrollToCardapio = () => {
@@ -23,10 +26,81 @@ const HeroSection = () => {
     if (!isAuthenticated) {
       // Disparar evento para abrir modal de login
       window.dispatchEvent(new CustomEvent('openAuthModal'));
-    } else {
-      // Se estiver logado, abrir o carrinho
-      openCart();
+      return;
     }
+
+    // Se estiver logado, verificar se há itens no carrinho
+    const { items, totalItems } = useCartSync();
+    
+    if (totalItems > 0) {
+      // Se há itens no carrinho, abrir o carrinho
+      openCart();
+    } else {
+      // Se não há itens, mostrar opções
+      showOrderOptions();
+    }
+  };
+
+  // Função para mostrar opções quando não há itens no carrinho
+  const showOrderOptions = () => {
+    // Criar modal com opções
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+    modal.innerHTML = `
+      <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+        <div class="text-center mb-6">
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">Como deseja prosseguir?</h3>
+          <p class="text-gray-600">Você ainda não tem itens no carrinho.</p>
+        </div>
+        
+        <div class="space-y-4">
+          <button 
+            id="add-items-btn"
+            class="w-full bg-gradient-to-r from-primary to-yellow-400 text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            📋 Ver Cardápio e Adicionar Itens
+          </button>
+          
+          <button 
+            id="schedule-btn"
+            class="w-full border-2 border-primary text-primary font-semibold py-4 px-6 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 hover:scale-105"
+          >
+            📅 Agendar Pedido
+          </button>
+          
+          <button 
+            id="close-modal-btn"
+            class="w-full text-gray-500 py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Event listeners
+    modal.querySelector('#add-items-btn')?.addEventListener('click', () => {
+      document.body.removeChild(modal);
+      scrollToCardapio();
+    });
+    
+    modal.querySelector('#schedule-btn')?.addEventListener('click', () => {
+      document.body.removeChild(modal);
+      setIsAgendamentoModalOpen(true);
+    });
+    
+    modal.querySelector('#close-modal-btn')?.addEventListener('click', () => {
+      document.body.removeChild(modal);
+    });
+    
+    // Fechar ao clicar fora
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        document.body.removeChild(modal);
+      }
+    });
   };
 
   return (
@@ -125,6 +199,12 @@ const HeroSection = () => {
           <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse" />
         </div>
       </div>
+
+      {/* Modal de Agendamento */}
+      <AgendamentoModal 
+        isOpen={isAgendamentoModalOpen}
+        onClose={() => setIsAgendamentoModalOpen(false)}
+      />
     </section>
   );
 };
