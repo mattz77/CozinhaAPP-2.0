@@ -91,6 +91,7 @@ builder.Services.AddAuthentication(options =>
 // Register services
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IClienteService, ClienteService>();
 
 // CORS configuration for React frontend
 var allowedOrigins = securityConfig.GetSection("AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:3000" };
@@ -144,7 +145,7 @@ using (var scope = app.Services.CreateScope())
     await SeedRolesAsync(roleManager);
     
     // Criar usuários de teste para desenvolvimento
-    await SeedTestUsersAsync(userManager);
+    await SeedTestUsersAsync(userManager, context);
     
     // Popular dados de exemplo
     await SeedDataAsync(context);
@@ -197,7 +198,7 @@ async Task SeedAdminUserAsync(UserManager<ApplicationUser> userManager)
     }
 }
 
-async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
+async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager, CozinhaAppContext context)
 {
     // Usuários de teste para desenvolvimento
     var testUsers = new[]
@@ -209,7 +210,8 @@ async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
             Role = "Admin",
             Endereco = "Rua das Flores, 123",
             Cidade = "São Paulo",
-            Cep = "01234-567"
+            Cep = "01234-567",
+            Telefone = "(11) 99999-0001"
         },
         new { 
             Email = "joao@teste.com", 
@@ -218,7 +220,8 @@ async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
             Role = "User",
             Endereco = "Av. Paulista, 1000",
             Cidade = "São Paulo",
-            Cep = "01310-100"
+            Cep = "01310-100",
+            Telefone = "(11) 99999-0002"
         },
         new { 
             Email = "maria@teste.com", 
@@ -227,7 +230,8 @@ async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
             Role = "User",
             Endereco = "Rua Augusta, 456",
             Cidade = "São Paulo",
-            Cep = "01305-000"
+            Cep = "01305-000",
+            Telefone = "(11) 99999-0003"
         },
         new { 
             Email = "pedro@teste.com", 
@@ -236,7 +240,8 @@ async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
             Role = "Manager",
             Endereco = "Rua Oscar Freire, 789",
             Cidade = "São Paulo",
-            Cep = "01426-001"
+            Cep = "01426-001",
+            Telefone = "(11) 99999-0004"
         }
     };
 
@@ -246,6 +251,7 @@ async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
         
         if (existingUser == null)
         {
+            // Criar usuário na tabela AspNetUsers
             var user = new ApplicationUser
             {
                 UserName = userData.Email,
@@ -264,7 +270,33 @@ async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(user, userData.Role);
-                Console.WriteLine($"👤 Usuário de teste criado: {userData.Nome} ({userData.Email}) - Senha: {userData.Password}");
+                
+                // Criar cliente na tabela Clientes
+                var cliente = new Cliente
+                {
+                    Nome = userData.Nome,
+                    Email = userData.Email,
+                    Telefone = userData.Telefone,
+                    Endereco = userData.Endereco,
+                    Cidade = userData.Cidade,
+                    Cep = userData.Cep,
+                    DataCriacao = DateTime.UtcNow,
+                    UserId = user.Id // Relacionar com o usuário criado
+                };
+
+                context.Clientes.Add(cliente);
+                await context.SaveChangesAsync();
+                
+                Console.WriteLine($"👤 Usuário de teste criado:");
+                Console.WriteLine($"   📧 Email: {userData.Email}");
+                Console.WriteLine($"   🔑 Senha: {userData.Password}");
+                Console.WriteLine($"   👤 Nome: {userData.Nome}");
+                Console.WriteLine($"   🏷️ Função: {userData.Role}");
+                Console.WriteLine($"   📱 Telefone: {userData.Telefone}");
+                Console.WriteLine($"   🏠 Endereço: {userData.Endereco}, {userData.Cidade}");
+                Console.WriteLine($"   📦 Cliente ID: {cliente.Id}");
+                Console.WriteLine($"   🔗 User ID: {user.Id}");
+                Console.WriteLine();
             }
             else
             {
@@ -273,7 +305,31 @@ async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
         }
         else
         {
-            Console.WriteLine($"✅ Usuário {userData.Email} já existe");
+            // Verificar se existe cliente correspondente
+            var existingCliente = context.Clientes.FirstOrDefault(c => c.UserId == existingUser.Id);
+            if (existingCliente == null)
+            {
+                // Criar cliente se não existir
+                var cliente = new Cliente
+                {
+                    Nome = userData.Nome,
+                    Email = userData.Email,
+                    Telefone = userData.Telefone,
+                    Endereco = userData.Endereco,
+                    Cidade = userData.Cidade,
+                    Cep = userData.Cep,
+                    DataCriacao = DateTime.UtcNow,
+                    UserId = existingUser.Id
+                };
+
+                context.Clientes.Add(cliente);
+                await context.SaveChangesAsync();
+                Console.WriteLine($"✅ Cliente criado para usuário existente: {userData.Email} (Cliente ID: {cliente.Id})");
+            }
+            else
+            {
+                Console.WriteLine($"✅ Usuário e cliente {userData.Email} já existem");
+            }
         }
     }
 }

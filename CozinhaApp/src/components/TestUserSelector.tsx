@@ -14,6 +14,7 @@ interface TestUser {
   role: string;
   endereco: string;
   cidade: string;
+  telefone: string;
   avatar: string;
   cor: string;
 }
@@ -26,6 +27,7 @@ const testUsers: TestUser[] = [
     role: 'Admin',
     endereco: 'Rua das Flores, 123',
     cidade: 'São Paulo',
+    telefone: '(11) 99999-0001',
     avatar: '👑',
     cor: 'bg-gradient-to-br from-yellow-400 to-orange-500'
   },
@@ -36,6 +38,7 @@ const testUsers: TestUser[] = [
     role: 'User',
     endereco: 'Av. Paulista, 1000',
     cidade: 'São Paulo',
+    telefone: '(11) 99999-0002',
     avatar: '👨‍💼',
     cor: 'bg-gradient-to-br from-blue-400 to-blue-600'
   },
@@ -46,6 +49,7 @@ const testUsers: TestUser[] = [
     role: 'User',
     endereco: 'Rua Augusta, 456',
     cidade: 'São Paulo',
+    telefone: '(11) 99999-0003',
     avatar: '👩‍💼',
     cor: 'bg-gradient-to-br from-pink-400 to-pink-600'
   },
@@ -56,6 +60,7 @@ const testUsers: TestUser[] = [
     role: 'Manager',
     endereco: 'Rua Oscar Freire, 789',
     cidade: 'São Paulo',
+    telefone: '(11) 99999-0004',
     avatar: '👨‍🍳',
     cor: 'bg-gradient-to-br from-green-400 to-green-600'
   }
@@ -173,6 +178,7 @@ export const TestUserSelector: React.FC = () => {
                       </div>
                       
                       <p className="text-sm text-muted-foreground mb-2">{user.email}</p>
+                      <p className="text-xs text-muted-foreground mb-2">{user.telefone}</p>
                       <p className="text-xs text-muted-foreground mb-4">
                         {user.endereco}<br />
                         {user.cidade}
@@ -214,6 +220,9 @@ export const TestUserSelector: React.FC = () => {
                   </div>
                   <div>
                     <strong>Email:</strong> {selectedUser.email}
+                  </div>
+                  <div>
+                    <strong>Telefone:</strong> {selectedUser.telefone}
                   </div>
                   <div>
                     <strong>Senha:</strong> {selectedUser.senha}

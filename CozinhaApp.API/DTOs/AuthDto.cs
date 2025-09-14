@@ -63,6 +63,8 @@ public class UserDto
     public DateTime DataCriacao { get; set; }
     public DateTime? UltimoLogin { get; set; }
     public string? AvatarUrl { get; set; }
+    public string? Telefone { get; set; }
+    public int? ClienteId { get; set; }
 }
 
 public class RefreshTokenDto

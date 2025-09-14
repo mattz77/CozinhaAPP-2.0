@@ -43,4 +43,5 @@ public class ClienteResponseDto
     public string? Cep { get; set; }
     public DateTime DataCriacao { get; set; }
     public int TotalPedidos { get; set; }
+    public string? UserId { get; set; }
 }

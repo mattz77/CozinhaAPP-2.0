@@ -24,17 +24,20 @@ public class AuthService : IAuthService
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
+    private readonly IClienteService _clienteService;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IConfiguration configuration,
-        ILogger<AuthService> logger)
+        ILogger<AuthService> logger,
+        IClienteService clienteService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
         _logger = logger;
+        _clienteService = clienteService;
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
@@ -63,12 +66,15 @@ public class AuthService : IAuthService
             // Salvar refresh token no usuário (em produção, use uma tabela separada)
             await _userManager.SetAuthenticationTokenAsync(user, "CozinhaApp", "RefreshToken", refreshToken);
 
+            // Buscar dados do cliente
+            var cliente = await _clienteService.GetClienteByUserIdAsync(user.Id);
+
             return new AuthResponseDto
             {
                 Token = token,
                 RefreshToken = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddHours(24),
-                User = MapToUserDto(user)
+                User = MapToUserDto(user, cliente)
             };
         }
         catch (Exception ex)
@@ -261,20 +267,22 @@ public class AuthService : IAuthService
         return Convert.ToBase64String(bytes);
     }
 
-    private static UserDto MapToUserDto(ApplicationUser user)
+    private static UserDto MapToUserDto(ApplicationUser user, ClienteResponseDto? cliente = null)
     {
         return new UserDto
         {
             Id = user.Id,
             NomeCompleto = user.NomeCompleto,
             Email = user.Email!,
-            Endereco = user.Endereco,
-            Cidade = user.Cidade,
-            Cep = user.Cep,
+            Endereco = cliente?.Endereco ?? user.Endereco,
+            Cidade = cliente?.Cidade ?? user.Cidade,
+            Cep = cliente?.Cep ?? user.Cep,
             DataNascimento = user.DataNascimento,
             DataCriacao = user.DataCriacao,
             UltimoLogin = user.UltimoLogin,
-            AvatarUrl = user.AvatarUrl
+            AvatarUrl = user.AvatarUrl,
+            Telefone = cliente?.Telefone,
+            ClienteId = cliente?.Id
         };
     }
 }

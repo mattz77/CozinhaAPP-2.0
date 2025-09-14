@@ -33,6 +33,8 @@ export interface UserDto {
   dataCriacao: string;
   ultimoLogin?: string;
   avatarUrl?: string;
+  telefone?: string;
+  clienteId?: number;
 }
 
 export interface RefreshTokenDto {

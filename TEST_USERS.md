@@ -13,6 +13,7 @@ Estes usuários são criados automaticamente no banco de dados para acelerar o d
 - **Senha**: `Admin123!@#`
 - **Nome**: Administrador
 - **Função**: Admin
+- **Telefone**: (11) 99999-0001
 - **Endereço**: Rua das Flores, 123, São Paulo
 - **CEP**: 01234-567
 - **Avatar**: 👑
@@ -22,6 +23,7 @@ Estes usuários são criados automaticamente no banco de dados para acelerar o d
 - **Senha**: `Joao123!@#`
 - **Nome**: João Silva
 - **Função**: User
+- **Telefone**: (11) 99999-0002
 - **Endereço**: Av. Paulista, 1000, São Paulo
 - **CEP**: 01310-100
 - **Avatar**: 👨‍💼
@@ -31,6 +33,7 @@ Estes usuários são criados automaticamente no banco de dados para acelerar o d
 - **Senha**: `Maria123!@#`
 - **Nome**: Maria Santos
 - **Função**: User
+- **Telefone**: (11) 99999-0003
 - **Endereço**: Rua Augusta, 456, São Paulo
 - **CEP**: 01305-000
 - **Avatar**: 👩‍💼
@@ -40,6 +43,7 @@ Estes usuários são criados automaticamente no banco de dados para acelerar o d
 - **Senha**: `Pedro123!@#`
 - **Nome**: Pedro Costa
 - **Função**: Manager
+- **Telefone**: (11) 99999-0004
 - **Endereço**: Rua Oscar Freire, 789, São Paulo
 - **CEP**: 01426-001
 - **Avatar**: 👨‍🍳
@@ -64,6 +68,25 @@ Estes usuários são criados automaticamente no banco de dados para acelerar o d
 
 ---
 
+## 🗄️ ESTRUTURA DE DADOS
+
+Os usuários são criados em **duas tabelas**:
+
+### **1. AspNetUsers** (Autenticação)
+- Contém dados de login e autenticação
+- Campos: Id, Email, PasswordHash, NomeCompleto, etc.
+- Usado pelo ASP.NET Core Identity
+
+### **2. Clientes** (Dados do Cliente)
+- Contém dados específicos do cliente
+- Campos: Id, Nome, Email, Telefone, Endereco, Cidade, Cep, UserId
+- Relacionado com AspNetUsers através do campo `UserId`
+
+### **Relacionamento**
+- `Clientes.UserId` → `AspNetUsers.Id`
+- Um usuário pode ter apenas um cliente associado
+- Login busca dados de ambas as tabelas
+
 ## 🔧 CONFIGURAÇÃO
 
 Os usuários são criados automaticamente quando a aplicação inicia através do método `SeedTestUsersAsync` no `Program.cs`.
@@ -73,7 +96,7 @@ Para desabilitar em produção, adicione uma verificação de ambiente:
 ```csharp
 if (app.Environment.IsDevelopment())
 {
-    await SeedTestUsersAsync(userManager);
+    await SeedTestUsersAsync(userManager, context);
 }
 ```
 
