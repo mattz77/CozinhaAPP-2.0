@@ -54,13 +54,19 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var jwtKey = jwtSettings["Key"];
+var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? 
+             Environment.GetEnvironmentVariable("JWT_SECRET_KEY_DEV") ?? 
+             jwtSettings["Key"] ??
+             "MinhaChaveSuperSecretaParaDesenvolvimento123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 // Validar se a chave JWT está configurada
 if (string.IsNullOrEmpty(jwtKey) || jwtKey.StartsWith("${"))
 {
     throw new InvalidOperationException("JWT Key não configurada. Configure a variável de ambiente JWT_SECRET_KEY.");
 }
+
+// Log do tamanho da chave para debug
+Console.WriteLine($"🔑 JWT Key configurada - Tamanho: {jwtKey.Length} caracteres ({jwtKey.Length * 8} bits)");
 
 var key = Encoding.UTF8.GetBytes(jwtKey);
 
@@ -93,17 +99,30 @@ builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 
+// Configurar a chave JWT para injeção de dependência
+builder.Configuration["Jwt:Key"] = jwtKey;
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
 // CORS configuration for React frontend
-var allowedOrigins = securityConfig.GetSection("AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:3000" };
+var allowedOrigins = securityConfig.GetSection("AllowedOrigins").Get<string[]>() ?? 
+    new[] { 
+        "http://localhost:3000",
+        "https://localhost:3000",
+        "http://localhost:3001",
+        "https://localhost:3001",
+        "http://localhost:5057",
+        "https://localhost:5057"
+    };
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
         policy.WithOrigins(allowedOrigins)
-              .WithHeaders("Content-Type", "Authorization", "X-Requested-With")
-              .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-              .AllowCredentials(); // Necessário para cookies/auth
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials()
+              .SetIsOriginAllowed(origin => true); // Em desenvolvimento, permite qualquer origem
     });
 });
 
@@ -114,16 +133,30 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    // Log de configurações em desenvolvimento
+    Console.WriteLine("\n🔧 Configurações da API em Desenvolvimento:");
+    Console.WriteLine($"📍 Ambiente: {app.Environment.EnvironmentName}");
+    Console.WriteLine($"🌐 URLs: {string.Join(", ", app.Urls)}");
+    Console.WriteLine($"🔑 JWT Key Length: {jwtKey.Length} chars ({jwtKey.Length * 8} bits)");
+    Console.WriteLine($"🔒 JWT Issuer: {jwtSettings["Issuer"]}");
+    Console.WriteLine($"🔒 JWT Audience: {jwtSettings["Audience"]}");
+    Console.WriteLine($"🌍 CORS Origins: {string.Join(", ", allowedOrigins)}");
+    Console.WriteLine("✅ Swagger habilitado em /swagger\n");
 }
 
-app.UseHttpsRedirection();
+// Enable CORS first
+app.UseCors("ReactApp");
 
-// Middlewares de segurança
+// Then security middlewares
 app.UseMiddleware<SecurityMiddleware>();
 app.UseMiddleware<AuditLoggingMiddleware>();
 
-// Enable CORS
-app.UseCors("ReactApp");
+// HTTPS redirection after CORS
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Authentication & Authorization
 app.UseAuthentication();
@@ -305,6 +338,15 @@ async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager, CozinhaA
         }
         else
         {
+            // Resetar senha para usuários existentes (especialmente admin)
+            var token = await userManager.GeneratePasswordResetTokenAsync(existingUser);
+            var resetResult = await userManager.ResetPasswordAsync(existingUser, token, userData.Password);
+            
+            if (resetResult.Succeeded)
+            {
+                Console.WriteLine($"🔄 Senha resetada para {userData.Email}: {userData.Password}");
+            }
+            
             // Verificar se existe cliente correspondente
             var existingCliente = context.Clientes.FirstOrDefault(c => c.UserId == existingUser.Id);
             if (existingCliente == null)

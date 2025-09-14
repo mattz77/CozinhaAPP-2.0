@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using CozinhaApp.API.Models;
 using CozinhaApp.API.DTOs;
+using CozinhaApp.API.Interfaces;
 
 namespace CozinhaApp.API.Services;
 
@@ -44,30 +45,47 @@ public class AuthService : IAuthService
     {
         try
         {
+            _logger.LogInformation("🔄 Iniciando processo de login para email: {Email}", loginDto.Email);
+            
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            _logger.LogInformation("👤 Busca de usuário: {Found}", user != null ? "Encontrado" : "Não encontrado");
+            
             if (user == null || !user.Ativo)
             {
+                _logger.LogWarning("❌ Login falhou: Usuário não encontrado ou inativo. Email: {Email}", loginDto.Email);
                 throw new UnauthorizedAccessException("Credenciais inválidas");
             }
 
+            _logger.LogInformation("🔐 Verificando senha para usuário: {Email}", user.Email);
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+            
             if (!result.Succeeded)
             {
+                _logger.LogWarning("❌ Login falhou: Senha incorreta para usuário {Email}", loginDto.Email);
                 throw new UnauthorizedAccessException("Credenciais inválidas");
             }
+
+            _logger.LogInformation("✅ Senha verificada com sucesso para {Email}", loginDto.Email);
 
             // Atualizar último login
             user.UltimoLogin = DateTime.UtcNow;
             await _userManager.UpdateAsync(user);
 
+            _logger.LogInformation("🔑 Gerando token JWT para usuário: {Email}", user.Email);
             var token = await GenerateJwtTokenAsync(user);
+            _logger.LogInformation("✅ Token JWT gerado com sucesso");
+
+            _logger.LogInformation("🔄 Gerando refresh token");
             var refreshToken = GenerateRefreshToken();
+            _logger.LogInformation("✅ Refresh token gerado");
 
-            // Salvar refresh token no usuário (em produção, use uma tabela separada)
+            _logger.LogInformation("💾 Salvando refresh token para usuário: {Email}", user.Email);
             await _userManager.SetAuthenticationTokenAsync(user, "CozinhaApp", "RefreshToken", refreshToken);
+            _logger.LogInformation("✅ Refresh token salvo");
 
-            // Buscar dados do cliente
+            _logger.LogInformation("🔍 Buscando dados do cliente para userId: {UserId}", user.Id);
             var cliente = await _clienteService.GetClienteByUserIdAsync(user.Id);
+            _logger.LogInformation("👤 Dados do cliente: {Found}", cliente != null ? "Encontrado" : "Não encontrado");
 
             return new AuthResponseDto
             {
@@ -227,6 +245,8 @@ public class AuthService : IAuthService
 
     private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
     {
+        _logger.LogInformation("🔐 Iniciando geração de token JWT para usuário: {Email}", user.Email);
+        
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
@@ -236,6 +256,8 @@ public class AuthService : IAuthService
             new("avatar_url", user.AvatarUrl ?? ""),
             new("ultimo_login", user.UltimoLogin?.ToString("O") ?? "")
         };
+        
+        _logger.LogInformation("✅ Claims básicas criadas");
 
         // Adicionar roles se necessário
         var roles = await _userManager.GetRolesAsync(user);
@@ -244,8 +266,16 @@ public class AuthService : IAuthService
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+        var jwtKey = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key não configurada.");
+        Console.WriteLine($"🔑 Usando chave JWT com tamanho: {jwtKey.Length} caracteres ({jwtKey.Length * 8} bits)");
+        _logger.LogInformation("📏 Tamanho da chave JWT: {Length} caracteres ({Bits} bits)", 
+            jwtKey.Length, jwtKey.Length * 8);
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+        _logger.LogInformation("✅ SymmetricSecurityKey criada");
+
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        _logger.LogInformation("✅ SigningCredentials criadas usando HmacSha256");
 
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
@@ -254,6 +284,7 @@ public class AuthService : IAuthService
             expires: DateTime.UtcNow.AddHours(24),
             signingCredentials: credentials
         );
+        _logger.LogInformation("✅ Token JWT criado com sucesso");
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

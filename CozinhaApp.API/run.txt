@@ -1,0 +1,1 @@
+$env:JWT_SECRET_KEY="MinhaChaveSuperSecretaParaDesenvolvimento123456789!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()"; dotnet run

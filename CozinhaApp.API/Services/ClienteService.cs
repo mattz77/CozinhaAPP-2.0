@@ -2,18 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using CozinhaApp.API.Data;
 using CozinhaApp.API.Models;
 using CozinhaApp.API.DTOs;
+using CozinhaApp.API.Interfaces;
 
 namespace CozinhaApp.API.Services;
-
-public interface IClienteService
-{
-    Task<ClienteResponseDto?> GetClienteByUserIdAsync(string userId);
-    Task<ClienteResponseDto?> GetClienteByEmailAsync(string email);
-    Task<ClienteResponseDto> CreateClienteAsync(CreateClienteDto clienteDto, string userId);
-    Task<ClienteResponseDto?> UpdateClienteAsync(int clienteId, UpdateClienteDto clienteDto);
-    Task<bool> DeleteClienteAsync(int clienteId);
-    Task<List<ClienteResponseDto>> GetAllClientesAsync();
-}
 
 public class ClienteService : IClienteService
 {
@@ -112,11 +103,99 @@ public class ClienteService : IClienteService
         }
     }
 
-    public async Task<bool> DeleteClienteAsync(int clienteId)
+
+    public async Task<IEnumerable<ClienteResponseDto>> GetAllAsync()
     {
         try
         {
-            var cliente = await _context.Clientes.FindAsync(clienteId);
+            var clientes = await _context.Clientes
+                .Include(c => c.Pedidos)
+                .ToListAsync();
+
+            return clientes.Select(MapToClienteResponseDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao buscar todos os clientes");
+            return new List<ClienteResponseDto>();
+        }
+    }
+
+    public async Task<ClienteResponseDto?> GetByIdAsync(int id)
+    {
+        try
+        {
+            var cliente = await _context.Clientes
+                .Include(c => c.Pedidos)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            return cliente != null ? MapToClienteResponseDto(cliente) : null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao buscar cliente por ID: {Id}", id);
+            return null;
+        }
+    }
+
+    public async Task<ClienteResponseDto> CreateAsync(CreateClienteDto dto)
+    {
+        try
+        {
+            var cliente = new Cliente
+            {
+                Nome = dto.Nome,
+                Email = dto.Email,
+                Telefone = dto.Telefone,
+                Endereco = dto.Endereco,
+                Cidade = dto.Cidade,
+                Cep = dto.Cep,
+                DataCriacao = DateTime.UtcNow
+            };
+
+            _context.Clientes.Add(cliente);
+            await _context.SaveChangesAsync();
+
+            return MapToClienteResponseDto(cliente);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao criar cliente");
+            throw;
+        }
+    }
+
+    public async Task<ClienteResponseDto?> UpdateAsync(int id, UpdateClienteDto dto)
+    {
+        try
+        {
+            var cliente = await _context.Clientes.FindAsync(id);
+            if (cliente == null)
+                return null;
+
+            cliente.Nome = dto.Nome;
+            cliente.Email = dto.Email;
+            cliente.Telefone = dto.Telefone;
+            cliente.Endereco = dto.Endereco;
+            cliente.Cidade = dto.Cidade;
+            cliente.Cep = dto.Cep;
+
+            await _context.SaveChangesAsync();
+
+            return MapToClienteResponseDto(cliente);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao atualizar cliente: {Id}", id);
+            return null;
+        }
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        try
+        {
+            var cliente = await _context.Clientes.FindAsync(id);
             if (cliente == null)
                 return false;
 
@@ -127,25 +206,8 @@ public class ClienteService : IClienteService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao deletar cliente: {ClienteId}", clienteId);
+            _logger.LogError(ex, "Erro ao deletar cliente: {Id}", id);
             return false;
-        }
-    }
-
-    public async Task<List<ClienteResponseDto>> GetAllClientesAsync()
-    {
-        try
-        {
-            var clientes = await _context.Clientes
-                .Include(c => c.Pedidos)
-                .ToListAsync();
-
-            return clientes.Select(MapToClienteResponseDto).ToList();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Erro ao buscar todos os clientes");
-            return new List<ClienteResponseDto>();
         }
     }
 

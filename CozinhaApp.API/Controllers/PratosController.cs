@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using CozinhaApp.API.Data;
 using CozinhaApp.API.Models;
 
@@ -7,6 +8,7 @@ namespace CozinhaApp.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // Protege todos os endpoints por padrão
 public class PratosController : ControllerBase
 {
     private readonly CozinhaAppContext _context;
@@ -18,6 +20,7 @@ public class PratosController : ControllerBase
 
     // GET: api/pratos
     [HttpGet]
+    [AllowAnonymous] // Permite acesso sem autenticação
     public async Task<ActionResult<IEnumerable<Prato>>> GetPratos()
     {
         try
@@ -38,6 +41,7 @@ public class PratosController : ControllerBase
 
     // GET: api/pratos/with-categories
     [HttpGet("with-categories")]
+    [AllowAnonymous] // Permite acesso sem autenticação
     public async Task<ActionResult<IEnumerable<Prato>>> GetPratosWithCategories()
     {
         try

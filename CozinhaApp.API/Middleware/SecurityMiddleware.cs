@@ -114,16 +114,40 @@ public class SecurityMiddleware
 
     private async Task ValidateOrigin(HttpContext context)
     {
-        var allowedOrigins = _configuration.GetSection("Security:AllowedOrigins").Get<string[]>();
+        var allowedOrigins = _configuration.GetSection("Security:AllowedOrigins").Get<string[]>() ?? 
+            new[] { "http://localhost:3000", "https://localhost:3000" };
+            
         var origin = context.Request.Headers["Origin"].FirstOrDefault();
+        var path = context.Request.Path.Value;
+        var method = context.Request.Method;
 
-        if (!string.IsNullOrEmpty(origin) && allowedOrigins != null && !allowedOrigins.Contains(origin))
+        _logger.LogInformation($"🔍 Validando requisição: Origem={origin}, Path={path}, Method={method}");
+
+        if (string.IsNullOrEmpty(origin))
         {
-            _logger.LogWarning($"Tentativa de acesso de origem não autorizada: {origin}");
-            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            await context.Response.WriteAsync("Origem não autorizada");
+            _logger.LogInformation("✅ Requisição sem origem (provavelmente local)");
             return;
         }
+
+        if (!allowedOrigins.Contains(origin))
+        {
+            _logger.LogWarning($"❌ Origem não autorizada: {origin}");
+            _logger.LogWarning($"📋 Origens permitidas: {string.Join(", ", allowedOrigins)}");
+            
+            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            var errorResponse = new
+            {
+                error = "Origem não autorizada",
+                message = "Esta origem não tem permissão para acessar a API",
+                origin = origin,
+                allowedOrigins = allowedOrigins
+            };
+            
+            await context.Response.WriteAsJsonAsync(errorResponse);
+            return;
+        }
+
+        _logger.LogInformation($"✅ Origem validada: {origin}");
     }
 
     private string GetClientIpAddress(HttpContext context)

@@ -29,6 +29,11 @@ public interface IClienteService
     Task<ClienteResponseDto> CreateAsync(CreateClienteDto dto);
     Task<ClienteResponseDto?> UpdateAsync(int id, UpdateClienteDto dto);
     Task<bool> DeleteAsync(int id);
+    
+    // Métodos adicionais para integração com AuthService
+    Task<ClienteResponseDto?> GetClienteByUserIdAsync(string userId);
+    Task<ClienteResponseDto?> GetClienteByEmailAsync(string email);
+    Task<ClienteResponseDto> CreateClienteAsync(CreateClienteDto clienteDto, string userId);
 }
 
 public interface IPedidoService

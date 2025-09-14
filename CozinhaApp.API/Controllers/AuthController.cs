@@ -7,6 +7,7 @@ namespace CozinhaApp.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // Protege todos os endpoints por padrão
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -22,16 +23,22 @@ public class AuthController : ControllerBase
     /// Realiza login do usuário
     /// </summary>
     [HttpPost("login")]
+    [AllowAnonymous] // Permite acesso sem autenticação
     public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto loginDto)
     {
         try
         {
+            _logger.LogInformation("📝 Recebida requisição de login para: {Email}", loginDto.Email);
+
             if (!ModelState.IsValid)
             {
+                _logger.LogWarning("❌ ModelState inválido: {Errors}", 
+                    string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
                 return BadRequest(ModelState);
             }
 
             var result = await _authService.LoginAsync(loginDto);
+            _logger.LogInformation("✅ Login realizado com sucesso para: {Email}", loginDto.Email);
             return Ok(result);
         }
         catch (UnauthorizedAccessException)
@@ -49,6 +56,7 @@ public class AuthController : ControllerBase
     /// Registra um novo usuário
     /// </summary>
     [HttpPost("register")]
+    [AllowAnonymous] // Permite acesso sem autenticação
     public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto registerDto)
     {
         try
