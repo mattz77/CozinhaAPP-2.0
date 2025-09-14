@@ -7,40 +7,40 @@
 @layer base {
   :root {
     /* Core Brand Colors - Black, Red, Yellow Theme */
-    --background: 0 0% 8%;
+    --background: 0 0% 5%;
     --foreground: 0 0% 98%;
 
     /* Card & Surface Colors */
-    --card: 0 0% 12%;
+    --card: 0 0% 8%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 12%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
 
     /* Primary Brand - Vibrant Red */
-    --primary: 350 85% 55%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 350 85% 60%;
+    --primary-foreground: 0 0% 100%;
 
     /* Secondary - Golden Yellow */
     --secondary: 45 93% 58%;
-    --secondary-foreground: 0 0% 8%;
+    --secondary-foreground: 0 0% 5%;
 
     /* Muted Tones */
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
 
     /* Accent - Red */
-    --accent: 350 85% 55%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 350 85% 60%;
+    --accent-foreground: 0 0% 100%;
 
     /* System Colors */
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
     /* Borders & Inputs */
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 350 85% 55%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 350 85% 60%;
 
     /* Design Elements */
     --radius: 0.75rem;
@@ -78,11 +78,48 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border box-border;
   }
 
-  body {
-    @apply bg-background text-foreground font-sans antialiased;
+  html {
+    @apply antialiased scroll-smooth;
+  }
+
+  html, body {
+    @apply bg-background text-foreground font-sans min-h-screen overflow-x-hidden;
+  }
+
+  #root {
+    @apply min-h-screen flex flex-col relative;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+
+  /* Scrollbar personalizada */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/20 rounded-full hover:bg-primary/30 transition-colors;
+  }
+
+  /* Melhorias de acessibilidade */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary/50;
+  }
+
+  /* Desativa highlight em dispositivos móveis */
+  @media (hover: none) and (pointer: coarse) {
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
   }
 
   /* Custom Typography */

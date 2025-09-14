@@ -43,16 +43,46 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🔄 LoginForm: Iniciando submit do formulário');
     
     if (!validateForm()) {
+      console.log('❌ LoginForm: Formulário inválido');
       return;
     }
 
     try {
+      console.log('📤 LoginForm: Enviando dados:', { email: formData.email });
       await login(formData);
-      toast.success("Login realizado com sucesso!", "Bem-vindo ao CozinhaApp!");
+      console.log('✅ LoginForm: Login realizado com sucesso');
+      toast.success(
+        "Login realizado com sucesso!", 
+        "Bem-vindo ao CozinhaApp!", 
+        5000
+      );
     } catch (error) {
-      toast.error("Erro no login", error instanceof Error ? error.message : "Credenciais inválidas");
+      console.error('❌ LoginForm: Erro no login:', error);
+      
+      let errorMessage = "Erro ao fazer login. Por favor, tente novamente.";
+      if (error instanceof Error) {
+        if (error.message.includes("401")) {
+          errorMessage = "Email ou senha incorretos.";
+        } else if (error.message.includes("403")) {
+          errorMessage = "Acesso não autorizado.";
+        } else if (error.message.includes("Network")) {
+          errorMessage = "Erro de conexão. Verifique sua internet.";
+        } else if (error.message.includes("timeout")) {
+          errorMessage = "Tempo de resposta excedido. Tente novamente.";
+        }
+      }
+      
+      toast.error(
+        "Erro no login", 
+        errorMessage,
+        10000
+      );
+      
+      // Limpar senha em caso de erro
+      setFormData(prev => ({ ...prev, password: '' }));
     }
   };
 

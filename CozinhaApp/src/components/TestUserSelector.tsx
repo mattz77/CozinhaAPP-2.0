@@ -89,19 +89,44 @@ const getRoleColor = (role: string) => {
 };
 
 export const TestUserSelector: React.FC = () => {
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, isAuthenticated, user } = useAuth();
   const [selectedUser, setSelectedUser] = useState<TestUser | null>(null);
+
+  // Log para debug
+  console.log('🔍 TestUserSelector: Estado:', {
+    isAuthenticated,
+    isLoading,
+    user: user?.nomeCompleto
+  });
 
   const handleLogin = async (user: TestUser) => {
     try {
+      console.log('🔄 TestUserSelector: Iniciando login...', {
+        email: user.email,
+        role: user.role
+      });
+
       await login({
         email: user.email,
         password: user.senha
       });
+
+      console.log('✅ TestUserSelector: Login realizado com sucesso!');
+      
+      // O AuthContext já vai atualizar a UI
+
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
+      console.error('❌ TestUserSelector: Erro ao fazer login:', error);
+      // Re-throw para propagar o erro
+      throw error;
     }
   };
+
+  // Se o usuário já está autenticado, não mostrar o seletor
+  if (isAuthenticated) {
+    console.log('✅ Usuário autenticado, escondendo TestUserSelector');
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -185,9 +210,16 @@ export const TestUserSelector: React.FC = () => {
                       </p>
                       
                       <Button
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          handleLogin(user);
+                          try {
+                            console.log('🔄 Iniciando login para:', user.email);
+                            await handleLogin(user);
+                            console.log('✅ Login bem-sucedido!');
+                          } catch (error) {
+                            console.error('❌ Erro no botão de login:', error);
+                            alert('Erro ao fazer login. Por favor, tente novamente.');
+                          }
                         }}
                         className="w-full bg-primary hover:bg-primary/90"
                         disabled={isLoading}

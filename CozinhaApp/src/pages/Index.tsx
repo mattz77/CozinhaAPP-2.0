@@ -14,13 +14,17 @@ const Index = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
   // Mostrar seletor de usuários de teste apenas em desenvolvimento e quando não logado
-  if (!isAuthenticated && !isLoading) {
-    return <TestUserSelector />;
-  }
+  const isDev = import.meta.env.DEV;
+  const showTestSelector = isDev && !isAuthenticated && !isLoading;
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      {showTestSelector && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <TestUserSelector />
+        </div>
+      )}
       <HeroSection />
       
       {/* Como Funciona Section */}

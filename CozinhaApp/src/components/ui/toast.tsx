@@ -14,23 +14,23 @@ export interface ToastProps {
 const toastVariants = {
   success: {
     icon: CheckCircle,
-    className: 'bg-green-50 border-green-200 text-green-800',
-    iconClassName: 'text-green-500'
+    className: 'bg-green-100 border-2 border-green-300 text-green-900 shadow-lg shadow-green-100/50',
+    iconClassName: 'text-green-600'
   },
   error: {
     icon: XCircle,
-    className: 'bg-red-50 border-red-200 text-red-800',
-    iconClassName: 'text-red-500'
+    className: 'bg-red-100 border-2 border-red-300 text-red-900 shadow-lg shadow-red-100/50',
+    iconClassName: 'text-red-600'
   },
   warning: {
     icon: AlertCircle,
-    className: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-    iconClassName: 'text-yellow-500'
+    className: 'bg-yellow-100 border-2 border-yellow-300 text-yellow-900 shadow-lg shadow-yellow-100/50',
+    iconClassName: 'text-yellow-600'
   },
   info: {
     icon: Info,
-    className: 'bg-blue-50 border-blue-200 text-blue-800',
-    iconClassName: 'text-blue-500'
+    className: 'bg-blue-100 border-2 border-blue-300 text-blue-900 shadow-lg shadow-blue-100/50',
+    iconClassName: 'text-blue-600'
   }
 };
 
@@ -58,7 +58,9 @@ export const Toast: React.FC<ToastProps> = ({
       initial={{ opacity: 0, y: 50, scale: 0.3 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-      className={`relative flex items-start p-4 rounded-lg border shadow-lg max-w-sm w-full ${config.className}`}
+      className={`relative flex items-start p-4 rounded-lg max-w-sm w-full backdrop-blur-sm ${config.className}`}
+      role="alert"
+      aria-live="assertive"
     >
       <Icon className={`h-5 w-5 mt-0.5 mr-3 flex-shrink-0 ${config.iconClassName}`} />
       
@@ -86,7 +88,7 @@ interface ToastContainerProps {
 
 export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onClose }) => {
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="fixed top-4 right-4 z-50 space-y-3 min-w-[320px]">
       <AnimatePresence>
         {toasts.map((toast) => (
           <Toast key={toast.id} {...toast} onClose={onClose} />

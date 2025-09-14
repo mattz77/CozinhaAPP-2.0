@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Facebook, Instagram, User, LogOut, ChefHat, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,31 @@ const Navigation = () => {
   const [showProfile, setShowProfile] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem } = useCart();
+  const [key, setKey] = useState(0); // Força re-render quando necessário
+
+  // Força re-render quando o estado de autenticação mudar
+  useEffect(() => {
+    console.log('🔄 Navigation: Estado de autenticação mudou:', { isAuthenticated, user: user?.nomeCompleto });
+    setKey(prev => prev + 1);
+  }, [isAuthenticated, user]);
+
+  // Escuta evento para abrir modal de login
+  useEffect(() => {
+    const handleOpenAuthModal = () => {
+      console.log('🔐 Navigation: Abrindo modal de login via evento');
+      setShowAuthModal(true);
+    };
+
+    window.addEventListener('openAuthModal', handleOpenAuthModal);
+    return () => window.removeEventListener('openAuthModal', handleOpenAuthModal);
+  }, []);
+
+  // Log para debug
+  console.log('🔍 Navigation: Estado:', {
+    isAuthenticated,
+    user: user?.nomeCompleto,
+    hasUser: !!user
+  });
 
   const navItems = [
     { label: "INÍCIO", href: "#inicio" },

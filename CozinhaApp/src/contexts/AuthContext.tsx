@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from 'react';
 import { AuthContextType, UserDto, LoginDto, RegisterDto, ChangePasswordDto } from '../types/auth';
 import { authService } from '../services/authService';
 
@@ -79,20 +79,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: LoginDto): Promise<void> => {
     try {
+      console.log('🔄 AuthContext: Iniciando login...', {
+        email: credentials.email,
+        currentUser: user?.nomeCompleto,
+        isAuthenticated: !!token
+      });
+
       setIsLoading(true);
+
+      console.log('📤 AuthContext: Chamando authService.login...');
       const authResponse = await authService.login(credentials);
       
+      // Validação da resposta
+      if (!authResponse || !authResponse.token || !authResponse.refreshToken || !authResponse.user) {
+        console.error('❌ AuthContext: Resposta inválida da API:', authResponse);
+        throw new Error('Resposta inválida do servidor');
+      }
+      
+      console.log('✅ AuthContext: Login bem-sucedido, dados recebidos:', {
+        token: 'presente',
+        refreshToken: 'presente',
+        user: authResponse.user.nomeCompleto
+      });
+      
+      // Primeiro salva no storage para garantir persistência
+      try {
+        sessionStorage.setItem('authToken', authResponse.token);
+        sessionStorage.setItem('refreshToken', authResponse.refreshToken);
+        sessionStorage.setItem('user', JSON.stringify(authResponse.user));
+        console.log('✅ AuthContext: Dados salvos no storage');
+      } catch (storageError) {
+        console.error('❌ AuthContext: Erro ao salvar no storage:', storageError);
+        throw new Error('Erro ao salvar dados de autenticação');
+      }
+      
+      // Depois atualiza o estado
+      console.log('🔄 AuthContext: Atualizando estado...');
       setToken(authResponse.token);
       setRefreshToken(authResponse.refreshToken);
       setUser(authResponse.user);
       
-      // Salvar no sessionStorage (mais seguro)
-      sessionStorage.setItem('authToken', authResponse.token);
-      sessionStorage.setItem('refreshToken', authResponse.refreshToken);
-      sessionStorage.setItem('user', JSON.stringify(authResponse.user));
+      // Força atualização do estado de autenticação
+      const isAuthenticatedNow = !!(authResponse.token && authResponse.user);
+      console.log('✅ AuthContext: Estado atualizado:', {
+        isAuthenticated: isAuthenticatedNow,
+        user: authResponse.user.nomeCompleto,
+        hasToken: !!authResponse.token
+      });
+      
     } catch (error) {
-      console.error('Erro no login:', error);
-      throw error;
+      console.error('❌ AuthContext: Erro no login:', error);
+      
+      // Limpa dados em caso de erro
+      clearAuthData();
+      
+      if (error instanceof Error) {
+        throw error;
+      } else {
+        throw new Error('Erro ao fazer login. Por favor, tente novamente.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -143,10 +188,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setRefreshToken(authResponse.refreshToken);
       setUser(authResponse.user);
       
-      // Salvar novos tokens
-      localStorage.setItem('authToken', authResponse.token);
-      localStorage.setItem('refreshToken', authResponse.refreshToken);
-      localStorage.setItem('user', JSON.stringify(authResponse.user));
+      // Salvar novos tokens no sessionStorage
+      sessionStorage.setItem('authToken', authResponse.token);
+      sessionStorage.setItem('refreshToken', authResponse.refreshToken);
+      sessionStorage.setItem('user', JSON.stringify(authResponse.user));
     } catch (error) {
       console.error('Erro ao renovar token:', error);
       clearAuthData();
@@ -167,11 +212,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Calcula o estado de autenticação de forma simples
+  const isAuthenticated = useMemo(() => {
+    const isAuth = !!user && !!token;
+    
+    console.log('🔍 AuthContext: Verificando autenticação:', {
+      hasUser: !!user,
+      hasToken: !!token,
+      isAuth
+    });
+    
+    return isAuth;
+  }, [token, user]);
+  
+  // Log para debug
+  console.log('🔍 AuthContext: Estado atual:', {
+    user: user?.nomeCompleto,
+    hasToken: !!token,
+    isAuthenticated,
+    isLoading
+  });
+
   const value: AuthContextType = {
     user,
     token,
     refreshToken,
-    isAuthenticated: !!user && !!token,
+    isAuthenticated,
     isLoading,
     login,
     register,

@@ -3,7 +3,8 @@ import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ChefHat } from 'lucide-react';
+import { ArrowLeft, ChefHat, Bug } from 'lucide-react';
+import { DevLoginModal } from './DevLoginModal';
 
 interface AuthModalProps {
   onClose: () => void;
@@ -11,6 +12,8 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
+  const [isDevMode, setIsDevMode] = useState(false);
+  const isDev = import.meta.env.DEV;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -56,8 +59,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
               : 'Ao criar uma conta, você concorda com nossos termos de uso e política de privacidade.'
             }
           </p>
+
+          {/* Botão de modo desenvolvedor */}
+          {isDev && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-4 text-gray-400 hover:text-white"
+              onClick={() => setIsDevMode(true)}
+            >
+              <Bug className="h-4 w-4 mr-2" />
+              Modo Desenvolvedor
+            </Button>
+          )}
         </div>
       </div>
+
+      {/* Modal de login para desenvolvimento */}
+      {isDev && <DevLoginModal isOpen={isDevMode} onClose={() => setIsDevMode(false)} />}
     </div>
   );
 };

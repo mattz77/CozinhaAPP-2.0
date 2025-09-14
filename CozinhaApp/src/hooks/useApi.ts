@@ -5,6 +5,7 @@ import {
   pedidosService, 
   clientesService 
 } from '../services/api';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   CreateCategoriaDto, 
   CreatePratoDto, 
@@ -14,152 +15,82 @@ import {
 
 // Hooks para Categorias
 export const useCategorias = () => {
+  const { token, isAuthenticated } = useAuth();
+  
   return useQuery({
-    queryKey: ['categorias'],
-    queryFn: categoriasService.getAll,
+    queryKey: ['categorias', { auth: isAuthenticated }],
+    queryFn: () => categoriasService.getAll(token),
     staleTime: 10 * 60 * 1000, // 10 minutos
     cacheTime: 30 * 60 * 1000, // 30 minutos
-    refetchOnWindowFocus: false, // Não refetch quando focar na janela
-    refetchOnMount: false, // Não refetch quando montar o componente
-  });
-};
-
-export const useCategoria = (id: number) => {
-  return useQuery({
-    queryKey: ['categorias', id],
-    queryFn: () => categoriasService.getById(id),
-    enabled: !!id,
-  });
-};
-
-export const useCreateCategoria = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: categoriasService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] });
-    },
-  });
-};
-
-export const useUpdateCategoria = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: CreateCategoriaDto }) =>
-      categoriasService.update(id, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] });
-      queryClient.invalidateQueries({ queryKey: ['categorias', id] });
-    },
-  });
-};
-
-export const useDeleteCategoria = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: categoriasService.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] });
-    },
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
+    retry: 2,
   });
 };
 
 // Hooks para Pratos
 export const usePratos = () => {
+  const { token, isAuthenticated } = useAuth();
+  
   return useQuery({
-    queryKey: ['pratos'],
-    queryFn: pratosService.getAll,
-    staleTime: 10 * 60 * 1000, // 10 minutos
-    cacheTime: 30 * 60 * 1000, // 30 minutos
-    refetchOnWindowFocus: false, // Não refetch quando focar na janela
-    refetchOnMount: false, // Não refetch quando montar o componente
-  });
-};
-
-export const usePrato = (id: number) => {
-  return useQuery({
-    queryKey: ['pratos', id],
-    queryFn: () => pratosService.getById(id),
-    enabled: !!id,
+    queryKey: ['pratos', { auth: isAuthenticated }],
+    queryFn: () => pratosService.getAll(token),
+    staleTime: 10 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
+    refetchOnReconnect: true,
+    retry: 2,
   });
 };
 
 export const usePratosByCategoria = (categoriaId: number) => {
+  const { token, isAuthenticated } = useAuth();
+  
   return useQuery({
-    queryKey: ['pratos', 'categoria', categoriaId],
-    queryFn: () => pratosService.getByCategoria(categoriaId),
-    enabled: !!categoriaId,
-  });
-};
-
-export const useCreatePrato = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: pratosService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pratos'] });
-    },
-  });
-};
-
-export const useUpdatePrato = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: CreatePratoDto }) =>
-      pratosService.update(id, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['pratos'] });
-      queryClient.invalidateQueries({ queryKey: ['pratos', id] });
-    },
-  });
-};
-
-export const useDeletePrato = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: pratosService.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pratos'] });
-    },
+    queryKey: ['pratos', 'categoria', categoriaId, { auth: isAuthenticated }],
+    queryFn: () => pratosService.getByCategoria(categoriaId, token),
+    enabled: !!categoriaId && isAuthenticated,
+    staleTime: 10 * 60 * 1000,
+    retry: 2,
   });
 };
 
 // Hooks para Pedidos
 export const usePedidos = () => {
+  const { token, isAuthenticated } = useAuth();
+  
   return useQuery({
-    queryKey: ['pedidos'],
-    queryFn: pedidosService.getAll,
-    staleTime: 1 * 60 * 1000, // 1 minuto (pedidos mudam frequentemente)
-  });
-};
-
-export const usePedido = (id: number) => {
-  return useQuery({
-    queryKey: ['pedidos', id],
-    queryFn: () => pedidosService.getById(id),
-    enabled: !!id,
+    queryKey: ['pedidos', { auth: isAuthenticated }],
+    queryFn: () => pedidosService.getAll(token),
+    enabled: isAuthenticated,
+    staleTime: 1 * 60 * 1000, // 1 minuto
+    refetchInterval: 30 * 1000, // Atualiza a cada 30 segundos
+    retry: 2,
   });
 };
 
 export const usePedidosByCliente = (clienteId: number) => {
+  const { token, isAuthenticated } = useAuth();
+  
   return useQuery({
-    queryKey: ['pedidos', 'cliente', clienteId],
-    queryFn: () => pedidosService.getByCliente(clienteId),
-    enabled: !!clienteId,
+    queryKey: ['pedidos', 'cliente', clienteId, { auth: isAuthenticated }],
+    queryFn: () => pedidosService.getByCliente(clienteId, token),
+    enabled: !!clienteId && isAuthenticated,
+    staleTime: 1 * 60 * 1000,
+    refetchInterval: 30 * 1000,
+    retry: 2,
   });
 };
 
+// Mutations
 export const useCreatePedido = () => {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
   
   return useMutation({
-    mutationFn: pedidosService.create,
+    mutationFn: (data: CreatePedidoDto) => pedidosService.create(data, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pedidos'] });
     },
@@ -168,10 +99,11 @@ export const useCreatePedido = () => {
 
 export const useUpdatePedidoStatus = () => {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
   
   return useMutation({
     mutationFn: ({ id, status }: { id: number; status: string }) =>
-      pedidosService.updateStatus(id, status),
+      pedidosService.updateStatus(id, status, token),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['pedidos'] });
       queryClient.invalidateQueries({ queryKey: ['pedidos', id] });
@@ -182,9 +114,10 @@ export const useUpdatePedidoStatus = () => {
 // Hooks para Clientes
 export const useCreateCliente = () => {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
   
   return useMutation({
-    mutationFn: clientesService.create,
+    mutationFn: (data: CreateClienteDto) => clientesService.create(data, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
     },

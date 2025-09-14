@@ -46,10 +46,14 @@ export const Cart: React.FC<CartProps> = ({
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
-      // Mostrar modal de login
+      onClose(); // Fecha o carrinho
+      // Emitir evento para abrir modal de login
+      const event = new CustomEvent('openAuthModal');
+      window.dispatchEvent(event);
       return;
     }
     // Lógica de checkout
+    console.log('🛒 Cart: Iniciando checkout...');
   };
 
   return (
