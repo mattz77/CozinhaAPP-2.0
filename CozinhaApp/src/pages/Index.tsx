@@ -3,12 +3,21 @@ import HeroSection from "@/components/ui/hero-section";
 import SectionCard from "@/components/ui/section-card";
 import InfoSection from "@/components/ui/info-section";
 import CardapioSection from "@/components/CardapioSection";
+import { TestUserSelector } from "@/components/TestUserSelector";
+import { useAuth } from "@/contexts/AuthContext";
 import soupImage from "@/assets/food-soup.jpg";
 import breadImage from "@/assets/food-bread.jpg";
 import pizzaImage from "@/assets/food-pizza.jpg";
 import deliveryImage from "@/assets/food-delivery.jpg";
 
 const Index = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Mostrar seletor de usuários de teste apenas em desenvolvimento e quando não logado
+  if (!isAuthenticated && !isLoading) {
+    return <TestUserSelector />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />

@@ -143,8 +143,8 @@ using (var scope = app.Services.CreateScope())
     // Criar roles padrão
     await SeedRolesAsync(roleManager);
     
-    // Criar usuário admin padrão
-    await SeedAdminUserAsync(userManager);
+    // Criar usuários de teste para desenvolvimento
+    await SeedTestUsersAsync(userManager);
     
     // Popular dados de exemplo
     await SeedDataAsync(context);
@@ -193,6 +193,87 @@ async Task SeedAdminUserAsync(UserManager<ApplicationUser> userManager)
             await userManager.AddToRoleAsync(adminUser, "Admin");
             Console.WriteLine($"🔐 Usuário admin criado com senha: {adminPassword}");
             Console.WriteLine("⚠️  IMPORTANTE: Altere esta senha imediatamente!");
+        }
+    }
+}
+
+async Task SeedTestUsersAsync(UserManager<ApplicationUser> userManager)
+{
+    // Usuários de teste para desenvolvimento
+    var testUsers = new[]
+    {
+        new { 
+            Email = "admin@cozinhaapp.com", 
+            Nome = "Administrador", 
+            Password = "Admin123!@#", 
+            Role = "Admin",
+            Endereco = "Rua das Flores, 123",
+            Cidade = "São Paulo",
+            Cep = "01234-567"
+        },
+        new { 
+            Email = "joao@teste.com", 
+            Nome = "João Silva", 
+            Password = "Joao123!@#", 
+            Role = "User",
+            Endereco = "Av. Paulista, 1000",
+            Cidade = "São Paulo",
+            Cep = "01310-100"
+        },
+        new { 
+            Email = "maria@teste.com", 
+            Nome = "Maria Santos", 
+            Password = "Maria123!@#", 
+            Role = "User",
+            Endereco = "Rua Augusta, 456",
+            Cidade = "São Paulo",
+            Cep = "01305-000"
+        },
+        new { 
+            Email = "pedro@teste.com", 
+            Nome = "Pedro Costa", 
+            Password = "Pedro123!@#", 
+            Role = "Manager",
+            Endereco = "Rua Oscar Freire, 789",
+            Cidade = "São Paulo",
+            Cep = "01426-001"
+        }
+    };
+
+    foreach (var userData in testUsers)
+    {
+        var existingUser = await userManager.FindByEmailAsync(userData.Email);
+        
+        if (existingUser == null)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = userData.Email,
+                Email = userData.Email,
+                NomeCompleto = userData.Nome,
+                Endereco = userData.Endereco,
+                Cidade = userData.Cidade,
+                Cep = userData.Cep,
+                DataNascimento = DateTime.UtcNow.AddYears(-25),
+                DataCriacao = DateTime.UtcNow,
+                Ativo = true,
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(user, userData.Password);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, userData.Role);
+                Console.WriteLine($"👤 Usuário de teste criado: {userData.Nome} ({userData.Email}) - Senha: {userData.Password}");
+            }
+            else
+            {
+                Console.WriteLine($"❌ Erro ao criar usuário {userData.Email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"✅ Usuário {userData.Email} já existe");
         }
     }
 }
