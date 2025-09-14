@@ -111,13 +111,42 @@ CozinhaApp2.0/
 - **SQL Server LocalDB** (incluído no Visual Studio)
 - **Git**
 
-### 1. Clone o repositório
+### 🚀 Inicialização Rápida (Recomendado)
+
+Para iniciar toda a aplicação de uma vez, use o script automatizado:
+
+```bash
+# Clone o repositório
+git clone <repository-url>
+cd CozinhaApp2.0
+
+# Execute o script de inicialização
+.\INICIAR-APLICACAO.cmd
+```
+
+Este script irá:
+- ✅ Configurar automaticamente a variável de ambiente JWT_SECRET_KEY
+- ✅ Iniciar o backend (.NET API) na porta 5057
+- ✅ Iniciar o frontend (React) na porta 3000
+- ✅ Configurar o banco de dados com dados de exemplo
+- ✅ Aplicar migrações automaticamente
+
+**Acessos após a inicialização:**
+- **Frontend**: `http://localhost:3000`
+- **API**: `http://localhost:5057`
+- **Swagger**: `http://localhost:5057/swagger`
+
+### 🔧 Inicialização Manual (Alternativa)
+
+Se preferir configurar manualmente:
+
+#### 1. Clone o repositório
 ```bash
 git clone <repository-url>
 cd CozinhaApp2.0
 ```
 
-### 2. Configurar o Backend
+#### 2. Configurar o Backend
 ```bash
 cd CozinhaApp.API
 dotnet restore
@@ -125,29 +154,43 @@ dotnet ef database update
 dotnet run
 ```
 
-O backend estará disponível em:
-- **API**: `https://localhost:5057`
-- **Swagger**: `https://localhost:5057/swagger`
-
-### 3. Configurar o Frontend
+#### 3. Configurar o Frontend
 ```bash
 cd CozinhaApp
 npm install
 npm run dev
 ```
 
-O frontend estará disponível em:
-- **Aplicação**: `http://localhost:3000`
+### 📋 Scripts Disponíveis
 
-## 🔑 Credenciais Padrão
+O projeto inclui vários scripts para facilitar o desenvolvimento:
 
-### Usuário Administrador
+- **`INICIAR-APLICACAO.cmd`** - Inicia backend + frontend automaticamente
+- **`INICIAR-API.cmd`** - Inicia apenas o backend
+- **`INICIAR-FRONTEND.cmd`** - Inicia apenas o frontend
+- **`TESTAR-API.cmd`** - Testa os endpoints da API
+- **`LIMPAR-E-REINSTALAR.cmd`** - Limpa e reinstala dependências
+
+## 🔑 Credenciais de Teste
+
+### Usuários Pré-cadastrados
+O sistema inclui 4 usuários de teste prontos para uso:
+
+#### 👑 Administrador
 - **Email**: `admin@cozinhaapp.com`
-- **Senha**: Será gerada automaticamente na primeira execução
-- **⚠️ IMPORTANTE**: Altere a senha imediatamente após o primeiro login!
+- **Senha**: `Admin123!@#`
+- **Tipo**: Administrador completo
 
-### Usuário de Teste
-Crie uma conta através do formulário de registro na aplicação.
+#### 👤 Usuários de Teste
+- **Email**: `joao@teste.com` | **Senha**: `Joao123!@#`
+- **Email**: `maria@teste.com` | **Senha**: `Maria123!@#`
+- **Email**: `pedro@teste.com` | **Senha**: `Pedro123!@#`
+
+### 🍽️ Cardápio Disponível
+- **16 pratos** com imagens reais
+- **4 categorias**: Entradas, Pratos Principais, Sobremesas, Bebidas
+- **Preços**: R$ 6,90 a R$ 68,90
+- **Tempo de preparo**: 1 a 40 minutos
 
 ### 🔐 Configuração de Segurança
 - Configure as variáveis de ambiente conforme `ENVIRONMENT_SETUP.md`
@@ -156,12 +199,31 @@ Crie uma conta através do formulário de registro na aplicação.
 
 ## 📊 Funcionalidades Implementadas
 
-### ✅ Sistema de Autenticação
+### ✅ Sistema de Autenticação Completo
 - Login e registro de usuários
-- JWT tokens com refresh
-- Perfil do usuário
-- Alteração de senha
-- Logout seguro
+- JWT tokens com refresh automático
+- Dropdown moderno do usuário (substitui modal)
+- Perfil do usuário com informações detalhadas
+- Alteração de senha segura
+- Logout com limpeza de dados
+- Sistema de logging detalhado para autenticação
+
+### ✅ CRUD Completo de Pratos
+- **16 pratos** com imagens reais do Unsplash
+- **Categorias**: Entradas, Pratos Principais, Sobremesas, Bebidas
+- **Endpoints avançados**:
+  - `GET /api/pratos` - Listar todos os pratos
+  - `GET /api/pratos/{id}` - Buscar prato específico
+  - `POST /api/pratos` - Criar novo prato
+  - `PUT /api/pratos/{id}` - Atualizar prato completo
+  - `PATCH /api/pratos/{id}/preco` - Atualizar apenas preço
+  - `PATCH /api/pratos/{id}/disponibilidade` - Atualizar disponibilidade
+  - `DELETE /api/pratos/{id}` - Soft delete
+  - `DELETE /api/pratos/{id}/hard` - Hard delete
+  - `GET /api/pratos/stats` - Estatísticas dos pratos
+  - `POST /api/pratos/bulk` - Criação em lote
+- **Validações robustas** com mensagens de erro específicas
+- **Sistema de logging** para todas as operações
 
 ### ✅ Interface Moderna
 - Design responsivo
