@@ -44,7 +44,7 @@ export const AgendamentoModal: React.FC<AgendamentoModalProps> = ({
 
   // Inicializar com itens do carrinho se disponíveis
   useEffect(() => {
-    if (carrinhoItems.length > 0) {
+    if (carrinhoItems && carrinhoItems.length > 0) {
       const itens = carrinhoItems.map(item => ({
         pratoId: item.id,
         quantidade: item.quantidade,

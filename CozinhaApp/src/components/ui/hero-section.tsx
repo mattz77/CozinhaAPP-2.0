@@ -14,18 +14,25 @@ const HeroSection = () => {
 
   // Função para rolar para a seção do cardápio
   const scrollToCardapio = () => {
+    console.log('📋 scrollToCardapio chamado');
     const cardapioSection = document.getElementById('cardapio');
+    console.log('🎯 Seção do cardápio encontrada:', cardapioSection);
     if (cardapioSection) {
       cardapioSection.scrollIntoView({ 
         behavior: 'smooth',
         block: 'start'
       });
+    } else {
+      console.error('❌ Seção do cardápio não encontrada!');
     }
   };
 
   // Função para fazer pedido
   const handleFazerPedido = () => {
+    console.log('🛒 handleFazerPedido chamado:', { isAuthenticated, totalItems, items });
+    
     if (!isAuthenticated) {
+      console.log('❌ Usuário não autenticado, abrindo modal de login');
       // Disparar evento para abrir modal de login
       window.dispatchEvent(new CustomEvent('openAuthModal'));
       return;
@@ -33,9 +40,11 @@ const HeroSection = () => {
 
     // Se estiver logado, verificar se há itens no carrinho
     if (totalItems > 0) {
+      console.log('✅ Há itens no carrinho, abrindo carrinho');
       // Se há itens no carrinho, abrir o carrinho
       openCart();
     } else {
+      console.log('📋 Carrinho vazio, mostrando opções');
       // Se não há itens, mostrar opções
       showOrderOptions();
     }
@@ -56,14 +65,14 @@ const HeroSection = () => {
         <div class="space-y-4">
           <button 
             id="add-items-btn"
-            class="w-full bg-gradient-to-r from-primary to-yellow-400 text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105"
+            class="w-full bg-gradient-to-r from-yellow-500 to-yellow-400 text-white font-semibold py-4 px-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105"
           >
             📋 Ver Cardápio e Adicionar Itens
           </button>
           
           <button 
             id="schedule-btn"
-            class="w-full border-2 border-primary text-primary font-semibold py-4 px-6 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 hover:scale-105"
+            class="w-full border-2 border-yellow-500 text-yellow-500 font-semibold py-4 px-6 rounded-xl hover:bg-yellow-500 hover:text-white transition-all duration-300 hover:scale-105"
           >
             📅 Agendar Pedido
           </button>
