@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Text.Json;
 
@@ -9,6 +10,10 @@ public class SecurityMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<SecurityMiddleware> _logger;
     private readonly IConfiguration _configuration;
+    
+    // Rate limiting storage (em produção, use Redis)
+    private static readonly ConcurrentDictionary<string, List<DateTime>> _requestCounts = new();
+    private static readonly object _lockObject = new object();
 
     public SecurityMiddleware(RequestDelegate next, ILogger<SecurityMiddleware> logger, IConfiguration configuration)
     {
@@ -43,10 +48,43 @@ public class SecurityMiddleware
     {
         var clientIp = GetClientIpAddress(context);
         var endpoint = context.Request.Path.Value;
+        var now = DateTime.UtcNow;
 
-        // Implementar rate limiting básico aqui
-        // Em produção, use Redis ou outro sistema de cache distribuído
-        _logger.LogInformation($"Acesso de {clientIp} para {endpoint}");
+        lock (_lockObject)
+        {
+            if (!_requestCounts.TryGetValue(clientIp, out var requests))
+            {
+                requests = new List<DateTime>();
+                _requestCounts[clientIp] = requests;
+            }
+
+            // Remover requisições antigas (mais de 1 minuto)
+            requests.RemoveAll(r => now - r > TimeSpan.FromMinutes(1));
+
+            // Verificar limite de 100 requisições por minuto
+            if (requests.Count >= 100)
+            {
+                _logger.LogWarning($"Rate limit excedido para IP: {clientIp}");
+                context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+                context.Response.ContentType = "application/json";
+                
+                var errorResponse = new
+                {
+                    error = "Rate limit excedido",
+                    message = "Muitas requisições. Tente novamente em 1 minuto.",
+                    retryAfter = 60
+                };
+                
+                var jsonResponse = JsonSerializer.Serialize(errorResponse);
+                context.Response.WriteAsync(jsonResponse);
+                return;
+            }
+
+            // Adicionar requisição atual
+            requests.Add(now);
+        }
+
+        _logger.LogDebug($"Acesso de {clientIp} para {endpoint} - {_requestCounts[clientIp].Count} req/min");
     }
 
     private void ApplySecurityHeaders(HttpContext context)

@@ -27,23 +27,26 @@ builder.Services.AddDbContext<CozinhaAppContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Identity configuration
+var securityConfig = builder.Configuration.GetSection("Security");
+var passwordPolicy = securityConfig.GetSection("PasswordPolicy");
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    // Configurações de senha
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
+    // Configurações de senha seguras
+    options.Password.RequireDigit = passwordPolicy.GetValue<bool>("RequireDigit");
+    options.Password.RequireLowercase = passwordPolicy.GetValue<bool>("RequireLowercase");
+    options.Password.RequireNonAlphanumeric = passwordPolicy.GetValue<bool>("RequireNonAlphanumeric");
+    options.Password.RequireUppercase = passwordPolicy.GetValue<bool>("RequireUppercase");
+    options.Password.RequiredLength = passwordPolicy.GetValue<int>("MinLength");
+    options.Password.RequiredUniqueChars = passwordPolicy.GetValue<int>("RequiredUniqueChars");
 
     // Configurações de usuário
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = true;
 
-    // Configurações de lockout
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
+    // Configurações de lockout mais rigorosas
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(securityConfig.GetValue<int>("LockoutDurationMinutes"));
+    options.Lockout.MaxFailedAccessAttempts = securityConfig.GetValue<int>("MaxFailedLoginAttempts");
     options.Lockout.AllowedForNewUsers = true;
 })
 .AddEntityFrameworkStores<CozinhaAppContext>()
@@ -51,7 +54,15 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+var jwtKey = jwtSettings["Key"];
+
+// Validar se a chave JWT está configurada
+if (string.IsNullOrEmpty(jwtKey) || jwtKey.StartsWith("${"))
+{
+    throw new InvalidOperationException("JWT Key não configurada. Configure a variável de ambiente JWT_SECRET_KEY.");
+}
+
+var key = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -60,7 +71,8 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    var requireHttps = securityConfig.GetValue<bool>("RequireHttps");
+    options.RequireHttpsMetadata = requireHttps;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -71,7 +83,8 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtSettings["Audience"],
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        RequireExpirationTime = true
     };
 });
 
@@ -80,13 +93,15 @@ builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // CORS configuration for React frontend
+var allowedOrigins = securityConfig.GetSection("AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:3000" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
+        policy.WithOrigins(allowedOrigins)
+              .WithHeaders("Content-Type", "Authorization", "X-Requested-With")
+              .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
               .AllowCredentials(); // Necessário para cookies/auth
     });
 });
@@ -168,10 +183,16 @@ async Task SeedAdminUserAsync(UserManager<ApplicationUser> userManager)
             DataCriacao = DateTime.UtcNow
         };
         
-        var result = await userManager.CreateAsync(adminUser, "Admin123!");
+        // Gerar senha segura para admin
+        var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? 
+                           Guid.NewGuid().ToString("N")[..12] + "!@#";
+        
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine($"🔐 Usuário admin criado com senha: {adminPassword}");
+            Console.WriteLine("⚠️  IMPORTANTE: Altere esta senha imediatamente!");
         }
     }
 }

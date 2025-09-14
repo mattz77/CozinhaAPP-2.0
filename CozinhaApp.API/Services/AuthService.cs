@@ -254,7 +254,11 @@ public class AuthService : IAuthService
 
     private static string GenerateRefreshToken()
     {
-        return Guid.NewGuid().ToString();
+        // Gerar refresh token seguro usando RandomNumberGenerator
+        using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+        var bytes = new byte[32];
+        rng.GetBytes(bytes);
+        return Convert.ToBase64String(bytes);
     }
 
     private static UserDto MapToUserDto(ApplicationUser user)

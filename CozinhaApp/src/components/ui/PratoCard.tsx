@@ -187,13 +187,13 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Button 
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-elegant transition-all duration-300"
                 disabled={!prato.disponivel}
                 onClick={handleAddToOrder}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
               >
                 {prato.disponivel ? (
                   <>

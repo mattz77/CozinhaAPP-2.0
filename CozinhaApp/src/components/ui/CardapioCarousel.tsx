@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Heart, ShoppingCart } from 'lucide-react';
+import { Clock, Heart, ShoppingCart, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/hooks/useCart';
 
@@ -56,6 +56,8 @@ export const CardapioCarousel: React.FC<CardapioCarouselProps> = ({
 
   const handleAddToOrder = (prato: Prato) => {
     if (!isAuthenticated) {
+      // Mostrar modal de login ou toast
+      console.warn('Usuário deve estar logado para adicionar itens ao carrinho');
       return;
     }
     
@@ -202,7 +204,12 @@ export const CardapioCarousel: React.FC<CardapioCarouselProps> = ({
                       disabled={!prato.disponivel}
                       onClick={() => handleAddToOrder(prato)}
                     >
-                      {prato.disponivel ? (
+                      {!isAuthenticated ? (
+                        <>
+                          <User className="h-4 w-4 mr-2" />
+                          Faça login para pedir
+                        </>
+                      ) : prato.disponivel ? (
                         <>
                           <ShoppingCart className="h-4 w-4 mr-2" />
                           Adicionar ao Pedido

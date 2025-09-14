@@ -59,21 +59,23 @@ const Navigation = () => {
 
             {/* Auth Section */}
             <div className="hidden lg:flex items-center space-x-4">
-              {/* Carrinho */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleCart}
-                className="text-sm relative"
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Carrinho
-                {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {totalItems}
-                  </span>
-                )}
-              </Button>
+              {/* Carrinho - só aparece se estiver logado */}
+              {isAuthenticated && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleCart}
+                  className="text-sm relative"
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Carrinho
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
+                </Button>
+              )}
 
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">
@@ -179,24 +181,26 @@ const Navigation = () => {
               
               {/* Mobile Auth Section */}
               <div className="pt-4 border-t border-border space-y-3">
-                {/* Carrinho Mobile */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    toggleCart();
-                    setIsOpen(false);
-                  }}
-                  className="w-full text-sm relative"
-                >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Carrinho
-                  {totalItems > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {totalItems}
-                    </span>
-                  )}
-                </Button>
+                {/* Carrinho Mobile - só aparece se estiver logado */}
+                {isAuthenticated && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      toggleCart();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-sm relative"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Carrinho
+                    {totalItems > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {totalItems}
+                      </span>
+                    )}
+                  </Button>
+                )}
 
                 {isAuthenticated ? (
                   <div className="space-y-3">

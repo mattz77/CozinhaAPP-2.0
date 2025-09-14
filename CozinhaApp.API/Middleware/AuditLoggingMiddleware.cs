@@ -62,15 +62,19 @@ public class AuditLoggingMiddleware
         var clientIp = GetClientIpAddress(context);
         var userAgent = request.Headers["User-Agent"].FirstOrDefault() ?? "Unknown";
 
+        // Sanitizar dados sensíveis
+        var sanitizedPath = SanitizePath(request.Path.Value);
+        var sanitizedQueryString = SanitizeQueryString(request.QueryString.Value);
+
         var logData = new
         {
             RequestId = requestId,
             Timestamp = DateTime.UtcNow,
             Method = request.Method,
-            Path = request.Path.Value,
-            QueryString = request.QueryString.Value,
-            ClientIp = clientIp,
-            UserAgent = userAgent,
+            Path = sanitizedPath,
+            QueryString = sanitizedQueryString,
+            ClientIp = MaskIpAddress(clientIp),
+            UserAgent = TruncateString(userAgent, 200),
             UserId = context.User?.Identity?.Name ?? "Anonymous",
             ContentType = request.ContentType,
             ContentLength = request.ContentLength
@@ -137,5 +141,52 @@ public class AuditLoggingMiddleware
         }
 
         return context.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+    }
+
+    private static string SanitizePath(string? path)
+    {
+        if (string.IsNullOrEmpty(path)) return string.Empty;
+        
+        // Remover IDs de usuário dos paths
+        return System.Text.RegularExpressions.Regex.Replace(path, @"/\d+", "/{id}");
+    }
+
+    private static string SanitizeQueryString(string? queryString)
+    {
+        if (string.IsNullOrEmpty(queryString)) return string.Empty;
+        
+        // Remover parâmetros sensíveis
+        var sensitiveParams = new[] { "password", "token", "email", "cpf", "telefone" };
+        var sanitized = queryString;
+        
+        foreach (var param in sensitiveParams)
+        {
+            sanitized = System.Text.RegularExpressions.Regex.Replace(
+                sanitized, 
+                $@"{param}=[^&]*", 
+                $"{param}=***", 
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        }
+        
+        return sanitized;
+    }
+
+    private static string MaskIpAddress(string ip)
+    {
+        if (string.IsNullOrEmpty(ip) || ip == "Unknown") return "Unknown";
+        
+        var parts = ip.Split('.');
+        if (parts.Length == 4)
+        {
+            return $"{parts[0]}.{parts[1]}.xxx.xxx";
+        }
+        
+        return "xxx.xxx.xxx.xxx";
+    }
+
+    private static string TruncateString(string? input, int maxLength)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+        return input.Length <= maxLength ? input : input[..maxLength] + "...";
     }
 }

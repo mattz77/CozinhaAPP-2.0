@@ -14,13 +14,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Verificar se há dados salvos no localStorage
+  // Verificar se há dados salvos no sessionStorage (mais seguro que localStorage)
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const savedToken = localStorage.getItem('authToken');
-        const savedRefreshToken = localStorage.getItem('refreshToken');
-        const savedUser = localStorage.getItem('user');
+        const savedToken = sessionStorage.getItem('authToken');
+        const savedRefreshToken = sessionStorage.getItem('refreshToken');
+        const savedUser = sessionStorage.getItem('user');
 
         if (savedToken && savedRefreshToken && savedUser) {
           setToken(savedToken);
@@ -40,9 +40,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setUser(authResponse.user);
               
               // Salvar novos tokens
-              localStorage.setItem('authToken', authResponse.token);
-              localStorage.setItem('refreshToken', authResponse.refreshToken);
-              localStorage.setItem('user', JSON.stringify(authResponse.user));
+              sessionStorage.setItem('authToken', authResponse.token);
+              sessionStorage.setItem('refreshToken', authResponse.refreshToken);
+              sessionStorage.setItem('user', JSON.stringify(authResponse.user));
             } catch (refreshError) {
               // Refresh falhou, limpar dados
               clearAuthData();
@@ -64,9 +64,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     setToken(null);
     setRefreshToken(null);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('user');
+    
+    // Limpar todos os carrinhos salvos (opcional - manter para persistência entre sessões)
+    // const keys = Object.keys(sessionStorage);
+    // keys.forEach(key => {
+    //   if (key.startsWith('cozinhaapp_cart_')) {
+    //     sessionStorage.removeItem(key);
+    //   }
+    // });
   };
 
   const login = async (credentials: LoginDto): Promise<void> => {
@@ -78,10 +86,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setRefreshToken(authResponse.refreshToken);
       setUser(authResponse.user);
       
-      // Salvar no localStorage
-      localStorage.setItem('authToken', authResponse.token);
-      localStorage.setItem('refreshToken', authResponse.refreshToken);
-      localStorage.setItem('user', JSON.stringify(authResponse.user));
+      // Salvar no sessionStorage (mais seguro)
+      sessionStorage.setItem('authToken', authResponse.token);
+      sessionStorage.setItem('refreshToken', authResponse.refreshToken);
+      sessionStorage.setItem('user', JSON.stringify(authResponse.user));
     } catch (error) {
       console.error('Erro no login:', error);
       throw error;
@@ -99,10 +107,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setRefreshToken(authResponse.refreshToken);
       setUser(authResponse.user);
       
-      // Salvar no localStorage
-      localStorage.setItem('authToken', authResponse.token);
-      localStorage.setItem('refreshToken', authResponse.refreshToken);
-      localStorage.setItem('user', JSON.stringify(authResponse.user));
+      // Salvar no sessionStorage (mais seguro)
+      sessionStorage.setItem('authToken', authResponse.token);
+      sessionStorage.setItem('refreshToken', authResponse.refreshToken);
+      sessionStorage.setItem('user', JSON.stringify(authResponse.user));
     } catch (error) {
       console.error('Erro no registro:', error);
       throw error;

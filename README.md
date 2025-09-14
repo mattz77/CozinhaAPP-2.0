@@ -143,10 +143,16 @@ O frontend estará disponível em:
 
 ### Usuário Administrador
 - **Email**: `admin@cozinhaapp.com`
-- **Senha**: `Admin123!`
+- **Senha**: Será gerada automaticamente na primeira execução
+- **⚠️ IMPORTANTE**: Altere a senha imediatamente após o primeiro login!
 
 ### Usuário de Teste
 Crie uma conta através do formulário de registro na aplicação.
+
+### 🔐 Configuração de Segurança
+- Configure as variáveis de ambiente conforme `ENVIRONMENT_SETUP.md`
+- Leia a documentação de segurança em `SECURITY.md`
+- Consulte a política de privacidade em `PRIVACY_POLICY.md`
 
 ## 📊 Funcionalidades Implementadas
 
