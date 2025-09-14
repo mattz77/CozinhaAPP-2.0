@@ -11,7 +11,7 @@ const InfoSection = () => {
             Informações
           </h2>
           <p className="font-elegant text-lg text-muted-foreground max-w-2xl mx-auto">
-            Encontre-nos no coração de Osasco
+            Encontre-nos no coração do Jardim Paulistano
           </p>
         </div>
 
@@ -26,10 +26,10 @@ const InfoSection = () => {
                 Localização
               </h3>
                <p className="font-elegant text-muted-foreground mb-4">
-                 R. Lázaro Suave, 233<br />
-                 Bussocaba<br />
-                 CEP: 06040-470<br />
-                 Osasco - SP - Brasil
+                 Rua CozinhaApp, 10<br />
+                 Centro<br />
+                 CEP: 01234-567<br />
+                 São Paulo - SP - Brasil
                </p>
               <Button
                 variant="outline"
