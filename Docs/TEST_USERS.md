@@ -13,8 +13,6 @@ Estes usuários são criados automaticamente no banco de dados para acelerar o d
 - **Senha**: `Admin123!@#`
 - **Nome**: Administrador
 - **Função**: Admin
-
-
 - **Telefone**: (11) 99999-0001
 - **Endereço**: Rua das Flores, 123, São Paulo
 - **CEP**: 01234-567
