@@ -183,11 +183,17 @@ O sistema inclui 4 usuários de teste prontos para uso:
 - **Email**: `admin@cozinhaapp.com`
 - **Senha**: `Admin123!@#`
 - **Tipo**: Administrador completo
+- **Acesso**: Todas as funcionalidades + Gerenciamento de usuários
+
+#### 👨‍💼 Manager
+- **Email**: `pedro@teste.com`
+- **Senha**: `Pedro123!@#`
+- **Tipo**: Manager
+- **Acesso**: Funcionalidades administrativas limitadas
 
 #### 👤 Usuários de Teste
-- **Email**: `joao@teste.com` | **Senha**: `Joao123!@#`
-- **Email**: `maria@teste.com` | **Senha**: `Maria123!@#`
-- **Email**: `pedro@teste.com` | **Senha**: `Pedro123!@#`
+- **Email**: `joao@teste.com` | **Senha**: `Joao123!@#` | **Tipo**: Usuario
+- **Email**: `maria@teste.com` | **Senha**: `Maria123!@#` | **Tipo**: Usuario
 
 ### 🍽️ Cardápio Disponível
 - **16 pratos** com imagens reais
@@ -210,6 +216,9 @@ O sistema inclui 4 usuários de teste prontos para uso:
 - Alteração de senha segura
 - Logout com limpeza de dados
 - Sistema de logging detalhado para autenticação
+- **Sistema de Roles** - Admin, Manager, Usuario com permissões diferenciadas
+- **Controle de Acesso** - Páginas administrativas restritas a Admin
+- **Navegação Inteligente** - Menu adapta-se ao tipo de usuário
 
 ### ✅ CRUD Completo de Pratos
 - **16 pratos** com imagens reais do Unsplash
@@ -271,6 +280,18 @@ O sistema inclui 4 usuários de teste prontos para uso:
 - Logging de auditoria
 - Validação de origem
 - Proteção contra ataques comuns
+- **CORS Configurado** - Suporte a múltiplas portas (3000, 3001, 3002)
+- **SecurityMiddleware** - Validação de origem e rate limiting otimizados
+- **Tratamento de Erros** - Middleware robusto sem conflitos de status code
+
+### ✅ Sistema de Gerenciamento de Usuários
+- **CRUD de Usuários** - Interface administrativa completa
+- **Controle de Roles** - Alteração de Admin, Manager, Usuario
+- **Controle de Status** - Ativar/desativar usuários
+- **Filtros Inteligentes** - Visualização apenas de Admin e Manager
+- **Interface Moderna** - Cards com ícones e badges de status
+- **Validações Robustas** - Prevenção de auto-alteração
+- **Logging Completo** - Auditoria de todas as alterações
 
 ## 🔧 Configurações de Ambiente
 
@@ -302,6 +323,32 @@ As configurações estão em `appsettings.Production.json`:
 2. Configure a URL da API
 3. Deploy via GitHub integration
 
+## 🆕 Melhorias Recentes Implementadas
+
+### 🎯 Sistema de Controle de Acesso por Roles (Setembro 2025)
+- ✅ **Implementado sistema de roles** - Admin, Manager, Usuario
+- ✅ **Navegação inteligente** - Menu adapta-se ao tipo de usuário
+- ✅ **Páginas administrativas restritas** - Apenas Admin acessa Dashboard, Reports, Configurations
+- ✅ **CRUD de usuários** - Interface completa para gerenciar usuários
+- ✅ **Controle de roles** - Alteração de Admin, Manager, Usuario
+- ✅ **Controle de status** - Ativar/desativar usuários
+- ✅ **Filtros inteligentes** - Visualização apenas de Admin e Manager
+- ✅ **Validações robustas** - Prevenção de auto-alteração
+- ✅ **Logging completo** - Auditoria de todas as alterações
+
+### 🔧 Correções de Infraestrutura
+- ✅ **CORS otimizado** - Suporte a múltiplas portas (3000, 3001, 3002)
+- ✅ **SecurityMiddleware corrigido** - Eliminado erro de status code
+- ✅ **Validação de origem** - Reordenada para execução prioritária
+- ✅ **Tratamento de erros** - Middleware robusto sem conflitos
+
+### 🎨 Melhorias de Interface
+- ✅ **Logo clicável** - CozinhaApp agora navega para home
+- ✅ **Botão INÍCIO removido** - Interface mais limpa
+- ✅ **Espaçamento otimizado** - Navegação com melhor alinhamento
+- ✅ **Cards de usuários** - Interface moderna com ícones e badges
+- ✅ **Feedback visual** - Estados de loading e notificações
+
 ## 📊 Evolução do Desenvolvimento
 
 ### ✅ Funcionalidades Implementadas (100% Concluído)
@@ -313,11 +360,17 @@ As configurações estão em `appsettings.Production.json`:
 - **Segurança Avançada** - Headers, rate limiting, logging de auditoria
 - **Sistema de Usuários** - 4 usuários de teste pré-cadastrados
 - **Builds Automatizados** - Backend (.NET) e Frontend (Vite) funcionais
-
-### 🚧 Em Desenvolvimento (Progresso Atual)
+- **Sistema de Roles** - Admin, Manager, Usuario com permissões diferenciadas ✅
 - **Páginas Administrativas** - Dashboard, Reports, Configurations (100% concluído) ✅
 - **Melhorias de UX** - Animações, loading states, feedback visual (100% concluído) ✅
 - **Sistema de Navegação** - Rotas protegidas e navegação intuitiva (100% concluído) ✅
+- **Gerenciamento de Usuários** - CRUD completo com interface administrativa ✅
+- **Controle de Acesso** - Páginas restritas por tipo de usuário ✅
+- **CORS e SecurityMiddleware** - Configuração otimizada para múltiplas portas ✅
+
+### 🚧 Em Desenvolvimento (Progresso Atual)
+- **Sistema de Pedidos** - Fluxo completo de pedidos (0% - Próxima prioridade)
+- **Dashboard Administrativo** - Métricas e controle de vendas (0% - Próxima prioridade)
 
 ### 📈 Próximos Passos
 
@@ -350,7 +403,7 @@ As configurações estão em `appsettings.Production.json`:
 
 ### 📊 Progresso Geral do Projeto
 ```
-████████████████████████████████████████ 90% Concluído
+████████████████████████████████████████ 95% Concluído
 
 ✅ Base do Sistema (100%)     ████████████████████████████████████
 ✅ Autenticação (100%)        ████████████████████████████████████
@@ -359,6 +412,9 @@ As configurações estão em `appsettings.Production.json`:
 ✅ Páginas Admin (100%)       ████████████████████████████████████
 ✅ UX/UI Melhorias (100%)     ████████████████████████████████████
 ✅ Navegação (100%)           ████████████████████████████████████
+✅ Sistema de Roles (100%)    ████████████████████████████████████
+✅ Gerenciamento Usuários (100%) ████████████████████████████████████
+✅ Segurança Avançada (100%)  ████████████████████████████████████
 ⏳ Sistema Pedidos (0%)       ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ⏳ Pagamentos (0%)           ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ⏳ Relatórios (0%)            ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
