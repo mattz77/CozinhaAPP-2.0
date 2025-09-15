@@ -380,11 +380,6 @@ As configurações estão em `appsettings.Production.json`:
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-## 📞 Suporte
-
-Para suporte, entre em contato:
-- **Email**: suporte@cozinhaapp.com
-- **Discord**: [Servidor da Comunidade](https://discord.gg/cozinhaapp)
 
 ---
 
