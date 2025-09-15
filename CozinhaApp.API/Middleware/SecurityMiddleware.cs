@@ -26,14 +26,18 @@ public class SecurityMiddleware
     {
         try
         {
+            // Validação de origem (deve ser feita antes de qualquer processamento)
+            var originValid = await ValidateOrigin(context);
+            if (!originValid)
+            {
+                return; // Não continuar se a origem não for válida
+            }
+
             // Rate limiting básico por IP
             ApplyRateLimiting(context);
 
             // Headers de segurança
             ApplySecurityHeaders(context);
-
-            // Validação de origem
-            await ValidateOrigin(context);
 
             await _next(context);
         }
@@ -117,10 +121,10 @@ public class SecurityMiddleware
         response.Headers.Remove("Server");
     }
 
-    private async Task ValidateOrigin(HttpContext context)
+    private async Task<bool> ValidateOrigin(HttpContext context)
     {
         var allowedOrigins = _configuration.GetSection("Security:AllowedOrigins").Get<string[]>() ?? 
-            new[] { "http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001" };
+            new[] { "http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001", "http://localhost:3002", "https://localhost:3002" };
             
         var origin = context.Request.Headers["Origin"].FirstOrDefault();
         var path = context.Request.Path.Value;
@@ -131,7 +135,7 @@ public class SecurityMiddleware
         if (string.IsNullOrEmpty(origin))
         {
             _logger.LogInformation("✅ Requisição sem origem (provavelmente local)");
-            return;
+            return true;
         }
 
         if (!allowedOrigins.Contains(origin))
@@ -156,10 +160,11 @@ public class SecurityMiddleware
                 var jsonResponse = JsonSerializer.Serialize(errorResponse);
                 await context.Response.WriteAsync(jsonResponse);
             }
-            return;
+            return false;
         }
 
         _logger.LogInformation($"✅ Origem validada: {origin}");
+        return true;
     }
 
     private string GetClientIpAddress(HttpContext context)
