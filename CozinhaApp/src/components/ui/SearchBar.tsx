@@ -410,3 +410,4 @@ export const SearchBar = ({ onResults, placeholder = "Buscar pratos...", classNa
 };
 
 
+

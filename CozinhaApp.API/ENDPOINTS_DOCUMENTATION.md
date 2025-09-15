@@ -302,3 +302,4 @@ const SearchBar = () => {
 Estes novos endpoints fornecem uma base sólida para criar uma aplicação frontend rica e funcional, com recursos avançados de busca, dashboard, relatórios e configurações.
 
 
+

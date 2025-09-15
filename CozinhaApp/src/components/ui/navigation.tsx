@@ -91,7 +91,6 @@ const Navigation = () => {
   });
 
   const navItems = [
-    { label: "INÍCIO", href: "/", isRoute: true },
     { label: "CARDÁPIO", href: "#cardapio", isRoute: false },
     { label: "AGENDAMENTOS", href: "#agendamentos", isRoute: false },
     { label: "CONTATO", href: "#contato", isRoute: false },
@@ -124,18 +123,18 @@ const Navigation = () => {
           boxShadow: isScrolled ? '0 4px 20px rgba(0, 0, 0, 0.3)' : 'none'
         }}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <div className="flex-shrink-0">
-              <h1 className="font-heading text-3xl font-bold text-primary flex items-center">
+            <div className="flex-shrink-0 -ml-2">
+              <Link to="/" className="font-heading text-3xl font-bold text-primary flex items-center hover:text-primary/80 transition-colors duration-300">
                 <ChefHat className="h-8 w-8 mr-2" />
                 CozinhaApp
-              </h1>
+              </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-6">
               {navItems.map((item) => (
                 item.isRoute ? (
                   <Link
@@ -164,7 +163,7 @@ const Navigation = () => {
               {/* Admin Navigation - só aparece se estiver autenticado */}
               {isAuthenticated && (
                 <>
-                  <div className="w-px h-6 bg-border mx-2"></div>
+                  <div className="w-px h-6 bg-border mx-3"></div>
                   {adminNavItems.map((item) => (
                     <Link
                       key={item.label}
@@ -184,7 +183,7 @@ const Navigation = () => {
             </div>
 
             {/* Auth Section */}
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-3">
               {/* Carrinho - só aparece se estiver logado */}
               {isAuthenticated && (
                 <Button
@@ -218,7 +217,7 @@ const Navigation = () => {
               )}
 
               {/* Social Links */}
-              <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-border">
+              <div className="flex items-center space-x-3 ml-3 pl-3 border-l border-border">
                 <a
                   href="https://www.facebook.com"
                   target="_blank"

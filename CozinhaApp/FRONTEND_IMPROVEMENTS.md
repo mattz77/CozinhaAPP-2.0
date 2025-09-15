@@ -268,3 +268,4 @@ const { data: settings } = useAppSettings();
 A reestruturação foi feita de forma **não destrutiva**, mantendo a compatibilidade com o código existente enquanto adiciona novas funcionalidades poderosas que aproveitam ao máximo os novos endpoints da API! 🚀
 
 
+
