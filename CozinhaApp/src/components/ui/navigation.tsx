@@ -98,6 +98,11 @@ const Navigation = () => {
     { label: "CONTATO", href: "#contato", isRoute: false },
   ];
 
+  // Itens de navegação para usuários autenticados
+  const userNavItems = [
+    { label: "MEUS PEDIDOS", href: "/pedidos", isRoute: true },
+  ];
+
   // Itens de navegação para usuários autenticados (admin)
   const adminNavItems = [
     { label: "DASHBOARD", href: "/dashboard", isRoute: true },
@@ -162,6 +167,27 @@ const Navigation = () => {
                 )
               ))}
               
+              {/* User Navigation - aparece para todos os usuários autenticados */}
+              {isAuthenticated && (
+                <>
+                  <div className="w-px h-6 bg-border mx-3"></div>
+                  {userNavItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      to={item.href}
+                      className={cn(
+                        "text-sm font-elegant transition-colors duration-300",
+                        location.pathname === item.href 
+                          ? "text-primary font-semibold" 
+                          : "text-foreground hover:text-primary"
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </>
+              )}
+
               {/* Admin Navigation - só aparece se estiver autenticado E for Admin */}
               {isAuthenticated && user?.role?.toLowerCase() === "admin" && (
                 <>
@@ -287,6 +313,32 @@ const Navigation = () => {
                 )
               ))}
               
+              {/* User Navigation Mobile - aparece para todos os usuários autenticados */}
+              {isAuthenticated && (
+                <>
+                  <div className="border-t border-border pt-4 mt-4">
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      Minha Conta
+                    </div>
+                    {userNavItems.map((item) => (
+                      <Link
+                        key={item.label}
+                        to={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          "block text-sm font-elegant transition-colors duration-300 pl-2",
+                          location.pathname === item.href 
+                            ? "text-primary font-semibold" 
+                            : "text-foreground hover:text-primary"
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+
               {/* Admin Navigation Mobile - só aparece se for Admin */}
               {isAuthenticated && user?.role?.toLowerCase() === "admin" && (
                 <>

@@ -36,12 +36,3 @@ public interface IClienteService
     Task<ClienteResponseDto> CreateClienteAsync(CreateClienteDto clienteDto, string userId);
 }
 
-public interface IPedidoService
-{
-    Task<IEnumerable<PedidoResponseDto>> GetAllAsync();
-    Task<PedidoResponseDto?> GetByIdAsync(int id);
-    Task<IEnumerable<PedidoResponseDto>> GetByClienteAsync(int clienteId);
-    Task<PedidoResponseDto> CreateAsync(CreatePedidoDto dto);
-    Task<bool> UpdateStatusAsync(int id, UpdatePedidoStatusDto dto);
-    Task<bool> DeleteAsync(int id);
-}

@@ -100,6 +100,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<CozinhaApp.API.Services.IPedidoService, CozinhaApp.API.Services.PedidoService>();
 builder.Services.AddScoped<ILoggingService, LoggingService>();
 
 // Configurar a chave JWT para injeção de dependência
