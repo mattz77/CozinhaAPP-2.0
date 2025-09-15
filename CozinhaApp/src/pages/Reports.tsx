@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { SkeletonCard, SkeletonTable } from '@/components/ui/Skeleton';
 import { 
   Table,
   TableBody,
@@ -42,6 +44,7 @@ import {
 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { motion } from 'framer-motion';
 
 const Reports = () => {
   const { user, isAuthenticated } = useAuth();

@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { SkeletonCard, SkeletonList } from '@/components/ui/Skeleton';
 import { 
   BarChart, 
   Bar, 
@@ -32,6 +34,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { motion } from 'framer-motion';
 
 const Dashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -89,16 +92,23 @@ const Dashboard = () => {
         {statsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[...Array(4)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                  <div className="h-8 bg-muted rounded w-1/2"></div>
-                </CardContent>
-              </Card>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <SkeletonCard />
+              </motion.div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -210,7 +220,7 @@ const Dashboard = () => {
               <CardContent>
                 {chartLoading ? (
                   <div className="h-80 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <LoadingSpinner size="lg" text="Carregando dados de vendas..." />
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height={400}>
@@ -247,7 +257,7 @@ const Dashboard = () => {
               <CardContent>
                 {topPratosLoading ? (
                   <div className="h-80 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <LoadingSpinner size="lg" text="Carregando pratos populares..." />
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height={400}>
@@ -280,7 +290,7 @@ const Dashboard = () => {
                 <CardContent>
                   {chartLoading ? (
                     <div className="h-64 flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      <LoadingSpinner size="lg" text="Carregando status dos pedidos..." />
                     </div>
                   ) : (
                     <ResponsiveContainer width="100%" height={300}>

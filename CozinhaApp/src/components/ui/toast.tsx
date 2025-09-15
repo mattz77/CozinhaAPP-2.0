@@ -1,99 +1,102 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle, XCircle, AlertTriangle, Info, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface ToastProps {
   id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-  title: string;
+  title?: string;
   description?: string;
+  type?: "success" | "error" | "warning" | "info";
   duration?: number;
-  onClose: (id: string) => void;
+  onClose?: () => void;
 }
 
-const toastVariants = {
-  success: {
-    icon: CheckCircle,
-    className: 'bg-green-100 border-2 border-green-300 text-green-900 shadow-lg shadow-green-100/50',
-    iconClassName: 'text-green-600'
-  },
-  error: {
-    icon: XCircle,
-    className: 'bg-red-100 border-2 border-red-300 text-red-900 shadow-lg shadow-red-100/50',
-    iconClassName: 'text-red-600'
-  },
-  warning: {
-    icon: AlertCircle,
-    className: 'bg-yellow-100 border-2 border-yellow-300 text-yellow-900 shadow-lg shadow-yellow-100/50',
-    iconClassName: 'text-yellow-600'
-  },
-  info: {
-    icon: Info,
-    className: 'bg-blue-100 border-2 border-blue-300 text-blue-900 shadow-lg shadow-blue-100/50',
-    iconClassName: 'text-blue-600'
-  }
-};
+const Toast = ({ id, title, description, type = "info", duration = 5000, onClose }: ToastProps) => {
+  const typeConfig = {
+    success: {
+      icon: CheckCircle,
+      className: "border-green-200 bg-green-50 text-green-800",
+      iconClassName: "text-green-600"
+    },
+    error: {
+      icon: XCircle,
+      className: "border-red-200 bg-red-50 text-red-800",
+      iconClassName: "text-red-600"
+    },
+    warning: {
+      icon: AlertTriangle,
+      className: "border-yellow-200 bg-yellow-50 text-yellow-800",
+      iconClassName: "text-yellow-600"
+    },
+    info: {
+      icon: Info,
+      className: "border-blue-200 bg-blue-50 text-blue-800",
+      iconClassName: "text-blue-600"
+    }
+  };
 
-export const Toast: React.FC<ToastProps> = ({
-  id,
-  type,
-  title,
-  description,
-  duration = 5000,
-  onClose
-}) => {
-  const config = toastVariants[type];
+  const config = typeConfig[type];
   const Icon = config.icon;
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose(id);
-    }, duration);
-
-    return () => clearTimeout(timer);
-  }, [id, duration, onClose]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.3 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-      className={`relative flex items-start p-4 rounded-lg max-w-sm w-full backdrop-blur-sm ${config.className}`}
-      role="alert"
-      aria-live="assertive"
+      className={cn(
+        "max-w-sm w-full border rounded-lg shadow-lg pointer-events-auto",
+        config.className
+      )}
     >
-      <Icon className={`h-5 w-5 mt-0.5 mr-3 flex-shrink-0 ${config.iconClassName}`} />
-      
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium">{title}</p>
-        {description && (
-          <p className="mt-1 text-sm opacity-90">{description}</p>
-        )}
+      <div className="p-4">
+        <div className="flex items-start">
+          <div className="flex-shrink-0">
+            <Icon className={cn("h-5 w-5", config.iconClassName)} />
+          </div>
+          <div className="ml-3 w-0 flex-1">
+            {title && (
+              <p className="text-sm font-medium">{title}</p>
+            )}
+            {description && (
+              <p className="mt-1 text-sm opacity-90">{description}</p>
+            )}
+          </div>
+          <div className="ml-4 flex-shrink-0 flex">
+            <button
+              className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none"
+              onClick={onClose}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
       </div>
-
-      <button
-        onClick={() => onClose(id)}
-        className="ml-3 flex-shrink-0 p-1 rounded-full hover:bg-black/10 transition-colors"
-      >
-        <X className="h-4 w-4" />
-      </button>
     </motion.div>
   );
 };
 
-interface ToastContainerProps {
-  toasts: ToastProps[];
-  onClose: (id: string) => void;
-}
+// Hook para gerenciar toasts
+export const useToast = () => {
+  const showToast = (toast: Omit<ToastProps, "id">) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    const toastElement = document.createElement("div");
+    toastElement.id = id;
+    toastElement.className = "fixed top-4 right-4 z-50";
+    
+    document.body.appendChild(toastElement);
+    
+    // Auto remove after duration
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.remove();
+      }
+    }, toast.duration || 5000);
+    
+    return id;
+  };
 
-export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onClose }) => {
-  return (
-    <div className="fixed top-4 right-4 z-50 space-y-3 min-w-[320px]">
-      <AnimatePresence>
-        {toasts.map((toast) => (
-          <Toast key={toast.id} {...toast} onClose={onClose} />
-        ))}
-      </AnimatePresence>
-    </div>
-  );
+  return { showToast };
 };
+
+export default Toast;

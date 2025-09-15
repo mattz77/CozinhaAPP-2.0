@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { SkeletonCard, SkeletonList } from '@/components/ui/Skeleton';
 import { 
   Settings, 
   Server, 
@@ -26,6 +28,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { motion } from 'framer-motion';
 
 const Configurations = () => {
   const { user, isAuthenticated } = useAuth();
@@ -247,7 +250,7 @@ const Configurations = () => {
               <CardContent>
                 {systemLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <RefreshCw className="h-6 w-6 animate-spin" />
+                    <LoadingSpinner size="lg" text="Carregando informações do sistema..." />
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -314,7 +317,7 @@ const Configurations = () => {
               <CardContent>
                 {healthLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <RefreshCw className="h-6 w-6 animate-spin" />
+                    <LoadingSpinner size="lg" text="Verificando saúde do sistema..." />
                   </div>
                 ) : (
                   <div className="space-y-6">
