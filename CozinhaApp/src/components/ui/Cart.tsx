@@ -14,6 +14,8 @@ import {
   Clock
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { CheckoutForm } from '@/components/checkout/CheckoutForm';
+import { useCart } from '@/hooks/useCart';
 
 interface CartItem {
   id: number;
@@ -39,7 +41,9 @@ export const Cart: React.FC<CartProps> = ({
   onRemoveItem
 }) => {
   const { isAuthenticated } = useAuth();
+  const { clearCart } = useCart();
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const total = items.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantidade, 0);
@@ -52,8 +56,31 @@ export const Cart: React.FC<CartProps> = ({
       window.dispatchEvent(event);
       return;
     }
-    // Lógica de checkout
-    console.log('🛒 Cart: Iniciando checkout...');
+    
+    if (items.length === 0) {
+      return;
+    }
+    
+    // Mostrar formulário de checkout
+    setShowCheckout(true);
+  };
+
+  const handleCheckoutSuccess = async () => {
+    // Limpar carrinho após sucesso
+    try {
+      await clearCart();
+      console.log('✅ Cart: Carrinho limpo após checkout');
+    } catch (error) {
+      console.error('❌ Cart: Erro ao limpar carrinho:', error);
+    }
+    
+    // Fechar checkout e carrinho
+    setShowCheckout(false);
+    onClose();
+  };
+
+  const handleCheckoutClose = () => {
+    setShowCheckout(false);
   };
 
   return (
@@ -243,6 +270,18 @@ export const Cart: React.FC<CartProps> = ({
           </motion.div>
         </>
       )}
+      
+      {/* Checkout Form */}
+      <AnimatePresence>
+        {showCheckout && (
+          <CheckoutForm
+            items={items}
+            totalPrice={total + 5} // Incluindo taxa de entrega
+            onSuccess={handleCheckoutSuccess}
+            onClose={handleCheckoutClose}
+          />
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   );
 };
