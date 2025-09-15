@@ -7,6 +7,7 @@ import { useCartSync } from "@/hooks/useCartSync";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { UserDropdown } from "@/components/auth/UserDropdown";
 import { Cart } from "@/components/ui/Cart";
+import { Link, useLocation } from "react-router-dom";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,7 @@ const Navigation = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem, syncKey } = useCartSync();
   const [key, setKey] = useState(0); // Força re-render quando necessário
+  const location = useLocation();
 
   // Força re-render quando o estado de autenticação mudar
   useEffect(() => {
@@ -89,17 +91,17 @@ const Navigation = () => {
   });
 
   const navItems = [
-    { label: "INÍCIO", href: "#inicio" },
-    { label: "CARDÁPIO", href: "#cardapio" },
-    { label: "AGENDAMENTOS", href: "#agendamentos" },
-    { label: "CONTATO", href: "#contato" },
+    { label: "INÍCIO", href: "/", isRoute: true },
+    { label: "CARDÁPIO", href: "#cardapio", isRoute: false },
+    { label: "AGENDAMENTOS", href: "#agendamentos", isRoute: false },
+    { label: "CONTATO", href: "#contato", isRoute: false },
   ];
 
   // Itens de navegação para usuários autenticados (admin)
   const adminNavItems = [
-    { label: "DASHBOARD", href: "#dashboard" },
-    { label: "RELATÓRIOS", href: "#relatorios" },
-    { label: "CONFIGURAÇÕES", href: "#configuracoes" },
+    { label: "DASHBOARD", href: "/dashboard", isRoute: true },
+    { label: "RELATÓRIOS", href: "/reports", isRoute: true },
+    { label: "CONFIGURAÇÕES", href: "/configurations", isRoute: true },
   ];
 
 
@@ -135,13 +137,28 @@ const Navigation = () => {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
               {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="text-sm font-elegant text-foreground hover:text-primary transition-colors duration-300"
-                >
-                  {item.label}
-                </a>
+                item.isRoute ? (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    className={cn(
+                      "text-sm font-elegant transition-colors duration-300",
+                      location.pathname === item.href 
+                        ? "text-primary font-semibold" 
+                        : "text-foreground hover:text-primary"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="text-sm font-elegant text-foreground hover:text-primary transition-colors duration-300"
+                  >
+                    {item.label}
+                  </a>
+                )
               ))}
               
               {/* Admin Navigation - só aparece se estiver autenticado */}
@@ -149,13 +166,18 @@ const Navigation = () => {
                 <>
                   <div className="w-px h-6 bg-border mx-2"></div>
                   {adminNavItems.map((item) => (
-                    <a
+                    <Link
                       key={item.label}
-                      href={item.href}
-                      className="text-sm font-elegant text-foreground hover:text-primary transition-colors duration-300"
+                      to={item.href}
+                      className={cn(
+                        "text-sm font-elegant transition-colors duration-300",
+                        location.pathname === item.href 
+                          ? "text-primary font-semibold" 
+                          : "text-foreground hover:text-primary"
+                      )}
                     >
                       {item.label}
-                    </a>
+                    </Link>
                   ))}
                 </>
               )}
@@ -238,14 +260,30 @@ const Navigation = () => {
           >
             <div className="py-4 space-y-4">
               {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="block text-sm font-elegant text-foreground hover:text-primary transition-colors duration-300"
-                >
-                  {item.label}
-                </a>
+                item.isRoute ? (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      "block text-sm font-elegant transition-colors duration-300",
+                      location.pathname === item.href 
+                        ? "text-primary font-semibold" 
+                        : "text-foreground hover:text-primary"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="block text-sm font-elegant text-foreground hover:text-primary transition-colors duration-300"
+                  >
+                    {item.label}
+                  </a>
+                )
               ))}
               
               {/* Admin Navigation Mobile */}
@@ -256,14 +294,19 @@ const Navigation = () => {
                       Administração
                     </div>
                     {adminNavItems.map((item) => (
-                      <a
+                      <Link
                         key={item.label}
-                        href={item.href}
+                        to={item.href}
                         onClick={() => setIsOpen(false)}
-                        className="block text-sm font-elegant text-foreground hover:text-primary transition-colors duration-300 pl-2"
+                        className={cn(
+                          "block text-sm font-elegant transition-colors duration-300 pl-2",
+                          location.pathname === item.href 
+                            ? "text-primary font-semibold" 
+                            : "text-foreground hover:text-primary"
+                        )}
                       >
                         {item.label}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </>

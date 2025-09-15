@@ -65,18 +65,23 @@ public class SecurityMiddleware
             if (requests.Count >= 100)
             {
                 _logger.LogWarning($"Rate limit excedido para IP: {clientIp}");
-                context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-                context.Response.ContentType = "application/json";
                 
-                var errorResponse = new
+                // Verificar se a resposta já começou antes de tentar definir o status code
+                if (!context.Response.HasStarted)
                 {
-                    error = "Rate limit excedido",
-                    message = "Muitas requisições. Tente novamente em 1 minuto.",
-                    retryAfter = 60
-                };
-                
-                var jsonResponse = JsonSerializer.Serialize(errorResponse);
-                _ = context.Response.WriteAsync(jsonResponse);
+                    context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+                    context.Response.ContentType = "application/json";
+                    
+                    var errorResponse = new
+                    {
+                        error = "Rate limit excedido",
+                        message = "Muitas requisições. Tente novamente em 1 minuto.",
+                        retryAfter = 60
+                    };
+                    
+                    var jsonResponse = JsonSerializer.Serialize(errorResponse);
+                    _ = context.Response.WriteAsync(jsonResponse);
+                }
                 return;
             }
 
@@ -115,7 +120,7 @@ public class SecurityMiddleware
     private async Task ValidateOrigin(HttpContext context)
     {
         var allowedOrigins = _configuration.GetSection("Security:AllowedOrigins").Get<string[]>() ?? 
-            new[] { "http://localhost:3000", "https://localhost:3000" };
+            new[] { "http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001" };
             
         var origin = context.Request.Headers["Origin"].FirstOrDefault();
         var path = context.Request.Path.Value;
@@ -134,16 +139,23 @@ public class SecurityMiddleware
             _logger.LogWarning($"❌ Origem não autorizada: {origin}");
             _logger.LogWarning($"📋 Origens permitidas: {string.Join(", ", allowedOrigins)}");
             
-            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            var errorResponse = new
+            // Verificar se a resposta já começou antes de tentar definir o status code
+            if (!context.Response.HasStarted)
             {
-                error = "Origem não autorizada",
-                message = "Esta origem não tem permissão para acessar a API",
-                origin = origin,
-                allowedOrigins = allowedOrigins
-            };
-            
-            await context.Response.WriteAsJsonAsync(errorResponse);
+                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                context.Response.ContentType = "application/json";
+                
+                var errorResponse = new
+                {
+                    error = "Origem não autorizada",
+                    message = "Esta origem não tem permissão para acessar a API",
+                    origin = origin,
+                    allowedOrigins = allowedOrigins
+                };
+                
+                var jsonResponse = JsonSerializer.Serialize(errorResponse);
+                await context.Response.WriteAsync(jsonResponse);
+            }
             return;
         }
 
@@ -170,17 +182,21 @@ public class SecurityMiddleware
 
     private async Task HandleSecurityException(HttpContext context, Exception ex)
     {
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-        context.Response.ContentType = "application/json";
-
-        var errorResponse = new
+        // Verificar se a resposta já começou antes de tentar definir o status code
+        if (!context.Response.HasStarted)
         {
-            error = "Erro interno de segurança",
-            message = "Ocorreu um erro interno. Tente novamente mais tarde.",
-            timestamp = DateTime.UtcNow
-        };
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.ContentType = "application/json";
 
-        var jsonResponse = JsonSerializer.Serialize(errorResponse);
-        await context.Response.WriteAsync(jsonResponse);
+            var errorResponse = new
+            {
+                error = "Erro interno de segurança",
+                message = "Ocorreu um erro interno. Tente novamente mais tarde.",
+                timestamp = DateTime.UtcNow
+            };
+
+            var jsonResponse = JsonSerializer.Serialize(errorResponse);
+            await context.Response.WriteAsync(jsonResponse);
+        }
     }
 }
