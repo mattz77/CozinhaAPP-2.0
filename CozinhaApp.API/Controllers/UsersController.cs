@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using CozinhaApp.API.Models;
 using CozinhaApp.API.DTOs;
 using CozinhaApp.API.Interfaces;
+using CozinhaApp.API.Services;
 
 namespace CozinhaApp.API.Controllers;
 
@@ -41,7 +42,9 @@ public class UsersController : ControllerBase
                 return Forbid("Apenas administradores podem acessar esta funcionalidade");
             }
 
-            var users = _userManager.Users.ToList();
+            var users = _userManager.Users
+                .Where(user => user.Role == "Admin" || user.Role == "Manager")
+                .ToList();
             var userDtos = users.Select(user => new UserManagementDto
             {
                 Id = user.Id,

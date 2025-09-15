@@ -94,7 +94,9 @@ export const UserManagementComponent: React.FC = () => {
   };
 
   const getRoleBadgeVariant = (role: string) => {
-    return role === 'Admin' ? 'default' : 'secondary';
+    if (role === 'Admin') return 'default';
+    if (role === 'Manager') return 'secondary';
+    return 'outline';
   };
 
   const getStatusBadgeVariant = (ativo: boolean) => {
@@ -148,6 +150,8 @@ export const UserManagementComponent: React.FC = () => {
                   <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                     {user.role === 'Admin' ? (
                       <Shield className="h-5 w-5 text-primary-foreground" />
+                    ) : user.role === 'Manager' ? (
+                      <Users className="h-5 w-5 text-primary-foreground" />
                     ) : (
                       <User className="h-5 w-5 text-primary-foreground" />
                     )}
@@ -216,6 +220,7 @@ export const UserManagementComponent: React.FC = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Usuario">Usuario</SelectItem>
+                        <SelectItem value="Manager">Manager</SelectItem>
                         <SelectItem value="Admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>

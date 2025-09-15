@@ -20,7 +20,7 @@ public class UserManagementDto
 public class UpdateUserRoleDto
 {
     [Required(ErrorMessage = "Role é obrigatório")]
-    [RegularExpression("^(Admin|Usuario)$", ErrorMessage = "Role deve ser 'Admin' ou 'Usuario'")]
+    [RegularExpression("^(Admin|Manager|Usuario)$", ErrorMessage = "Role deve ser 'Admin', 'Manager' ou 'Usuario'")]
     public string Role { get; set; } = string.Empty;
 }
 
