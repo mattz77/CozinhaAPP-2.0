@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Clock, DollarSign } from 'lucide-react';
 import { PratoCard } from '@/components/ui/PratoCard';
 import { CardapioCarousel } from '@/components/ui/CardapioCarousel';
-import { LoadingSpinner, LoadingCard } from '@/components/ui/LoadingSpinner';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { SkeletonCard } from '@/components/ui/Skeleton';
 import { motion } from 'framer-motion';
 import { mockCategorias, mockPratos } from '@/data/mockData';
 import { useState, useMemo } from 'react';
@@ -71,7 +72,7 @@ const CardapioSection = () => {
               Do café da manhã ao jantar, temos opções para todos os gostos.
             </p>
           </div>
-          <LoadingCard count={6} />
+          <SkeletonCard count={6} />
         </div>
       </section>
     );

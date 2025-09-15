@@ -187,7 +187,7 @@ const Dashboard = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </motion.div>
         )}
 
         {/* Charts Section */}
