@@ -65,6 +65,7 @@ public class UserDto
     public string? AvatarUrl { get; set; }
     public string? Telefone { get; set; }
     public int? ClienteId { get; set; }
+    public string Role { get; set; } = "Usuario";
 }
 
 public class RefreshTokenDto

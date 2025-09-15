@@ -326,7 +326,8 @@ public class AuthService : IAuthService
             UltimoLogin = user.UltimoLogin,
             AvatarUrl = user.AvatarUrl,
             Telefone = cliente?.Telefone,
-            ClienteId = cliente?.Id
+            ClienteId = cliente?.Id,
+            Role = user.Role
         };
     }
 }

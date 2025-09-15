@@ -35,6 +35,7 @@ export interface UserDto {
   avatarUrl?: string;
   telefone?: string;
   clienteId?: number;
+  role: string;
 }
 
 export interface RefreshTokenDto {

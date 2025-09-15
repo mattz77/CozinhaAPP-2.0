@@ -87,7 +87,9 @@ const Navigation = () => {
   console.log('🔍 Navigation: Estado:', {
     isAuthenticated,
     user: user?.nomeCompleto,
-    hasUser: !!user
+    hasUser: !!user,
+    userRole: user?.role,
+    isAdmin: user?.role?.toLowerCase() === "admin"
   });
 
   const navItems = [
@@ -160,8 +162,8 @@ const Navigation = () => {
                 )
               ))}
               
-              {/* Admin Navigation - só aparece se estiver autenticado */}
-              {isAuthenticated && (
+              {/* Admin Navigation - só aparece se estiver autenticado E for Admin */}
+              {isAuthenticated && user?.role?.toLowerCase() === "admin" && (
                 <>
                   <div className="w-px h-6 bg-border mx-3"></div>
                   {adminNavItems.map((item) => (
@@ -285,8 +287,8 @@ const Navigation = () => {
                 )
               ))}
               
-              {/* Admin Navigation Mobile */}
-              {isAuthenticated && (
+              {/* Admin Navigation Mobile - só aparece se for Admin */}
+              {isAuthenticated && user?.role?.toLowerCase() === "admin" && (
                 <>
                   <div className="border-t border-border pt-4 mt-4">
                     <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">

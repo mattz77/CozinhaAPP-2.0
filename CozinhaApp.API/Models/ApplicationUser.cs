@@ -29,6 +29,9 @@ public class ApplicationUser : IdentityUser
     [StringLength(500)]
     public string? AvatarUrl { get; set; }
     
+    [StringLength(50)]
+    public string Role { get; set; } = "Usuario"; // Usuario, Admin
+    
     // Relacionamento com pedidos
     public List<Pedido> Pedidos { get; set; } = new();
 }
