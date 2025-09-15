@@ -380,7 +380,3 @@ As configurações estão em `appsettings.Production.json`:
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
-
----
-
-**Desenvolvido com ❤️ para revolucionar o delivery de comida!**
