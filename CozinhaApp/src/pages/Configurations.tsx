@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { SkeletonCard, SkeletonList } from '@/components/ui/Skeleton';
+import { UserManagementComponent } from '@/components/admin/UserManagementComponent';
 import { 
   Settings, 
   Server, 
@@ -24,7 +25,8 @@ import {
   Database,
   Cpu,
   HardDrive,
-  MemoryStick
+  MemoryStick,
+  Users
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -32,6 +34,9 @@ import { motion } from 'framer-motion';
 
 const Configurations = () => {
   const { user, isAuthenticated } = useAuth();
+  
+  // Verificar se o usuário é admin
+  const isAdmin = user?.role?.toLowerCase() === 'admin';
   const [settings, setSettings] = useState({
     nomeRestaurante: 'CozinhaApp',
     telefoneContato: '+55 (11) 99999-9999',
@@ -66,6 +71,26 @@ const Configurations = () => {
             </p>
             <Button onClick={() => window.dispatchEvent(new CustomEvent('openAuthModal'))}>
               Fazer Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-96">
+          <CardHeader>
+            <CardTitle className="text-center">Acesso Restrito</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-muted-foreground mb-4">
+              Apenas administradores podem acessar as configurações do sistema.
+            </p>
+            <Button onClick={() => window.history.back()}>
+              Voltar
             </Button>
           </CardContent>
         </Card>
@@ -123,11 +148,12 @@ const Configurations = () => {
         </div>
 
         <Tabs defaultValue="app" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="app">Aplicação</TabsTrigger>
             <TabsTrigger value="system">Sistema</TabsTrigger>
             <TabsTrigger value="security">Segurança</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
+            <TabsTrigger value="users">Usuários</TabsTrigger>
           </TabsList>
 
           <TabsContent value="app" className="space-y-6">
@@ -499,6 +525,10 @@ const Configurations = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="users" className="space-y-6">
+            <UserManagementComponent />
           </TabsContent>
         </Tabs>
       </div>
