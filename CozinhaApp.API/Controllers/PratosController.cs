@@ -547,4 +547,206 @@ public class PratosController : ControllerBase
             return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
         }
     }
+
+    // GET: api/pratos/search
+    [HttpGet("search")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<PratoResponseDto>>> SearchPratos(
+        [FromQuery] string? q,
+        [FromQuery] int? categoriaId,
+        [FromQuery] decimal? precoMin,
+        [FromQuery] decimal? precoMax,
+        [FromQuery] string? tipo,
+        [FromQuery] int limit = 20)
+    {
+        try
+        {
+            _loggingService.LogApi("Buscando pratos", new { 
+                endpoint = "GET /api/pratos/search",
+                query = q,
+                categoriaId = categoriaId,
+                limit = limit
+            });
+
+            var query = _context.Pratos
+                .Include(p => p.Categoria)
+                .Where(p => p.Disponivel);
+
+            // Aplicar filtros
+            if (!string.IsNullOrEmpty(q))
+            {
+                query = query.Where(p => p.Nome.Contains(q) || 
+                                       (p.Descricao != null && p.Descricao.Contains(q)));
+            }
+
+            if (categoriaId.HasValue)
+            {
+                query = query.Where(p => p.CategoriaId == categoriaId.Value);
+            }
+
+            if (precoMin.HasValue)
+            {
+                query = query.Where(p => p.Preco >= precoMin.Value);
+            }
+
+            if (precoMax.HasValue)
+            {
+                query = query.Where(p => p.Preco <= precoMax.Value);
+            }
+
+            if (!string.IsNullOrEmpty(tipo))
+            {
+                query = query.Where(p => p.Tipo == tipo);
+            }
+
+            var pratos = await query
+                .OrderBy(p => p.Nome)
+                .Take(limit)
+                .Select(p => new PratoResponseDto
+                {
+                    Id = p.Id,
+                    Nome = p.Nome,
+                    Descricao = p.Descricao,
+                    Preco = p.Preco,
+                    ImagemUrl = p.ImagemUrl,
+                    Disponivel = p.Disponivel,
+                    TempoPreparo = p.TempoPreparo,
+                    Tipo = p.Tipo,
+                    DataCriacao = p.DataCriacao,
+                    CategoriaId = p.CategoriaId,
+                    CategoriaNome = p.Categoria.Nome
+                })
+                .ToListAsync();
+
+            return Ok(pratos);
+        }
+        catch (Exception ex)
+        {
+            _loggingService.LogError("Erro ao buscar pratos", ex);
+            return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+        }
+    }
+
+    // GET: api/pratos/recent
+    [HttpGet("recent")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<PratoResponseDto>>> GetRecentPratos([FromQuery] int limit = 10)
+    {
+        try
+        {
+            _loggingService.LogApi("Buscando pratos recentes", new { 
+                endpoint = "GET /api/pratos/recent",
+                limit = limit
+            });
+
+            var pratos = await _context.Pratos
+                .Include(p => p.Categoria)
+                .Where(p => p.Disponivel)
+                .OrderByDescending(p => p.DataCriacao)
+                .Take(limit)
+                .Select(p => new PratoResponseDto
+                {
+                    Id = p.Id,
+                    Nome = p.Nome,
+                    Descricao = p.Descricao,
+                    Preco = p.Preco,
+                    ImagemUrl = p.ImagemUrl,
+                    Disponivel = p.Disponivel,
+                    TempoPreparo = p.TempoPreparo,
+                    Tipo = p.Tipo,
+                    DataCriacao = p.DataCriacao,
+                    CategoriaId = p.CategoriaId,
+                    CategoriaNome = p.Categoria.Nome
+                })
+                .ToListAsync();
+
+            return Ok(pratos);
+        }
+        catch (Exception ex)
+        {
+            _loggingService.LogError("Erro ao buscar pratos recentes", ex);
+            return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+        }
+    }
+
+    // GET: api/pratos/featured
+    [HttpGet("featured")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<PratoResponseDto>>> GetFeaturedPratos([FromQuery] int limit = 6)
+    {
+        try
+        {
+            _loggingService.LogApi("Buscando pratos em destaque", new { 
+                endpoint = "GET /api/pratos/featured",
+                limit = limit
+            });
+
+            // Buscar pratos mais vendidos (baseado em pedidos)
+            var pratosMaisVendidos = await _context.ItensPedido
+                .Include(ip => ip.Prato)
+                .Include(ip => ip.Prato.Categoria)
+                .Where(ip => ip.Prato.Disponivel)
+                .GroupBy(ip => ip.PratoId)
+                .Select(g => new { PratoId = g.Key, Quantidade = g.Sum(ip => ip.Quantidade) })
+                .OrderByDescending(x => x.Quantidade)
+                .Take(limit)
+                .ToListAsync();
+
+            var pratosIds = pratosMaisVendidos.Select(x => x.PratoId).ToList();
+
+            var pratos = await _context.Pratos
+                .Include(p => p.Categoria)
+                .Where(p => p.Disponivel && pratosIds.Contains(p.Id))
+                .OrderBy(p => pratosIds.IndexOf(p.Id))
+                .Select(p => new PratoResponseDto
+                {
+                    Id = p.Id,
+                    Nome = p.Nome,
+                    Descricao = p.Descricao,
+                    Preco = p.Preco,
+                    ImagemUrl = p.ImagemUrl,
+                    Disponivel = p.Disponivel,
+                    TempoPreparo = p.TempoPreparo,
+                    Tipo = p.Tipo,
+                    DataCriacao = p.DataCriacao,
+                    CategoriaId = p.CategoriaId,
+                    CategoriaNome = p.Categoria.Nome
+                })
+                .ToListAsync();
+
+            return Ok(pratos);
+        }
+        catch (Exception ex)
+        {
+            _loggingService.LogError("Erro ao buscar pratos em destaque", ex);
+            return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+        }
+    }
+
+    // GET: api/pratos/types
+    [HttpGet("types")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<string>>> GetPratoTypes()
+    {
+        try
+        {
+            _loggingService.LogApi("Buscando tipos de pratos", new { 
+                endpoint = "GET /api/pratos/types"
+            });
+
+            var tipos = await _context.Pratos
+                .Where(p => p.Disponivel && !string.IsNullOrEmpty(p.Tipo))
+                .Select(p => p.Tipo!)
+                .Distinct()
+                .OrderBy(t => t)
+                .ToListAsync();
+
+            return Ok(tipos);
+        }
+        catch (Exception ex)
+        {
+            _loggingService.LogError("Erro ao buscar tipos de pratos", ex);
+            return StatusCode(500, new { message = "Erro interno do servidor", error = ex.Message });
+        }
+    }
 }

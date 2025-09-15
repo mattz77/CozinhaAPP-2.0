@@ -1,6 +1,6 @@
 // Configurações da API
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.DEV ? '/api' : 'http://localhost:5057/api',
+  BASE_URL: import.meta.env.DEV ? 'http://localhost:5057/api' : 'http://localhost:5057/api',
   ENDPOINTS: {
     CATEGORIAS: '/categorias',
     PRATOS: '/pratos',

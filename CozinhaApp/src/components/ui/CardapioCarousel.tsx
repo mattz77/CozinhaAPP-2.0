@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { PratoCard } from '@/components/ui/PratoCard';
 import { Clock, Heart, ShoppingCart, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCart } from '@/hooks/useCart';
+import { useCartSync } from '@/hooks/useCartSync';
 
 interface Prato {
   id: number;
@@ -32,7 +32,7 @@ export const CardapioCarousel: React.FC<CardapioCarouselProps> = ({
   onCategoriaChange
 }) => {
   const { isAuthenticated } = useAuth();
-  const { addItem, openCart } = useCart();
+  const { addItem, openCart } = useCartSync();
   const [isLiked, setIsLiked] = useState<{ [key: number]: boolean }>({});
   const carouselRef = useRef<HTMLDivElement>(null);
   const [cardsPerView, setCardsPerView] = useState(3);

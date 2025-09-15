@@ -1,15 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCartSync } from "@/hooks/useCartSync";
-import { usePratos } from "@/hooks/useApi";
-import { AgendamentoModal } from "@/components/auth/AgendamentoModal";
 import { useState } from "react";
 import heroImage from "@/assets/food-soup.jpg";
 
 const HeroSection = () => {
   const { isAuthenticated } = useAuth();
   const { openCart, items, totalItems } = useCartSync();
-  const { data: pratos = [] } = usePratos();
   const [isAgendamentoModalOpen, setIsAgendamentoModalOpen] = useState(false);
 
   // Função para rolar para a seção do cardápio
@@ -209,12 +206,12 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Modal de Agendamento */}
-      <AgendamentoModal 
+      {/* Modal de Agendamento - Temporariamente desabilitado */}
+      {/* <AgendamentoModal 
         isOpen={isAgendamentoModalOpen}
         onClose={() => setIsAgendamentoModalOpen(false)}
-        pratos={pratos}
-      />
+        pratos={[]}
+      /> */}
     </section>
   );
 };

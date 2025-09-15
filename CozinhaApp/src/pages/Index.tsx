@@ -17,6 +17,14 @@ const Index = () => {
   const isDev = import.meta.env.DEV;
   const showTestSelector = isDev && !isAuthenticated && !isLoading;
 
+  // Debug: Log do estado
+  console.log('🔍 Index: Estado atual:', {
+    isAuthenticated,
+    isLoading,
+    showTestSelector,
+    isDev
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />

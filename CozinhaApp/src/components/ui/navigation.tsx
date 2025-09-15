@@ -95,6 +95,13 @@ const Navigation = () => {
     { label: "CONTATO", href: "#contato" },
   ];
 
+  // Itens de navegação para usuários autenticados (admin)
+  const adminNavItems = [
+    { label: "DASHBOARD", href: "#dashboard" },
+    { label: "RELATÓRIOS", href: "#relatorios" },
+    { label: "CONFIGURAÇÕES", href: "#configuracoes" },
+  ];
+
 
   return (
     <>
@@ -136,6 +143,22 @@ const Navigation = () => {
                   {item.label}
                 </a>
               ))}
+              
+              {/* Admin Navigation - só aparece se estiver autenticado */}
+              {isAuthenticated && (
+                <>
+                  <div className="w-px h-6 bg-border mx-2"></div>
+                  {adminNavItems.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="text-sm font-elegant text-foreground hover:text-primary transition-colors duration-300"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </>
+              )}
             </div>
 
             {/* Auth Section */}
@@ -224,6 +247,27 @@ const Navigation = () => {
                   {item.label}
                 </a>
               ))}
+              
+              {/* Admin Navigation Mobile */}
+              {isAuthenticated && (
+                <>
+                  <div className="border-t border-border pt-4 mt-4">
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      Administração
+                    </div>
+                    {adminNavItems.map((item) => (
+                      <a
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className="block text-sm font-elegant text-foreground hover:text-primary transition-colors duration-300 pl-2"
+                      >
+                        {item.label}
+                      </a>
+                    ))}
+                  </div>
+                </>
+              )}
               
               {/* Mobile Auth Section */}
               <div className="pt-4 border-t border-border space-y-3">

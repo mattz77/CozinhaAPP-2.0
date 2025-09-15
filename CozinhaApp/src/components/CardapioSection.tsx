@@ -11,8 +11,19 @@ import { mockCategorias, mockPratos } from '@/data/mockData';
 import { useState, useMemo } from 'react';
 
 const CardapioSection = () => {
+  console.log('🔍 CardapioSection: Iniciando componente');
+  
   const { data: categoriasApi, isLoading: categoriasLoading, error: categoriasError } = useCategorias();
   const { data: pratosApi, isLoading: pratosLoading, error: pratosError } = usePratos();
+  
+  console.log('🔍 CardapioSection: Estado dos dados:', {
+    categoriasApi: categoriasApi?.length || 0,
+    pratosApi: pratosApi?.length || 0,
+    categoriasLoading,
+    pratosLoading,
+    categoriasError: !!categoriasError,
+    pratosError: !!pratosError
+  });
   
   // Estado para filtro de categoria
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(null);
@@ -21,12 +32,22 @@ const CardapioSection = () => {
   const categorias = categoriasError ? mockCategorias : categoriasApi;
   const pratos = pratosError ? mockPratos : pratosApi;
 
+  console.log('🔍 CardapioSection: Dados finais:', {
+    categorias: categorias?.length || 0,
+    pratos: pratos?.length || 0
+  });
+
   // Filtrar pratos por categoria usando useMemo para evitar re-renderizações
   const pratosFiltrados = useMemo(() => {
-    if (!pratos || !Array.isArray(pratos)) return [];
+    if (!pratos || !Array.isArray(pratos)) {
+      console.log('🔍 CardapioSection: Pratos inválidos, retornando array vazio');
+      return [];
+    }
     if (categoriaSelecionada === null) return pratos.slice(0, 3); // Limitar a 3 pratos para "Todas"
     return pratos.filter(prato => prato.categoriaId === categoriaSelecionada).slice(0, 3); // Limitar a 3 pratos por categoria
   }, [pratos, categoriaSelecionada]);
+
+  console.log('🔍 CardapioSection: Pratos filtrados:', pratosFiltrados.length);
 
   // Debug: mostrar erros no console
   if (categoriasError) {
@@ -37,6 +58,7 @@ const CardapioSection = () => {
   }
 
   if (categoriasLoading || pratosLoading) {
+    console.log('🔍 CardapioSection: Carregando...');
     return (
       <section className="py-20 bg-elegant">
         <div className="container mx-auto px-4">
@@ -57,6 +79,8 @@ const CardapioSection = () => {
 
   // Mostrar aviso se estiver usando dados mockados
   const usingMockData = categoriasError || pratosError;
+
+  console.log('🔍 CardapioSection: Renderizando componente principal');
 
   return (
     <section id="cardapio" className="py-20 bg-elegant">

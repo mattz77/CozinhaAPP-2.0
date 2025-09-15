@@ -9,8 +9,8 @@ import {
   ChangePasswordDto 
 } from '../types/auth';
 
-// Em desenvolvimento, use o proxy do Vite
-const API_BASE_URL = import.meta.env.DEV ? '/api' : API_CONFIG.BASE_URL;
+// Usar a configuração da API
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 // Serviço de autenticação
 export const authService = {

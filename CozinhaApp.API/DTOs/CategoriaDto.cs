@@ -28,3 +28,12 @@ public class CategoriaResponseDto
     public DateTime DataCriacao { get; set; }
     public int TotalPratos { get; set; }
 }
+
+public class CategoriaStatsDto
+{
+    public int TotalCategorias { get; set; }
+    public int CategoriasAtivas { get; set; }
+    public int CategoriasInativas { get; set; }
+    public string CategoriaComMaisPratos { get; set; } = string.Empty;
+    public decimal MediaPratosPorCategoria { get; set; }
+}
