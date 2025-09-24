@@ -28,27 +28,44 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
   const [isLiked, setIsLiked] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const cartButtonRef = useRef<HTMLButtonElement>(null);
 
-  const handleAddToOrder = () => {
+  const handleAddToOrder = async () => {
     if (!isAuthenticated) {
       // Mostrar modal de login
       return;
     }
     
-    console.log('🎯 PratoCard: Iniciando animação para', prato.nome);
-    // Iniciar animação
-    setIsAnimating(true);
+    // Prevenir cliques múltiplos
+    if (isAdding || isAnimating) {
+      console.log('⚠️ PratoCard: Clique ignorado - operação em andamento');
+      return;
+    }
     
-    // Adicionar item imediatamente
-    addItem({
-      id: prato.id,
-      nome: prato.nome,
-      preco: prato.preco,
-      imagemUrl: prato.imagemUrl,
-      categoria: prato.categoria
-    });
+    setIsAdding(true);
+    console.log('🎯 PratoCard: Iniciando animação para', prato.nome);
+    
+    try {
+      // Iniciar animação
+      setIsAnimating(true);
+      
+      // Adicionar item imediatamente
+      await addItem({
+        id: prato.id,
+        nome: prato.nome,
+        preco: prato.preco,
+        imagemUrl: prato.imagemUrl,
+        categoria: prato.categoria
+      });
+      
+      console.log('✅ PratoCard: Item adicionado com sucesso');
+    } catch (error) {
+      console.error('❌ PratoCard: Erro ao adicionar item:', error);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const handleAnimationComplete = () => {
@@ -310,7 +327,7 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
-                disabled={!prato.disponivel}
+                disabled={!prato.disponivel || isAdding || isAnimating}
                 onClick={handleAddToOrder}
               >
                 {/* Efeito de brilho animado */}
@@ -319,13 +336,18 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
                 )}
                 
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  {prato.disponivel ? (
+                  {!prato.disponivel ? (
+                    <span>Indisponível</span>
+                  ) : isAdding || isAnimating ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      <span>{isAnimating ? 'Adicionando...' : 'Processando...'}</span>
+                    </>
+                  ) : (
                     <>
                       <ShoppingCart className="h-4 w-4 flex-shrink-0" />
                       <span>Adicionar ao Pedido</span>
                     </>
-                  ) : (
-                    <span>Indisponível</span>
                   )}
                 </span>
               </Button>

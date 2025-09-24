@@ -23,7 +23,14 @@ export const FloatingCart: React.FC<FloatingCartProps> = ({ cartButtonRef }) => 
   // Mostrar carrinho flutuante apenas na página do cardápio
   useEffect(() => {
     const isCardapioPage = location.pathname === '/' || location.pathname.includes('cardapio');
-    setIsVisible(isCardapioPage && isAuthenticated);
+    const shouldShow = isCardapioPage && isAuthenticated;
+    console.log('🛒 FloatingCart: Verificando visibilidade:', {
+      pathname: location.pathname,
+      isCardapioPage,
+      isAuthenticated,
+      shouldShow
+    });
+    setIsVisible(shouldShow);
   }, [location.pathname, isAuthenticated]);
 
   // Atualizar referência do botão
@@ -36,10 +43,13 @@ export const FloatingCart: React.FC<FloatingCartProps> = ({ cartButtonRef }) => 
   if (!isVisible) return null;
 
   const handleCartClick = () => {
-    console.log('🛒 FloatingCart: Botão clicado');
+    console.log('🛒 FloatingCart: Botão clicado, totalItems:', totalItems);
     if (totalItems > 0) {
+      // Se há itens, alternar mini carrinho
       setShowMiniCart(!showMiniCart);
     } else {
+      // Se não há itens, abrir carrinho principal
+      console.log('🛒 FloatingCart: Abrindo carrinho principal');
       toggleCart();
     }
   };

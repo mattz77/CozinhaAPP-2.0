@@ -41,6 +41,7 @@ export const useCart = () => {
   // Carregar carrinho da API quando o usuário muda
   const loadCarrinho = useCallback(async () => {
     if (!isAuthenticated || !token) {
+      console.log('🔄 useCart: Usuário não autenticado, limpando carrinho');
       setItems([]);
       return;
     }
@@ -51,6 +52,8 @@ export const useCart = () => {
     try {
       console.log('🔄 useCart: Carregando carrinho da API...');
       const carrinho = await carrinhoService.getCarrinho(token);
+      console.log('🔄 useCart: Resposta da API:', carrinho);
+      
       const cartItems: CartItem[] = carrinho.itens.map(item => ({
         id: item.pratoId,
         nome: item.pratoNome,
@@ -82,7 +85,11 @@ export const useCart = () => {
       loadCarrinho();
     });
 
-    return unsubscribe;
+    console.log('🔄 useCart: Event listener registrado');
+    return () => {
+      console.log('🔄 useCart: Event listener removido');
+      unsubscribe();
+    };
   }, [loadCarrinho]);
 
   const addItem = useCallback(async (item: Omit<CartItem, 'quantidade'>) => {
@@ -91,29 +98,45 @@ export const useCart = () => {
       return;
     }
 
+    if (isLoading) {
+      console.warn('⚠️ useCart: Operação já em andamento, ignorando');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log('➕ useCart: Adicionando item ao carrinho:', item.nome);
+      console.log('➕ useCart: Adicionando item ao carrinho:', item.nome, 'ID:', item.id);
       const addItemDto: AddItemCarrinhoDto = {
         pratoId: item.id,
         quantidade: 1,
         observacoes: undefined
       };
 
-      await carrinhoService.adicionarItem(addItemDto, token);
+      console.log('🔄 useCart: Enviando requisição para API...');
+      
+      // Adicionar timeout para evitar operações muito longas
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout: Operação demorou muito')), 10000);
+      });
+      
+      const apiPromise = carrinhoService.adicionarItem(addItemDto, token);
+      
+      await Promise.race([apiPromise, timeoutPromise]);
       console.log('✅ useCart: Item adicionado com sucesso');
       
       // Notificar todos os listeners
+      console.log('📢 useCart: Notificando listeners...');
       cartEventManager.notify();
     } catch (err) {
       console.error('❌ useCart: Erro ao adicionar item ao carrinho:', err);
       setError(err instanceof Error ? err.message : 'Erro ao adicionar item');
+      throw err; // Re-throw para que o PratoCard possa capturar
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, isLoading]);
 
   const removeItem = useCallback(async (id: number) => {
     if (!isAuthenticated || !token) return;
@@ -209,6 +232,18 @@ export const useCart = () => {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantidade, 0);
   const totalPrice = items.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+
+  // Log apenas quando há mudanças significativas
+  useEffect(() => {
+    console.log('🔄 useCart: Estado atual:', {
+      items: items.length,
+      totalItems,
+      totalPrice,
+      isLoading,
+      error,
+      isOpen
+    });
+  }, [items.length, totalItems, totalPrice, isLoading, error, isOpen]);
 
   return {
     items,

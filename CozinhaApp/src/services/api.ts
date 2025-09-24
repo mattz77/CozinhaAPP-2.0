@@ -119,6 +119,7 @@ export interface HealthCheckDto {
 }
 
 const API_BASE_URL = API_CONFIG.BASE_URL;
+console.log('🔧 API_BASE_URL configurado:', API_BASE_URL);
 
 // Serviço para Categorias
 export const categoriasService = {
@@ -421,6 +422,10 @@ export const carrinhoService = {
   },
 
   async adicionarItem(data: AddItemCarrinhoDto, token: string): Promise<ItemCarrinhoResponseDto> {
+    console.log('🔄 carrinhoService: Adicionando item:', data);
+    console.log('🔄 carrinhoService: Token presente:', !!token);
+    console.log('🔄 carrinhoService: URL:', `${API_BASE_URL}/carrinho/item`);
+    
     const response = await fetch(`${API_BASE_URL}/carrinho/item`, {
       method: 'POST',
       headers: {
@@ -429,10 +434,19 @@ export const carrinhoService = {
       },
       body: JSON.stringify(data),
     });
+    
+    console.log('🔄 carrinhoService: Response status:', response.status);
+    console.log('🔄 carrinhoService: Response ok:', response.ok);
+    
     if (!response.ok) {
-      throw new Error('Erro ao adicionar item ao carrinho');
+      const errorText = await response.text();
+      console.error('❌ carrinhoService: Erro na resposta:', errorText);
+      throw new Error(`Erro ao adicionar item ao carrinho: ${response.status} - ${errorText}`);
     }
-    return response.json();
+    
+    const result = await response.json();
+    console.log('✅ carrinhoService: Item adicionado com sucesso:', result);
+    return result;
   },
 
   async atualizarItem(itemId: number, data: UpdateItemCarrinhoDto, token: string): Promise<ItemCarrinhoResponseDto> {
