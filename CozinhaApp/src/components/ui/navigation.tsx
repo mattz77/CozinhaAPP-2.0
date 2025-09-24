@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Facebook, Instagram, User, LogOut, ChefHat, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -7,6 +7,7 @@ import { useCartSync } from "@/hooks/useCartSync";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { UserDropdown } from "@/components/auth/UserDropdown";
 import { Cart } from "@/components/ui/Cart";
+import { FloatingCart } from "@/components/ui/FloatingCart";
 import { Link, useLocation } from "react-router-dom";
 
 const Navigation = () => {
@@ -19,6 +20,7 @@ const Navigation = () => {
   const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem, syncKey } = useCartSync();
   const [key, setKey] = useState(0); // Força re-render quando necessário
   const location = useLocation();
+  const cartButtonRef = useRef<HTMLButtonElement>(null);
 
   // Força re-render quando o estado de autenticação mudar
   useEffect(() => {
@@ -487,6 +489,9 @@ const Navigation = () => {
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeItem}
       />
+
+      {/* Floating Cart - sempre visível na página do cardápio */}
+      <FloatingCart cartButtonRef={cartButtonRef} />
     </>
   );
 };

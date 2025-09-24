@@ -20,7 +20,10 @@ import {
   RefreshCw,
   TrendingUp,
   Users,
-  DollarSign
+  DollarSign,
+  User,
+  X,
+  ShoppingCart
 } from 'lucide-react';
 import { pedidoService } from '@/services/pedidoService';
 import { Pedido, StatusPedido, PedidoEstatisticas } from '@/types/pedidos';
@@ -396,112 +399,153 @@ const PedidosAdmin: React.FC = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4"
             onClick={() => setShowDetails(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-gray-900 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] overflow-hidden border border-gray-700"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">
-                  Pedido #{selectedPedido.numeroPedido}
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDetails(false)}
-                >
-                  <AlertCircle className="h-4 w-4" />
-                </Button>
+              {/* Header com gradiente */}
+              <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-black/10"></div>
+                <div className="relative flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-1">
+                      Pedido #{selectedPedido.numeroPedido}
+                    </h2>
+                    <p className="text-primary-foreground/80 text-sm">
+                      {formatDate(selectedPedido.dataPedido)} às {new Date(selectedPedido.dataPedido).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowDetails(false)}
+                    className="text-white hover:bg-white/20"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="p-6 space-y-6 max-h-[calc(95vh-120px)] overflow-y-auto">
                 {/* Informações do Cliente */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-3">Informações do Cliente</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Nome</p>
-                      <p className="font-medium">{selectedPedido.clienteNome}</p>
+                <div className="bg-gray-800 border-2 border-gray-700 hover:border-primary/40 transition-colors p-6 rounded-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                      <User className="h-5 w-5 text-blue-400" />
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Email</p>
-                      <p className="font-medium">{selectedPedido.clienteEmail}</p>
+                    <h3 className="text-xl font-bold text-white">Informações do Cliente</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-300">Nome</label>
+                      <p className="text-white font-semibold text-lg">{selectedPedido.clienteNome}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Telefone</p>
-                      <p className="font-medium">{selectedPedido.clienteTelefone}</p>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-300">Email</label>
+                      <p className="text-white font-semibold">{selectedPedido.clienteEmail}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Status</p>
-                      <Badge className={getStatusColor(selectedPedido.status)}>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-300">Telefone</label>
+                      <p className="text-white font-semibold">{selectedPedido.clienteTelefone}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-300">Status</label>
+                      <Badge className={`${getStatusColor(selectedPedido.status)} text-white font-semibold px-4 py-2`}>
                         {getStatusIcon(selectedPedido.status)}
-                        <span className="ml-1">{selectedPedido.status}</span>
+                        <span className="ml-2">{selectedPedido.status}</span>
                       </Badge>
                     </div>
                   </div>
                 </div>
 
                 {/* Endereço e Pagamento */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="font-semibold mb-2">Endereço de Entrega</h3>
-                    <p className="text-sm text-muted-foreground">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gray-800 border-2 border-gray-700 hover:border-green-500/40 transition-colors p-6 rounded-xl">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                        <MapPin className="h-5 w-5 text-green-400" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">Endereço de Entrega</h3>
+                    </div>
+                    <p className="text-white font-semibold text-lg">
                       {selectedPedido.enderecoEntrega || 'Não informado'}
                     </p>
                   </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Forma de Pagamento</h3>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="bg-gray-800 border-2 border-gray-700 hover:border-orange-500/40 transition-colors p-6 rounded-xl">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
+                        <CreditCard className="h-5 w-5 text-orange-400" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">Forma de Pagamento</h3>
+                    </div>
+                    <p className="text-white font-semibold text-lg">
                       {selectedPedido.formaPagamento || 'Não informado'}
                     </p>
                   </div>
                 </div>
 
                 {/* Itens do Pedido */}
-                <div>
-                  <h3 className="font-semibold mb-4">Itens do Pedido</h3>
-                  <div className="space-y-3">
-                    {selectedPedido.itens.map((item) => (
-                      <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          {item.pratoImagemUrl && (
+                <div className="bg-gray-800 border-2 border-gray-700 p-6 rounded-xl">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                      <ShoppingCart className="h-5 w-5 text-purple-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">Itens do Pedido</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {selectedPedido.itens.map((item, index) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        className="flex justify-between items-center p-4 bg-gray-700 border border-gray-600 hover:border-primary/40 transition-colors rounded-xl"
+                      >
+                        <div className="flex items-center gap-4">
+                          {item.pratoImagemUrl ? (
                             <img
                               src={item.pratoImagemUrl}
                               alt={item.pratoNome}
-                              className="w-12 h-12 object-cover rounded"
+                              className="w-16 h-16 object-cover rounded-lg border-2 border-gray-600"
                             />
+                          ) : (
+                            <div className="w-16 h-16 bg-gray-600 rounded-lg flex items-center justify-center">
+                              <Package className="h-8 w-8 text-gray-400" />
+                            </div>
                           )}
                           <div>
-                            <p className="font-medium">{item.pratoNome}</p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="font-semibold text-white text-lg">{item.pratoNome}</p>
+                            <p className="text-gray-300 font-medium">
                               {item.quantidade}x {formatCurrency(item.precoUnitario)}
                             </p>
                             {item.observacoes && (
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-sm text-yellow-400 font-medium">
                                 Obs: {item.observacoes}
                               </p>
                             )}
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold">
+                          <p className="text-xl font-bold text-primary">
                             {formatCurrency(item.subtotal)}
                           </p>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
 
                 {/* Total */}
-                <div className="border-t pt-4">
+                <div className="bg-gradient-to-r from-primary/20 to-primary/30 border-2 border-primary/40 bg-gray-800 p-6 rounded-xl">
                   <div className="flex justify-between items-center">
-                    <span className="text-xl font-bold">Total</span>
-                    <span className="text-2xl font-bold text-primary">
+                    <span className="text-2xl font-bold text-white">Total do Pedido</span>
+                    <span className="text-3xl font-bold text-primary">
                       {formatCurrency(selectedPedido.valorTotal)}
                     </span>
                   </div>
@@ -509,9 +553,14 @@ const PedidosAdmin: React.FC = () => {
 
                 {/* Observações */}
                 {selectedPedido.observacoes && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Observações</h3>
-                    <p className="text-sm text-muted-foreground bg-gray-50 p-3 rounded-lg">
+                  <div className="bg-gray-800 border-2 border-yellow-500/30 p-6 rounded-xl">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                        <AlertCircle className="h-5 w-5 text-yellow-400" />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">Observações</h3>
+                    </div>
+                    <p className="text-white font-medium bg-yellow-500/10 p-4 rounded-lg border border-yellow-500/30">
                       {selectedPedido.observacoes}
                     </p>
                   </div>

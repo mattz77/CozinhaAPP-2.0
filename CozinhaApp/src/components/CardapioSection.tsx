@@ -1,4 +1,4 @@
-import { useCategorias, usePratos } from '@/hooks/useApi';
+import { useCategorias, usePratos, useTopPratos } from '@/hooks/useApi';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,20 +10,26 @@ import { SkeletonCard } from '@/components/ui/Skeleton';
 import { motion } from 'framer-motion';
 import { mockCategorias, mockPratos } from '@/data/mockData';
 import { useState, useMemo } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CardapioSection = () => {
   console.log('🔍 CardapioSection: Iniciando componente');
   
+  const { isAuthenticated } = useAuth();
   const { data: categoriasApi, isLoading: categoriasLoading, error: categoriasError } = useCategorias();
   const { data: pratosApi, isLoading: pratosLoading, error: pratosError } = usePratos();
+  const { data: topPratos, isLoading: topPratosLoading } = useTopPratos(3);
   
   console.log('🔍 CardapioSection: Estado dos dados:', {
     categoriasApi: categoriasApi?.length || 0,
     pratosApi: pratosApi?.length || 0,
+    topPratos: topPratos?.length || 0,
     categoriasLoading,
     pratosLoading,
+    topPratosLoading,
     categoriasError: !!categoriasError,
-    pratosError: !!pratosError
+    pratosError: !!pratosError,
+    isAuthenticated
   });
   
   // Estado para filtro de categoria
@@ -44,9 +50,29 @@ const CardapioSection = () => {
       console.log('🔍 CardapioSection: Pratos inválidos, retornando array vazio');
       return [];
     }
+    
+    // Se categoriaSelecionada for -1, mostrar top 3 pratos
+    if (categoriaSelecionada === -1) {
+      if (topPratos && topPratos.length > 0) {
+        // Converter topPratos para o formato esperado pelos pratos
+        return topPratos.map(topPrato => ({
+          id: topPrato.pratoId,
+          nome: topPrato.nome,
+          descricao: `Mais vendido - ${topPrato.quantidadeVendida} unidades vendidas`,
+          preco: topPrato.preco,
+          tempoPreparo: 15, // Valor padrão
+          categoria: { nome: topPrato.categoriaNome },
+          imagemUrl: topPrato.imagemUrl,
+          disponivel: true,
+          categoriaId: 0 // ID temporário para top pratos
+        }));
+      }
+      return [];
+    }
+    
     if (categoriaSelecionada === null) return pratos.slice(0, 3); // Limitar a 3 pratos para "Todas"
     return pratos.filter(prato => prato.categoriaId === categoriaSelecionada).slice(0, 3); // Limitar a 3 pratos por categoria
-  }, [pratos, categoriaSelecionada]);
+  }, [pratos, categoriaSelecionada, topPratos]);
 
   console.log('🔍 CardapioSection: Pratos filtrados:', pratosFiltrados.length);
 
@@ -109,6 +135,8 @@ const CardapioSection = () => {
           categorias={Array.isArray(categorias) ? categorias : []}
           categoriaSelecionada={categoriaSelecionada}
           onCategoriaChange={setCategoriaSelecionada}
+          topPratos={topPratos}
+          isAuthenticated={isAuthenticated}
         />
       </div>
     </section>

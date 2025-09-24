@@ -18,20 +18,37 @@ interface Prato {
   disponivel: boolean;
 }
 
+interface TopPrato {
+  pratoId: number;
+  nome: string;
+  preco: number;
+  imagemUrl?: string;
+  categoriaNome: string;
+  quantidadeVendida: number;
+  valorTotalVendido: number;
+  numeroVendas: number;
+}
+
 interface CardapioCarouselProps {
   pratos: Prato[];
   categorias: { id: number; nome: string }[];
   categoriaSelecionada: number | null;
   onCategoriaChange: (categoriaId: number | null) => void;
+  topPratos?: TopPrato[];
+  isAuthenticated?: boolean;
 }
 
 export const CardapioCarousel: React.FC<CardapioCarouselProps> = ({
   pratos,
   categorias,
   categoriaSelecionada,
-  onCategoriaChange
+  onCategoriaChange,
+  topPratos,
+  isAuthenticated
 }) => {
-  const { isAuthenticated } = useAuth();
+  // Usar isAuthenticated do prop ou do contexto
+  const authContext = useAuth();
+  const userAuthenticated = isAuthenticated ?? authContext.isAuthenticated;
   const { addItem, openCart } = useCartSync();
   const [isLiked, setIsLiked] = useState<{ [key: number]: boolean }>({});
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -56,7 +73,7 @@ export const CardapioCarousel: React.FC<CardapioCarouselProps> = ({
   }, []);
 
   const handleAddToOrder = (prato: Prato) => {
-    if (!isAuthenticated) {
+    if (!userAuthenticated) {
       // Mostrar modal de login ou toast
       console.warn('Usuário deve estar logado para adicionar itens ao carrinho');
       return;
@@ -88,13 +105,24 @@ export const CardapioCarousel: React.FC<CardapioCarouselProps> = ({
           Categorias
         </h3>
         <div className="flex flex-wrap justify-center gap-4">
-          <Badge 
-            variant={categoriaSelecionada === null ? "default" : "outline"}
-            className="px-6 py-3 text-lg border-primary text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-all duration-300 transform hover:scale-105"
-            onClick={() => onCategoriaChange(null)}
-          >
-            Todas
-          </Badge>
+          {/* Mostrar "Top 3" se houver dados de top pratos, senão mostrar "Todas" */}
+          {topPratos && topPratos.length > 0 ? (
+            <Badge 
+              variant={categoriaSelecionada === -1 ? "default" : "outline"}
+              className="px-6 py-3 text-lg border-primary text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-all duration-300 transform hover:scale-105"
+              onClick={() => onCategoriaChange(-1)}
+            >
+              🔥 Top 3
+            </Badge>
+          ) : (
+            <Badge 
+              variant={categoriaSelecionada === null ? "default" : "outline"}
+              className="px-6 py-3 text-lg border-primary text-primary hover:bg-primary hover:text-primary-foreground cursor-pointer transition-all duration-300 transform hover:scale-105"
+              onClick={() => onCategoriaChange(null)}
+            >
+              Todas
+            </Badge>
+          )}
           {categorias?.map((categoria) => (
             <Badge 
               key={categoria.id} 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Clock, DollarSign, Star, Heart, ShoppingCart } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCartSync } from '@/hooks/useCartSync';
+import { SimpleCartAnimation } from './SimpleCartAnimation';
 
 interface PratoCardProps {
   prato: {
@@ -26,6 +27,9 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
   const { addItem, openCart } = useCartSync();
   const [isLiked, setIsLiked] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const cartButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleAddToOrder = () => {
     if (!isAuthenticated) {
@@ -33,6 +37,11 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
       return;
     }
     
+    console.log('🎯 PratoCard: Iniciando animação para', prato.nome);
+    // Iniciar animação
+    setIsAnimating(true);
+    
+    // Adicionar item imediatamente
     addItem({
       id: prato.id,
       nome: prato.nome,
@@ -40,8 +49,32 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
       imagemUrl: prato.imagemUrl,
       categoria: prato.categoria
     });
-    
-    openCart();
+  };
+
+  const handleAnimationComplete = () => {
+    setIsAnimating(false);
+  };
+
+  const getCartButtonPosition = () => {
+    if (cartButtonRef.current) {
+      const rect = cartButtonRef.current.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+    return { x: window.innerWidth - 100, y: 100 };
+  };
+
+  const getStartPosition = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+    return { x: 0, y: 0 };
   };
 
   return (
@@ -259,6 +292,7 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
               whileTap={{ scale: 0.98 }}
             >
               <Button 
+                ref={buttonRef}
                 className="w-full font-elegant transition-all duration-300 relative overflow-hidden group"
                 style={{
                   background: prato.disponivel 
@@ -299,6 +333,16 @@ export const PratoCard: React.FC<PratoCardProps> = ({ prato, index }) => {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Animação de adição ao carrinho */}
+      <SimpleCartAnimation
+        isVisible={isAnimating}
+        onComplete={handleAnimationComplete}
+        startPosition={getStartPosition()}
+        endPosition={getCartButtonPosition()}
+        itemName={prato.nome}
+        itemImage={prato.imagemUrl}
+      />
     </motion.div>
   );
 };
