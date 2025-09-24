@@ -265,6 +265,7 @@ public class AuthService : IAuthService
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Name, user.NomeCompleto),
             new(ClaimTypes.Email, user.Email ?? ""),
+            new("sub", user.Id), // Adicionar claim "sub" para compatibilidade com JWT
             new("nome_completo", user.NomeCompleto),
             new("avatar_url", user.AvatarUrl ?? ""),
             new("ultimo_login", user.UltimoLogin?.ToString("O") ?? "")

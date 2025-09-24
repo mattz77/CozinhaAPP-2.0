@@ -82,6 +82,27 @@ builder.Services.AddAuthentication(options =>
     var requireHttps = securityConfig.GetValue<bool>("RequireHttps");
     options.RequireHttpsMetadata = requireHttps;
     options.SaveToken = true;
+    
+    // Adicionar eventos para debug
+    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"❌ JWT Authentication Failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine($"✅ JWT Token Validated for user: {context.Principal?.Identity?.Name}");
+            return Task.CompletedTask;
+        },
+        OnMessageReceived = context =>
+        {
+            Console.WriteLine($"🔍 JWT Message Received: {context.Request.Path}");
+            return Task.CompletedTask;
+        }
+    };
+    
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,

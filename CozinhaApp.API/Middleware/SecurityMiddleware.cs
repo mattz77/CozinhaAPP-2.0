@@ -26,6 +26,14 @@ public class SecurityMiddleware
     {
         try
         {
+            // Log da requisição
+            var path = context.Request.Path.Value;
+            var method = context.Request.Method;
+            var authorization = context.Request.Headers["Authorization"].FirstOrDefault();
+            
+            _logger.LogInformation($"🔍 SecurityMiddleware: {method} {path}");
+            _logger.LogInformation($"🔍 SecurityMiddleware: Authorization header: {authorization?.Substring(0, Math.Min(20, authorization?.Length ?? 0))}...");
+
             // Validação de origem (deve ser feita antes de qualquer processamento)
             var originValid = await ValidateOrigin(context);
             if (!originValid)

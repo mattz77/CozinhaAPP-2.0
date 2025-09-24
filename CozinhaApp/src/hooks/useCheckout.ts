@@ -28,6 +28,32 @@ export const useCheckout = () => {
     setIsProcessing(true);
 
     try {
+      // Verificar token antes de fazer a requisição
+      const token = sessionStorage.getItem('authToken');
+      console.log('🔑 useCheckout: Token presente:', !!token);
+      console.log('🔑 useCheckout: Token valor:', token ? token.substring(0, 20) + '...' : 'null');
+      console.log('👤 useCheckout: Usuário:', user?.nomeCompleto, user?.email);
+      console.log('👤 useCheckout: isAuthenticated:', isAuthenticated);
+      
+      // Verificar se o token está válido
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado. Faça login novamente.');
+      }
+      
+      // Verificar se o token contém o claim "sub" (userId)
+      try {
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        console.log('🔍 useCheckout: Token payload:', tokenPayload);
+        console.log('🔍 useCheckout: Token sub claim:', tokenPayload.sub);
+        
+        if (!tokenPayload.sub) {
+          throw new Error('Token inválido: claim "sub" não encontrado');
+        }
+      } catch (error) {
+        console.error('❌ useCheckout: Erro ao decodificar token:', error);
+        throw new Error('Token de autenticação inválido. Faça login novamente.');
+      }
+
       // Converter itens do carrinho para formato de pedido
       const itensPedido: ItemPedidoCriacao[] = items.map(item => ({
         pratoId: item.id,

@@ -9,6 +9,8 @@ import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
 import Configurations from "./pages/Configurations";
 import Pedidos from "./pages/Pedidos";
+import MeusPedidos from "./pages/MeusPedidos";
+import PedidosAdmin from "./pages/PedidosAdmin";
 import NotFound from "./pages/NotFound";
 
 // Configuração do React Query
@@ -43,6 +45,8 @@ const App = () => {
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/configurations" element={<Configurations />} />
                 <Route path="/pedidos" element={<Pedidos />} />
+                <Route path="/meus-pedidos" element={<MeusPedidos />} />
+                <Route path="/pedidos-admin" element={<PedidosAdmin />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

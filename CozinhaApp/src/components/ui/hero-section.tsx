@@ -155,37 +155,20 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Botões com espaçamento adequado */}
-        <div className="hero-buttons flex flex-col sm:flex-row justify-center items-center">
-          <Button
-            size="lg"
-            className="group relative bg-gradient-to-r from-primary via-yellow-400 to-primary text-primary-foreground font-elegant px-12 py-6 text-lg rounded-2xl shadow-2xl hover:shadow-primary/30 transition-all duration-500 hover:scale-105 overflow-hidden"
-            onClick={scrollToCardapio}
-          >
-            {/* Efeito de brilho animado */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
-            
-            {/* Conteúdo do botão */}
-            <span className="relative z-10 font-semibold tracking-wide">
-              VER CARDÁPIO
-            </span>
-            
-            {/* Efeito de borda brilhante */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary via-yellow-400 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm -z-10"></div>
-          </Button>
-          
+        {/* Botão único com efeitos visuais do botão fazer pedido */}
+        <div className="hero-buttons flex justify-center items-center">
           <Button
             variant="outline"
             size="lg"
             className="group relative border-2 border-primary text-primary hover:text-primary-foreground font-elegant px-12 py-6 text-lg rounded-2xl shadow-2xl hover:shadow-primary/30 transition-all duration-500 hover:scale-105 backdrop-blur-sm bg-white/5 hover:bg-gradient-to-r hover:from-primary hover:to-yellow-400 overflow-hidden"
-            onClick={handleFazerPedido}
+            onClick={scrollToCardapio}
           >
             {/* Efeito de preenchimento animado */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary to-yellow-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></div>
             
             {/* Conteúdo do botão */}
             <span className="relative z-10 font-semibold tracking-wide">
-              FAZER PEDIDO
+              VER CARDÁPIO
             </span>
             
             {/* Ícone de seta animada */}

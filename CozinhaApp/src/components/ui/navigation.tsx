@@ -100,12 +100,13 @@ const Navigation = () => {
 
   // Itens de navegação para usuários autenticados
   const userNavItems = [
-    { label: "MEUS PEDIDOS", href: "/pedidos", isRoute: true },
+    { label: "MEUS PEDIDOS", href: "/meus-pedidos", isRoute: true },
   ];
 
   // Itens de navegação para usuários autenticados (admin)
   const adminNavItems = [
     { label: "DASHBOARD", href: "/dashboard", isRoute: true },
+    { label: "PEDIDOS", href: "/pedidos-admin", isRoute: true },
     { label: "RELATÓRIOS", href: "/reports", isRoute: true },
     { label: "CONFIGURAÇÕES", href: "/configurations", isRoute: true },
   ];
