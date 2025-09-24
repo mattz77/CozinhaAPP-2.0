@@ -583,37 +583,54 @@ export const dashboardService = {
         'Content-Type': 'application/json',
       },
     });
+    
     if (!response.ok) {
       throw new Error('Erro ao buscar estatísticas do dashboard');
     }
     const data = await response.json();
     
-    // Converter PascalCase para camelCase
-    return {
-      totalPratos: data.TotalPratos,
-      pratosDisponiveis: data.PratosDisponiveis,
-      totalCategorias: data.TotalCategorias,
-      totalPedidos: data.TotalPedidos,
-      totalAgendamentos: data.TotalAgendamentos,
-      totalCarrinhos: data.TotalCarrinhos,
-      valorTotalVendas: data.ValorTotalVendas,
-      valorMedioPedido: data.ValorMedioPedido,
-      valorTotalAgendamentos: data.ValorTotalAgendamentos,
-      pedidosPendentes: data.PedidosPendentes,
-      pedidosConfirmados: data.PedidosConfirmados,
-      pedidosPreparando: data.PedidosPreparando,
-      pedidosEntregues: data.PedidosEntregues,
-      pedidosCancelados: data.PedidosCancelados,
-      agendamentosPendentes: data.AgendamentosPendentes,
-      agendamentosConfirmados: data.AgendamentosConfirmados,
-      agendamentosPreparando: data.AgendamentosPreparando,
-      agendamentosProntos: data.AgendamentosProntos,
-      agendamentosEntregues: data.AgendamentosEntregues,
-      agendamentosCancelados: data.AgendamentosCancelados,
-      vendasHoje: data.VendasHoje,
-      vendasEstaSemana: data.VendasEstaSemana,
-      vendasEsteMes: data.VendasEsteMes,
+    // Debug: Log dos dados brutos da API
+    console.log('🔍 API Response Raw Data:', data);
+    console.log('🔍 API Response Keys:', Object.keys(data));
+    console.log('🔍 API Response - totalPratos:', data.totalPratos);
+    console.log('🔍 API Response - totalPedidos:', data.totalPedidos);
+    console.log('🔍 API Response - vendasHoje:', data.vendasHoje);
+    
+    // Os dados já estão em camelCase, não precisamos mapear!
+    // A API está retornando dados em camelCase, não PascalCase
+    const mappedData = {
+      totalPratos: data.totalPratos,
+      pratosDisponiveis: data.pratosDisponiveis,
+      totalCategorias: data.totalCategorias,
+      totalPedidos: data.totalPedidos,
+      totalAgendamentos: data.totalAgendamentos,
+      totalCarrinhos: data.totalCarrinhos,
+      valorTotalVendas: data.valorTotalVendas,
+      valorMedioPedido: data.valorMedioPedido,
+      valorTotalAgendamentos: data.valorTotalAgendamentos,
+      pedidosPendentes: data.pedidosPendentes,
+      pedidosConfirmados: data.pedidosConfirmados,
+      pedidosPreparando: data.pedidosPreparando,
+      pedidosEntregues: data.pedidosEntregues,
+      pedidosCancelados: data.pedidosCancelados,
+      agendamentosPendentes: data.agendamentosPendentes,
+      agendamentosConfirmados: data.agendamentosConfirmados,
+      agendamentosPreparando: data.agendamentosPreparando,
+      agendamentosProntos: data.agendamentosProntos,
+      agendamentosEntregues: data.agendamentosEntregues,
+      agendamentosCancelados: data.agendamentosCancelados,
+      vendasHoje: data.vendasHoje,
+      vendasEstaSemana: data.vendasEstaSemana,
+      vendasEsteMes: data.vendasEsteMes,
     };
+    
+    // Debug: Log dos dados mapeados
+    console.log('🔍 Mapped Data:', mappedData);
+    console.log('🔍 Mapped Data - totalPratos:', mappedData.totalPratos);
+    console.log('🔍 Mapped Data - totalPedidos:', mappedData.totalPedidos);
+    console.log('🔍 Mapped Data - vendasHoje:', mappedData.vendasHoje);
+    
+    return mappedData;
   },
 
   async getSalesChart(token: string, days: number = 30): Promise<SalesChartDto> {

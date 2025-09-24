@@ -160,13 +160,40 @@ export const useCreateCliente = () => {
 export const useDashboardStats = () => {
   const { token, isAuthenticated } = useAuth();
   
-  return useQuery<DashboardStatsDto>({
+  // Debug: Log do estado de autenticação
+  console.log('🔍 useDashboardStats - isAuthenticated:', isAuthenticated);
+  console.log('🔍 useDashboardStats - token:', token ? 'Presente' : 'Ausente');
+  console.log('🔍 useDashboardStats - token value:', token);
+  
+  const query = useQuery<DashboardStatsDto>({
     queryKey: ['dashboard', 'stats'],
-    queryFn: () => dashboardService.getStats(token!),
+    queryFn: () => {
+      console.log('🔍 useDashboardStats - Executando queryFn com token:', token);
+      return dashboardService.getStats(token!);
+    },
     enabled: isAuthenticated && !!token,
     staleTime: 2 * 60 * 1000, // 2 minutos
     refetchInterval: 5 * 60 * 1000, // Atualiza a cada 5 minutos
   });
+  
+  console.log('🔍 useDashboardStats - Query state:', {
+    data: query.data,
+    isLoading: query.isLoading,
+    error: query.error,
+    isSuccess: query.isSuccess,
+    isError: query.isError,
+    enabled: isAuthenticated && !!token
+  });
+  
+  if (query.data) {
+    console.log('🔍 useDashboardStats - Query data details:', {
+      totalPratos: query.data.totalPratos,
+      totalPedidos: query.data.totalPedidos,
+      vendasHoje: query.data.vendasHoje
+    });
+  }
+  
+  return query;
 };
 
 export const useSalesChart = (days: number = 30) => {
