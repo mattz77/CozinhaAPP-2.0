@@ -204,3 +204,6 @@ export interface AgendamentoStatsDto {
   valorTotalAgendamentos: number;
   valorMedioAgendamento: number;
 }
+
+// Exportar tipos do Dashboard
+export * from './dashboard';

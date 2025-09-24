@@ -17,6 +17,14 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { 
+  SalesChart,
+  OrdersChart,
+  StatusPieChart,
+  TrendLineChart,
+  ComparisonChart,
+  RealTimeMetrics
+} from './Charts';
 
 interface DashboardProps {
   className?: string;
@@ -57,15 +65,15 @@ export const Dashboard = ({ className }: DashboardProps) => {
   const statCards = [
     {
       title: "Total de Pratos",
-      value: stats.TotalPratos,
-      change: `${stats.PratosDisponiveis} disponíveis`,
+      value: stats.totalPratos,
+      change: `${stats.pratosDisponiveis} disponíveis`,
       icon: ChefHat,
       color: "text-blue-600",
       bgColor: "bg-blue-100",
     },
     {
       title: "Total de Categorias",
-      value: stats.TotalCategorias,
+      value: stats.totalCategorias,
       change: "Ativas no sistema",
       icon: Package,
       color: "text-green-600",
@@ -73,31 +81,31 @@ export const Dashboard = ({ className }: DashboardProps) => {
     },
     {
       title: "Pedidos Hoje",
-      value: stats.PedidosPendentes + stats.PedidosConfirmados + stats.PedidosPreparando + stats.PedidosEntregues,
-      change: `${stats.PedidosEntregues} entregues`,
+      value: stats.pedidosPendentes + stats.pedidosConfirmados + stats.pedidosPreparando + stats.pedidosEntregues,
+      change: `${stats.pedidosEntregues} entregues`,
       icon: ShoppingCart,
       color: "text-purple-600",
       bgColor: "bg-purple-100",
     },
     {
       title: "Agendamentos",
-      value: stats.TotalAgendamentos,
-      change: `${stats.AgendamentosPendentes} pendentes`,
+      value: stats.totalAgendamentos,
+      change: `${stats.agendamentosPendentes} pendentes`,
       icon: Calendar,
       color: "text-orange-600",
       bgColor: "bg-orange-100",
     },
     {
       title: "Vendas Hoje",
-      value: `R$ ${stats.VendasHoje.toFixed(2)}`,
-      change: `Média: R$ ${stats.ValorMedioPedido.toFixed(2)}`,
+      value: `R$ ${stats.vendasHoje.toFixed(2)}`,
+      change: `Média: R$ ${stats.valorMedioPedido.toFixed(2)}`,
       icon: DollarSign,
       color: "text-emerald-600",
       bgColor: "bg-emerald-100",
     },
     {
       title: "Vendas Esta Semana",
-      value: `R$ ${stats.VendasEstaSemana.toFixed(2)}`,
+      value: `R$ ${stats.vendasEstaSemana.toFixed(2)}`,
       change: `Crescimento semanal`,
       icon: TrendingUp,
       color: "text-cyan-600",
@@ -105,7 +113,7 @@ export const Dashboard = ({ className }: DashboardProps) => {
     },
     {
       title: "Vendas Este Mês",
-      value: `R$ ${stats.VendasEsteMes.toFixed(2)}`,
+      value: `R$ ${stats.vendasEsteMes.toFixed(2)}`,
       change: `Total acumulado`,
       icon: BarChart3,
       color: "text-indigo-600",
@@ -113,7 +121,7 @@ export const Dashboard = ({ className }: DashboardProps) => {
     },
     {
       title: "Total de Carrinhos",
-      value: stats.TotalCarrinhos,
+      value: stats.totalCarrinhos,
       change: "Ativos no sistema",
       icon: Users,
       color: "text-pink-600",
@@ -125,22 +133,22 @@ export const Dashboard = ({ className }: DashboardProps) => {
     {
       title: "Status dos Pedidos",
       data: [
-        { label: "Pendentes", value: stats.PedidosPendentes, color: "bg-yellow-500" },
-        { label: "Confirmados", value: stats.PedidosConfirmados, color: "bg-blue-500" },
-        { label: "Preparando", value: stats.PedidosPreparando, color: "bg-orange-500" },
-        { label: "Entregues", value: stats.PedidosEntregues, color: "bg-green-500" },
-        { label: "Cancelados", value: stats.PedidosCancelados, color: "bg-red-500" },
+        { label: "Pendentes", value: stats.pedidosPendentes, color: "bg-yellow-500" },
+        { label: "Confirmados", value: stats.pedidosConfirmados, color: "bg-blue-500" },
+        { label: "Preparando", value: stats.pedidosPreparando, color: "bg-orange-500" },
+        { label: "Entregues", value: stats.pedidosEntregues, color: "bg-green-500" },
+        { label: "Cancelados", value: stats.pedidosCancelados, color: "bg-red-500" },
       ],
     },
     {
       title: "Status dos Agendamentos",
       data: [
-        { label: "Pendentes", value: stats.AgendamentosPendentes, color: "bg-yellow-500" },
-        { label: "Confirmados", value: stats.AgendamentosConfirmados, color: "bg-blue-500" },
-        { label: "Preparando", value: stats.AgendamentosPreparando, color: "bg-orange-500" },
-        { label: "Prontos", value: stats.AgendamentosProntos, color: "bg-purple-500" },
-        { label: "Entregues", value: stats.AgendamentosEntregues, color: "bg-green-500" },
-        { label: "Cancelados", value: stats.AgendamentosCancelados, color: "bg-red-500" },
+        { label: "Pendentes", value: stats.agendamentosPendentes, color: "bg-yellow-500" },
+        { label: "Confirmados", value: stats.agendamentosConfirmados, color: "bg-blue-500" },
+        { label: "Preparando", value: stats.agendamentosPreparando, color: "bg-orange-500" },
+        { label: "Prontos", value: stats.agendamentosProntos, color: "bg-purple-500" },
+        { label: "Entregues", value: stats.agendamentosEntregues, color: "bg-green-500" },
+        { label: "Cancelados", value: stats.agendamentosCancelados, color: "bg-red-500" },
       ],
     },
   ];
@@ -193,64 +201,31 @@ export const Dashboard = ({ className }: DashboardProps) => {
       {/* Gráfico de Vendas e Top Pratos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de Vendas */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <TrendingUp className="h-5 w-5 mr-2 text-primary" />
-              Vendas por Período
-            </CardTitle>
-            <div className="flex space-x-2">
-              {[7, 30, 90].map((days) => (
-                <Button
-                  key={days}
-                  variant={chartPeriod === days ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setChartPeriod(days)}
-                >
-                  {days} dias
-                </Button>
-              ))}
+        <div className="space-y-4">
+          <div className="flex space-x-2">
+            {[7, 30, 90].map((days) => (
+              <Button
+                key={days}
+                variant={chartPeriod === days ? "default" : "outline"}
+                size="sm"
+                onClick={() => setChartPeriod(days)}
+              >
+                {days} dias
+              </Button>
+            ))}
+          </div>
+          {chartLoading ? (
+            <div className="h-64 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-          </CardHeader>
-          <CardContent>
-            {chartLoading ? (
-              <div className="h-64 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : salesChart ? (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary">
-                    R$ {salesChart.TotalVendas.toFixed(2)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Total de vendas nos últimos {chartPeriod} dias
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <p className="text-lg font-semibold">{salesChart.VendasPorDia.length}</p>
-                    <p className="text-xs text-muted-foreground">Dias com vendas</p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-semibold">R$ {salesChart.MediaDiariaVendas.toFixed(2)}</p>
-                    <p className="text-xs text-muted-foreground">Média diária</p>
-                  </div>
-                </div>
-                {/* Aqui você pode adicionar um gráfico real usando uma biblioteca como Chart.js ou Recharts */}
-                <div className="h-32 bg-muted/20 rounded-lg flex items-center justify-center">
-                  <p className="text-muted-foreground text-sm">
-                    Gráfico de vendas por dia
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="h-64 flex items-center justify-center text-muted-foreground">
-                Nenhum dado de vendas disponível
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          ) : salesChart ? (
+            <SalesChart data={salesChart.vendasPorDia} />
+          ) : (
+            <div className="h-64 flex items-center justify-center text-muted-foreground">
+              Nenhum dado de vendas disponível
+            </div>
+          )}
+        </div>
 
         {/* Top Pratos */}
         <Card>
@@ -344,6 +319,38 @@ export const Dashboard = ({ className }: DashboardProps) => {
           </Card>
         ))}
       </div>
+
+      {/* Seção de Gráficos Avançados */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Gráfico de Status dos Pedidos */}
+        <StatusPieChart 
+          data={statusStats[0].data}
+          title="Status dos Pedidos"
+        />
+
+        {/* Gráfico de Status dos Agendamentos */}
+        <StatusPieChart 
+          data={statusStats[1].data}
+          title="Status dos Agendamentos"
+        />
+      </div>
+
+      {/* Métricas em Tempo Real */}
+      <RealTimeMetrics 
+        vendasHoje={stats.vendasHoje}
+        vendasOntem={stats.vendasHoje * 0.8} // Simulado - em produção viria da API
+        pedidosHoje={stats.pedidosPendentes + stats.pedidosConfirmados + stats.pedidosPreparando + stats.pedidosEntregues}
+        pedidosOntem={Math.floor((stats.pedidosPendentes + stats.pedidosConfirmados + stats.pedidosPreparando + stats.pedidosEntregues) * 0.9)}
+        className="mt-6"
+      />
+
+      {/* Gráfico de Tendências */}
+      {salesChart && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <TrendLineChart data={salesChart.vendasPorDia} />
+          <OrdersChart data={salesChart.vendasPorDia} />
+        </div>
+      )}
     </div>
   );
 };

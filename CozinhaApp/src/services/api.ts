@@ -15,7 +15,12 @@ import {
   CreateAgendamentoDto,
   UpdateAgendamentoDto,
   AgendamentoResponseDto,
-  AgendamentoStatsDto
+  AgendamentoStatsDto,
+  DashboardStatsDto,
+  SalesChartDto,
+  TopPratoDto,
+  CategoriaDetailStatsDto,
+  PerformanceReportDto
 } from '../types';
 import { API_CONFIG } from '../constants/api';
 
@@ -581,10 +586,37 @@ export const dashboardService = {
     if (!response.ok) {
       throw new Error('Erro ao buscar estatísticas do dashboard');
     }
-    return response.json();
+    const data = await response.json();
+    
+    // Converter PascalCase para camelCase
+    return {
+      totalPratos: data.TotalPratos,
+      pratosDisponiveis: data.PratosDisponiveis,
+      totalCategorias: data.TotalCategorias,
+      totalPedidos: data.TotalPedidos,
+      totalAgendamentos: data.TotalAgendamentos,
+      totalCarrinhos: data.TotalCarrinhos,
+      valorTotalVendas: data.ValorTotalVendas,
+      valorMedioPedido: data.ValorMedioPedido,
+      valorTotalAgendamentos: data.ValorTotalAgendamentos,
+      pedidosPendentes: data.PedidosPendentes,
+      pedidosConfirmados: data.PedidosConfirmados,
+      pedidosPreparando: data.PedidosPreparando,
+      pedidosEntregues: data.PedidosEntregues,
+      pedidosCancelados: data.PedidosCancelados,
+      agendamentosPendentes: data.AgendamentosPendentes,
+      agendamentosConfirmados: data.AgendamentosConfirmados,
+      agendamentosPreparando: data.AgendamentosPreparando,
+      agendamentosProntos: data.AgendamentosProntos,
+      agendamentosEntregues: data.AgendamentosEntregues,
+      agendamentosCancelados: data.AgendamentosCancelados,
+      vendasHoje: data.VendasHoje,
+      vendasEstaSemana: data.VendasEstaSemana,
+      vendasEsteMes: data.VendasEsteMes,
+    };
   },
 
-  async getSalesChart(token: string, days: number = 30): Promise<any> {
+  async getSalesChart(token: string, days: number = 30): Promise<SalesChartDto> {
     const response = await fetch(`${API_BASE_URL}/dashboard/sales-chart?days=${days}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -597,7 +629,7 @@ export const dashboardService = {
     return response.json();
   },
 
-  async getTopPratos(token: string, limit: number = 10): Promise<any[]> {
+  async getTopPratos(token: string, limit: number = 10): Promise<TopPratoDto[]> {
     const response = await fetch(`${API_BASE_URL}/dashboard/top-pratos?limit=${limit}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -610,7 +642,7 @@ export const dashboardService = {
     return response.json();
   },
 
-  async getCategoriasStats(token: string): Promise<any[]> {
+  async getCategoriasStats(token: string): Promise<CategoriaDetailStatsDto[]> {
     const response = await fetch(`${API_BASE_URL}/dashboard/categorias-stats`, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -623,7 +655,7 @@ export const dashboardService = {
     return response.json();
   },
 
-  async getPerformanceReport(token: string, startDate?: string, endDate?: string): Promise<any> {
+  async getPerformanceReport(token: string, startDate?: string, endDate?: string): Promise<PerformanceReportDto> {
     let url = `${API_BASE_URL}/dashboard/performance`;
     const params = new URLSearchParams();
     if (startDate) params.append('startDate', startDate);

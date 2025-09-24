@@ -13,7 +13,12 @@ import {
   CreateCategoriaDto, 
   CreatePratoDto, 
   CreatePedidoDto, 
-  CreateClienteDto 
+  CreateClienteDto,
+  DashboardStatsDto,
+  SalesChartDto,
+  TopPratoDto,
+  CategoriaDetailStatsDto,
+  PerformanceReportDto
 } from '../types';
 
 // Hooks para Categorias
@@ -155,7 +160,7 @@ export const useCreateCliente = () => {
 export const useDashboardStats = () => {
   const { token, isAuthenticated } = useAuth();
   
-  return useQuery({
+  return useQuery<DashboardStatsDto>({
     queryKey: ['dashboard', 'stats'],
     queryFn: () => dashboardService.getStats(token!),
     enabled: isAuthenticated && !!token,
@@ -167,7 +172,7 @@ export const useDashboardStats = () => {
 export const useSalesChart = (days: number = 30) => {
   const { token, isAuthenticated } = useAuth();
   
-  return useQuery({
+  return useQuery<SalesChartDto>({
     queryKey: ['dashboard', 'sales-chart', days],
     queryFn: () => dashboardService.getSalesChart(token!, days),
     enabled: isAuthenticated && !!token,
@@ -178,11 +183,33 @@ export const useSalesChart = (days: number = 30) => {
 export const useTopPratos = (limit: number = 10) => {
   const { token, isAuthenticated } = useAuth();
   
-  return useQuery({
+  return useQuery<TopPratoDto[]>({
     queryKey: ['dashboard', 'top-pratos', limit],
     queryFn: () => dashboardService.getTopPratos(token!, limit),
     enabled: isAuthenticated && !!token,
     staleTime: 10 * 60 * 1000, // 10 minutos
+  });
+};
+
+export const useCategoriasStats = () => {
+  const { token, isAuthenticated } = useAuth();
+  
+  return useQuery<CategoriaDetailStatsDto[]>({
+    queryKey: ['dashboard', 'categorias-stats'],
+    queryFn: () => dashboardService.getCategoriasStats(token!),
+    enabled: isAuthenticated && !!token,
+    staleTime: 15 * 60 * 1000, // 15 minutos
+  });
+};
+
+export const usePerformanceReport = (startDate?: string, endDate?: string) => {
+  const { token, isAuthenticated } = useAuth();
+  
+  return useQuery<PerformanceReportDto>({
+    queryKey: ['dashboard', 'performance', startDate, endDate],
+    queryFn: () => dashboardService.getPerformanceReport(token!, startDate, endDate),
+    enabled: isAuthenticated && !!token,
+    staleTime: 5 * 60 * 1000, // 5 minutos
   });
 };
 
