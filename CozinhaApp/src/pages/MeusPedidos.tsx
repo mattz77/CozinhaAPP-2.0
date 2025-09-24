@@ -258,117 +258,193 @@ const MeusPedidos: React.FC = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
             onClick={() => setShowDetails(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="bg-gray-900 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden border border-gray-700"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">
-                  Pedido #{selectedPedido.numeroPedido}
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDetails(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Status e Informações */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Header com gradiente */}
+              <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-black/10"></div>
+                <div className="relative flex justify-between items-center">
                   <div>
-                    <h3 className="font-semibold mb-2">Status</h3>
-                    <Badge className={getStatusColor(selectedPedido.status)}>
-                      {getStatusIcon(selectedPedido.status)}
-                      <span className="ml-1">{selectedPedido.status}</span>
-                    </Badge>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Data do Pedido</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h2 className="text-3xl font-bold mb-2">
+                      Pedido #{selectedPedido.numeroPedido}
+                    </h2>
+                    <p className="text-white/90 text-lg">
                       {formatDate(selectedPedido.dataPedido)}
                     </p>
                   </div>
-                </div>
-
-                {/* Endereço e Pagamento */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="font-semibold mb-2">Endereço de Entrega</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedPedido.enderecoEntrega || 'Não informado'}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Forma de Pagamento</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedPedido.formaPagamento || 'Não informado'}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <Badge className="bg-white/20 text-white border-white/30 text-lg px-4 py-2">
+                      {getStatusIcon(selectedPedido.status)}
+                      <span className="ml-2">{selectedPedido.status}</span>
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowDetails(false)}
+                      className="text-white hover:bg-white/20 rounded-full p-2"
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
                   </div>
                 </div>
+              </div>
 
-                {/* Itens do Pedido */}
-                <div>
-                  <h3 className="font-semibold mb-4">Itens do Pedido</h3>
-                  <div className="space-y-3">
-                    {selectedPedido.itens.map((item) => (
-                      <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          {item.pratoImagemUrl && (
+              {/* Conteúdo */}
+              <div className="p-6 max-h-[calc(95vh-120px)] overflow-y-auto">
+                <div className="space-y-8">
+                  {/* Informações Principais */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card className="p-4 bg-gray-800 border-2 border-gray-700 hover:border-primary/40 transition-colors">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-blue-500/20 rounded-lg">
+                          <MapPin className="h-5 w-5 text-blue-400" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-white">Endereço de Entrega</h3>
+                      </div>
+                      <p className="text-gray-300">
+                        {selectedPedido.enderecoEntrega || 'Não informado'}
+                      </p>
+                    </Card>
+
+                    <Card className="p-4 bg-gray-800 border-2 border-gray-700 hover:border-primary/40 transition-colors">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-green-500/20 rounded-lg">
+                          <CreditCard className="h-5 w-5 text-green-400" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-white">Forma de Pagamento</h3>
+                      </div>
+                      <p className="text-gray-300">
+                        {selectedPedido.formaPagamento || 'Não informado'}
+                      </p>
+                    </Card>
+                  </div>
+
+                  {/* Itens do Pedido */}
+                  <div>
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-2 bg-orange-500/20 rounded-lg">
+                        <Package className="h-5 w-5 text-orange-400" />
+                      </div>
+                      <h3 className="font-semibold text-xl text-white">Itens do Pedido</h3>
+                      <Badge variant="outline" className="ml-auto bg-gray-700 text-gray-300 border-gray-600">
+                        {selectedPedido.itens.length} item(s)
+                      </Badge>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      {selectedPedido.itens.map((item, index) => (
+                        <motion.div
+                          key={item.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-center gap-4 p-4 bg-gray-800 rounded-xl hover:bg-gray-750 transition-colors border border-gray-700"
+                        >
+                          {item.pratoImagemUrl ? (
                             <img
                               src={item.pratoImagemUrl}
                               alt={item.pratoNome}
-                              className="w-12 h-12 object-cover rounded"
+                              className="w-16 h-16 object-cover rounded-lg shadow-md"
                             />
+                          ) : (
+                            <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center">
+                              <Package className="h-8 w-8 text-gray-400" />
+                            </div>
                           )}
-                          <div>
-                            <p className="font-medium">{item.pratoNome}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {item.quantidade}x {formatCurrency(item.precoUnitario)}
-                            </p>
+                          
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-lg mb-1 text-white">{item.pratoNome}</h4>
+                            <div className="flex items-center gap-4 text-sm text-gray-300">
+                              <span className="flex items-center gap-1">
+                                <Package className="h-4 w-4" />
+                                {item.quantidade}x
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <CreditCard className="h-4 w-4" />
+                                {formatCurrency(item.precoUnitario)} cada
+                              </span>
+                            </div>
                             {item.observacoes && (
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-gray-400 mt-1 italic">
                                 Obs: {item.observacoes}
                               </p>
                             )}
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold">
-                            {formatCurrency(item.subtotal)}
-                          </p>
-                        </div>
+                          
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-primary">
+                              {formatCurrency(item.subtotal)}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Resumo Financeiro */}
+                  <Card className="p-6 bg-gradient-to-r from-primary/20 to-primary/30 border-2 border-primary/40 bg-gray-800">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-2xl font-bold text-white">Total do Pedido</h3>
+                        <p className="text-gray-300">Incluindo todos os itens</p>
                       </div>
-                    ))}
+                      <div className="text-right">
+                        <p className="text-4xl font-bold text-primary">
+                          {formatCurrency(selectedPedido.valorTotal)}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* Observações */}
+                  {selectedPedido.observacoes && (
+                    <Card className="p-6 border-2 border-yellow-500/30 bg-yellow-500/10 bg-gray-800">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-yellow-500/20 rounded-lg">
+                          <AlertCircle className="h-5 w-5 text-yellow-400" />
+                        </div>
+                        <h3 className="font-semibold text-lg text-white">Observações Especiais</h3>
+                      </div>
+                      <p className="text-gray-300 italic">
+                        "{selectedPedido.observacoes}"
+                      </p>
+                    </Card>
+                  )}
+
+                  {/* Ações */}
+                  <div className="flex justify-center gap-4 pt-4">
+                    {canCancel(selectedPedido.status) && (
+                      <Button
+                        variant="destructive"
+                        size="lg"
+                        onClick={() => {
+                          setShowDetails(false);
+                          handleCancelPedido(selectedPedido.id);
+                        }}
+                        className="px-8 bg-red-600 hover:bg-red-700 text-white border-red-600"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancelar Pedido
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => setShowDetails(false)}
+                      className="px-8 bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
+                    >
+                      Fechar
+                    </Button>
                   </div>
                 </div>
-
-                {/* Total */}
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xl font-bold">Total</span>
-                    <span className="text-2xl font-bold text-primary">
-                      {formatCurrency(selectedPedido.valorTotal)}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Observações */}
-                {selectedPedido.observacoes && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Observações</h3>
-                    <p className="text-sm text-muted-foreground bg-gray-50 p-3 rounded-lg">
-                      {selectedPedido.observacoes}
-                    </p>
-                  </div>
-                )}
               </div>
             </motion.div>
           </motion.div>

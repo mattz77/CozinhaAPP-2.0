@@ -54,11 +54,45 @@ public class PedidosController : ControllerBase
     {
         try
         {
+            _loggingService.LogApi($"🚀 GetMeusPedidos: Iniciando busca de pedidos");
+            _loggingService.LogApi($"🚀 GetMeusPedidos: User.Identity.Name: {User.Identity?.Name}");
+            _loggingService.LogApi($"🚀 GetMeusPedidos: User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
+            
+            // Log de todas as claims
+            _loggingService.LogApi($"🔍 GetMeusPedidos: Todas as claims disponíveis:");
+            foreach (var claim in User.Claims)
+            {
+                _loggingService.LogApi($"🔍 GetMeusPedidos: Claim - {claim.Type}: {claim.Value}");
+            }
+
+            // Tentar extrair userId - primeiro 'sub', depois 'NameIdentifier'
             var userId = User.FindFirst("sub")?.Value;
+            _loggingService.LogApi($"🔍 GetMeusPedidos: Tentando extrair 'sub' claim: {userId}");
+            
             if (string.IsNullOrEmpty(userId))
             {
+                _loggingService.LogApi($"🔍 GetMeusPedidos: 'sub' não encontrado, tentando 'NameIdentifier'...");
+                var nameIdentifierClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                _loggingService.LogApi($"🔍 GetMeusPedidos: NameIdentifier claim encontrada: {nameIdentifierClaim != null}");
+                if (nameIdentifierClaim != null)
+                {
+                    userId = nameIdentifierClaim.Value;
+                    _loggingService.LogApi($"🔍 GetMeusPedidos: 'NameIdentifier' valor: {userId}");
+                }
+                else
+                {
+                    _loggingService.LogApi($"🔍 GetMeusPedidos: 'NameIdentifier' não encontrada");
+                }
+            }
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _loggingService.LogApi($"❌ GetMeusPedidos: Usuário não identificado - nem 'sub' nem 'NameIdentifier' encontrados");
+                _loggingService.LogApi($"❌ GetMeusPedidos: Claims disponíveis: {string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}"))}");
                 return Unauthorized("Usuário não identificado");
             }
+
+            _loggingService.LogApi($"✅ GetMeusPedidos: Usuário identificado: {userId}");
 
             var cliente = await _context.Clientes
                 .FirstOrDefaultAsync(c => c.UserId == userId);
