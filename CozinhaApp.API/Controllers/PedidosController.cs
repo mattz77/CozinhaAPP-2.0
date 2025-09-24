@@ -28,6 +28,26 @@ public class PedidosController : ControllerBase
     }
 
     /// <summary>
+    /// Método helper para extrair userId do token JWT
+    /// </summary>
+    private string? GetUserId()
+    {
+        // Tentar extrair userId - primeiro 'sub', depois 'NameIdentifier'
+        var userId = User.FindFirst("sub")?.Value;
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            var nameIdentifierClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (nameIdentifierClaim != null)
+            {
+                userId = nameIdentifierClaim.Value;
+            }
+        }
+
+        return userId;
+    }
+
+    /// <summary>
     /// Lista todos os pedidos (apenas Admin e Manager)
     /// </summary>
     [HttpGet]
@@ -54,45 +74,11 @@ public class PedidosController : ControllerBase
     {
         try
         {
-            _loggingService.LogApi($"🚀 GetMeusPedidos: Iniciando busca de pedidos");
-            _loggingService.LogApi($"🚀 GetMeusPedidos: User.Identity.Name: {User.Identity?.Name}");
-            _loggingService.LogApi($"🚀 GetMeusPedidos: User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
-            
-            // Log de todas as claims
-            _loggingService.LogApi($"🔍 GetMeusPedidos: Todas as claims disponíveis:");
-            foreach (var claim in User.Claims)
-            {
-                _loggingService.LogApi($"🔍 GetMeusPedidos: Claim - {claim.Type}: {claim.Value}");
-            }
-
-            // Tentar extrair userId - primeiro 'sub', depois 'NameIdentifier'
-            var userId = User.FindFirst("sub")?.Value;
-            _loggingService.LogApi($"🔍 GetMeusPedidos: Tentando extrair 'sub' claim: {userId}");
-            
+            var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
             {
-                _loggingService.LogApi($"🔍 GetMeusPedidos: 'sub' não encontrado, tentando 'NameIdentifier'...");
-                var nameIdentifierClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-                _loggingService.LogApi($"🔍 GetMeusPedidos: NameIdentifier claim encontrada: {nameIdentifierClaim != null}");
-                if (nameIdentifierClaim != null)
-                {
-                    userId = nameIdentifierClaim.Value;
-                    _loggingService.LogApi($"🔍 GetMeusPedidos: 'NameIdentifier' valor: {userId}");
-                }
-                else
-                {
-                    _loggingService.LogApi($"🔍 GetMeusPedidos: 'NameIdentifier' não encontrada");
-                }
-            }
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                _loggingService.LogApi($"❌ GetMeusPedidos: Usuário não identificado - nem 'sub' nem 'NameIdentifier' encontrados");
-                _loggingService.LogApi($"❌ GetMeusPedidos: Claims disponíveis: {string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}"))}");
                 return Unauthorized("Usuário não identificado");
             }
-
-            _loggingService.LogApi($"✅ GetMeusPedidos: Usuário identificado: {userId}");
 
             var cliente = await _context.Clientes
                 .FirstOrDefaultAsync(c => c.UserId == userId);
@@ -146,7 +132,7 @@ public class PedidosController : ControllerBase
             }
 
             // Verificar se o usuário pode acessar este pedido
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = GetUserId();
             var isAdminOrManager = User.IsInRole("Admin") || User.IsInRole("Manager");
             
             if (!isAdminOrManager)
@@ -184,7 +170,7 @@ public class PedidosController : ControllerBase
             }
 
             // Verificar se o usuário pode acessar este pedido
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = GetUserId();
             var isAdminOrManager = User.IsInRole("Admin") || User.IsInRole("Manager");
             
             if (!isAdminOrManager)
@@ -223,47 +209,11 @@ public class PedidosController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            _loggingService.LogApi($"🚀 CriarPedido: Iniciando criação de pedido");
-            _loggingService.LogApi($"🚀 CriarPedido: Request recebido: {System.Text.Json.JsonSerializer.Serialize(criarPedidoDto)}");
-            _loggingService.LogApi($"🚀 CriarPedido: User.Identity.Name: {User.Identity?.Name}");
-            _loggingService.LogApi($"🚀 CriarPedido: User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
-            _loggingService.LogApi($"🚀 CriarPedido: User.Identity.AuthenticationType: {User.Identity?.AuthenticationType}");
-            
-            // Log de todas as claims
-            _loggingService.LogApi($"🔍 CriarPedido: Todas as claims disponíveis:");
-            foreach (var claim in User.Claims)
-            {
-                _loggingService.LogApi($"🔍 CriarPedido: Claim - {claim.Type}: {claim.Value}");
-            }
-
-            var userId = User.FindFirst("sub")?.Value;
-            _loggingService.LogApi($"🔍 CriarPedido: Tentando extrair 'sub' claim: {userId}");
-            
-            // Se não encontrar 'sub', tentar 'NameIdentifier'
+            var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
             {
-                _loggingService.LogApi($"🔍 CriarPedido: 'sub' não encontrado, tentando 'NameIdentifier'...");
-                var nameIdentifierClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-                _loggingService.LogApi($"🔍 CriarPedido: NameIdentifier claim encontrada: {nameIdentifierClaim != null}");
-                if (nameIdentifierClaim != null)
-                {
-                    userId = nameIdentifierClaim.Value;
-                    _loggingService.LogApi($"🔍 CriarPedido: 'NameIdentifier' valor: {userId}");
-                }
-                else
-                {
-                    _loggingService.LogApi($"🔍 CriarPedido: 'NameIdentifier' não encontrada");
-                }
-            }
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                _loggingService.LogApi($"❌ CriarPedido: Usuário não identificado - nem 'sub' nem 'NameIdentifier' encontrados");
-                _loggingService.LogApi($"❌ CriarPedido: Claims disponíveis: {string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}"))}");
                 return Unauthorized("Usuário não identificado");
             }
-
-            _loggingService.LogApi($"✅ CriarPedido: Usuário identificado: {userId}");
 
             var cliente = await _context.Clientes
                 .FirstOrDefaultAsync(c => c.UserId == userId);
@@ -328,7 +278,12 @@ public class PedidosController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Usuário não identificado");
+            }
+            
             var isAdminOrManager = User.IsInRole("Admin") || User.IsInRole("Manager");
             
             if (!isAdminOrManager)
