@@ -362,20 +362,36 @@ As configurações estão em `appsettings.Production.json`:
 - **Builds Automatizados** - Backend (.NET) e Frontend (Vite) funcionais
 - **Sistema de Roles** - Admin, Manager, Usuario com permissões diferenciadas ✅
 - **Páginas Administrativas** - Dashboard, Reports, Configurations (100% concluído) ✅
+- **Sistema de Pedidos** - Fluxo completo de pedidos (100% concluído) ✅
+  - ✅ Páginas de pedidos do usuário (`/meus-pedidos`)
+  - ✅ Página administrativa de pedidos (`/pedidos-admin`)
+  - ✅ Integração com carrinho e checkout
+  - ✅ Visualização detalhada com tema escuro
+  - ✅ Cancelamento de pedidos funcionando
+  - ✅ Autenticação JWT corrigida em todos os endpoints
 - **Melhorias de UX** - Animações, loading states, feedback visual (100% concluído) ✅
 - **Sistema de Navegação** - Rotas protegidas e navegação intuitiva (100% concluído) ✅
 - **Gerenciamento de Usuários** - CRUD completo com interface administrativa ✅
 - **Controle de Acesso** - Páginas restritas por tipo de usuário ✅
 - **CORS e SecurityMiddleware** - Configuração otimizada para múltiplas portas ✅
 
+### ✅ Recém Concluído
+- **Sistema de Pedidos** - Fluxo completo de pedidos (100% - CONCLUÍDO) ✅
+  - ✅ Páginas de pedidos do usuário (`/meus-pedidos`)
+  - ✅ Página administrativa de pedidos (`/pedidos-admin`)
+  - ✅ Integração com carrinho e checkout
+  - ✅ Visualização detalhada de pedidos com tema escuro
+  - ✅ Cancelamento de pedidos funcionando
+  - ✅ Autenticação JWT corrigida em todos os endpoints
+  - ✅ Sistema de debug abrangente implementado
+
 ### 🚧 Em Desenvolvimento (Progresso Atual)
-- **Sistema de Pedidos** - Fluxo completo de pedidos (0% - Próxima prioridade)
 - **Dashboard Administrativo** - Métricas e controle de vendas (0% - Próxima prioridade)
 
 ### 📈 Próximos Passos
 
 #### 🎯 Funcionalidades Prioritárias (Próximas 2-4 semanas)
-- [ ] **Sistema de Pedidos** - Finalizar fluxo completo de pedidos
+- [x] **Sistema de Pedidos** - Finalizar fluxo completo de pedidos ✅
 - [ ] **Dashboard Administrativo** - Métricas e controle de vendas
 - [ ] **Sistema de Pagamento** - Integração PIX/Cartão
 - [ ] **Relatórios e Analytics** - Dados de vendas e performance
@@ -403,7 +419,7 @@ As configurações estão em `appsettings.Production.json`:
 
 ### 📊 Progresso Geral do Projeto
 ```
-████████████████████████████████████████ 95% Concluído
+████████████████████████████████████████ 98% Concluído
 
 ✅ Base do Sistema (100%)     ████████████████████████████████████
 ✅ Autenticação (100%)        ████████████████████████████████████
@@ -415,7 +431,8 @@ As configurações estão em `appsettings.Production.json`:
 ✅ Sistema de Roles (100%)    ████████████████████████████████████
 ✅ Gerenciamento Usuários (100%) ████████████████████████████████████
 ✅ Segurança Avançada (100%)  ████████████████████████████████████
-⏳ Sistema Pedidos (0%)       ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+✅ Sistema Pedidos (100%)     ████████████████████████████████████
+⏳ Dashboard Admin (0%)       ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ⏳ Pagamentos (0%)           ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ⏳ Relatórios (0%)            ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ```
