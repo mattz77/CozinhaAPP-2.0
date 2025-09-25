@@ -11,6 +11,9 @@ export const useCartSync = () => {
   const lastUpdateRef = useRef<number>(0);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Debug log para verificar se o hook está sendo chamado
+  console.log('🔄 useCartSync: Hook chamado, cart.isOpen:', cart.isOpen);
+
   // Debounce para evitar atualizações muito frequentes
   const debouncedUpdate = () => {
     if (debounceTimeoutRef.current) {

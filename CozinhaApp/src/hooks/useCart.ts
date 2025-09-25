@@ -269,12 +269,13 @@ export const useCart = () => {
   }, [isAuthenticated, token]);
 
   const toggleCart = useCallback(() => {
+    console.log('🛒 useCart: toggleCart chamado, isOpen atual:', isOpen);
     setIsOpen(prev => {
       const newValue = !prev;
       console.log('🛒 useCart: toggleCart - mudando isOpen de', prev, 'para', newValue);
       return newValue;
     });
-  }, []);
+  }, [isOpen]);
 
   const openCart = useCallback(() => {
     setIsOpen(true);
