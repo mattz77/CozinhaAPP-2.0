@@ -20,6 +20,14 @@ export const FloatingCart: React.FC<FloatingCartProps> = ({ cartButtonRef }) => 
   const [showMiniCart, setShowMiniCart] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
+  // Debug log para verificar se o hook está funcionando
+  console.log('🛒 FloatingCart: Hook useCartSync retornou:', {
+    isOpen,
+    totalItems,
+    itemsLength: items.length,
+    toggleCartType: typeof toggleCart
+  });
+
   // Mostrar carrinho flutuante apenas na página do cardápio
   useEffect(() => {
     const isCardapioPage = location.pathname === '/' || location.pathname.includes('cardapio');
@@ -33,6 +41,9 @@ export const FloatingCart: React.FC<FloatingCartProps> = ({ cartButtonRef }) => 
     setIsVisible(shouldShow);
   }, [location.pathname, isAuthenticated]);
 
+  // Debug log para verificar se o componente está sendo renderizado
+  console.log('🛒 FloatingCart: Componente renderizado, isVisible:', isVisible, 'isAuthenticated:', isAuthenticated, 'pathname:', location.pathname);
+
   // Atualizar referência do botão
   useEffect(() => {
     if (cartButtonRef && buttonRef.current) {
@@ -42,9 +53,13 @@ export const FloatingCart: React.FC<FloatingCartProps> = ({ cartButtonRef }) => 
 
   if (!isVisible) return null;
 
-  const handleCartClick = () => {
+  const handleCartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     console.log('🛒 FloatingCart: Botão clicado, totalItems:', totalItems);
     console.log('🛒 FloatingCart: Estado atual do carrinho:', { isOpen, totalItems, items: items.length });
+    console.log('🛒 FloatingCart: toggleCart function:', typeof toggleCart);
     
     // Sempre fechar o mini carrinho primeiro
     if (showMiniCart) {
@@ -92,11 +107,16 @@ export const FloatingCart: React.FC<FloatingCartProps> = ({ cartButtonRef }) => 
           <Button
             ref={buttonRef}
             onClick={handleCartClick}
-            className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl border-2 border-white/20 backdrop-blur-sm"
+            className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl border-2 border-white/20 backdrop-blur-sm cursor-pointer"
             style={{
               background: 'linear-gradient(135deg, #F5C442, #E6B800)',
               boxShadow: '0 8px 32px rgba(245, 196, 66, 0.4)',
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              zIndex: 9999
             }}
+            onMouseEnter={() => console.log('🛒 FloatingCart: Mouse enter')}
+            onMouseLeave={() => console.log('🛒 FloatingCart: Mouse leave')}
           >
             <ShoppingCart className="h-6 w-6" />
           </Button>
