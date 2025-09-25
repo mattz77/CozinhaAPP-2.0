@@ -82,7 +82,7 @@ export const useCartSync = () => {
   });
 
   // Retornar estado diretamente sem spread para evitar problemas de sincronização
-  return {
+  const result = {
     isOpen: cart.isOpen,
     totalItems: cart.totalItems,
     totalPrice: cart.totalPrice,
@@ -100,4 +100,12 @@ export const useCartSync = () => {
     isAuthenticated: cart.isAuthenticated,
     syncKey: syncKey,
   };
+
+  console.log('🔄 useCartSync: Retornando resultado:', {
+    isOpen: result.isOpen,
+    totalItems: result.totalItems,
+    toggleCartType: typeof result.toggleCart
+  });
+
+  return result;
 };
