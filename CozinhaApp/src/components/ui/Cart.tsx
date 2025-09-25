@@ -100,14 +100,14 @@ export const Cart: React.FC<CartProps> = ({
             onClick={onClose}
           />
 
-          {/* Cart Panel */}
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-background shadow-2xl z-[70] flex flex-col"
-          >
+                 {/* Cart Panel */}
+                 <motion.div
+                   initial={{ x: '100%' }}
+                   animate={{ x: 0 }}
+                   exit={{ x: '100%' }}
+                   transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                   className="fixed right-0 top-0 h-full w-full max-w-md bg-background shadow-2xl z-[70] flex flex-col border-l border-border"
+                 >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div className="flex items-center space-x-3">

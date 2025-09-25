@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Facebook, Instagram, User, LogOut, ChefHat, ShoppingCart } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCartSync } from "@/hooks/useCartSync";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { UserDropdown } from "@/components/auth/UserDropdown";
 import { Cart } from "@/components/ui/Cart";
-import { FloatingCart } from "@/components/ui/FloatingCart";
 import { Link, useLocation } from "react-router-dom";
 
 const Navigation = () => {
@@ -19,16 +19,8 @@ const Navigation = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem, syncKey } = useCartSync();
   
-  // Debug log para verificar o estado recebido
-  console.log('🛒 Navigation: Estado do carrinho recebido:', {
-    isCartOpen,
-    totalItems,
-    itemsLength: items.length,
-    syncKey
-  });
   const [key, setKey] = useState(0); // Força re-render quando necessário
   const location = useLocation();
-  const cartButtonRef = useRef<HTMLButtonElement>(null);
 
   // Força re-render quando o estado de autenticação mudar
   useEffect(() => {
@@ -150,6 +142,34 @@ const Navigation = () => {
                 CozinhaApp
               </Link>
             </div>
+
+            {/* Carrinho sempre visível */}
+            {isAuthenticated && (
+              <div className="flex items-center space-x-4">
+                <motion.button
+                  onClick={() => toggleCart()}
+                  className="relative p-3 rounded-full bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:scale-105"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={totalItems > 0 ? { 
+                    boxShadow: "0 0 20px rgba(245, 196, 66, 0.5)",
+                    backgroundColor: "rgba(245, 196, 66, 0.15)"
+                  } : {}}
+                >
+                  <ShoppingCart className="h-6 w-6 text-primary" />
+                  {totalItems > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      key={totalItems}
+                      className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg"
+                    >
+                      {totalItems}
+                    </motion.span>
+                  )}
+                </motion.button>
+              </div>
+            )}
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-6">
@@ -498,8 +518,6 @@ const Navigation = () => {
         onRemoveItem={removeItem}
       />
 
-      {/* Floating Cart - sempre visível na página do cardápio */}
-      <FloatingCart cartButtonRef={cartButtonRef} />
     </>
   );
 };

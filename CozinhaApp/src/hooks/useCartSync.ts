@@ -11,8 +11,6 @@ export const useCartSync = () => {
   const lastUpdateRef = useRef<number>(0);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debug log para verificar se o hook está sendo chamado
-  console.log('🔄 useCartSync: Hook chamado, cart.isOpen:', cart.isOpen);
 
   // Debounce para evitar atualizações muito frequentes
   const debouncedUpdate = () => {
@@ -72,14 +70,6 @@ export const useCartSync = () => {
     setSyncKey(prev => prev + 1);
   }, [cart.isOpen]);
 
-  // Debug log para verificar o estado que está sendo retornado
-  console.log('🔄 useCartSync: Retornando estado:', {
-    isOpen: cart.isOpen,
-    totalItems: cart.totalItems,
-    items: cart.items.length,
-    isLoading: cart.isLoading,
-    syncKey
-  });
 
   // Retornar estado diretamente sem spread para evitar problemas de sincronização
   const result = {
@@ -101,11 +91,6 @@ export const useCartSync = () => {
     syncKey: syncKey,
   };
 
-  console.log('🔄 useCartSync: Retornando resultado:', {
-    isOpen: result.isOpen,
-    totalItems: result.totalItems,
-    toggleCartType: typeof result.toggleCart
-  });
 
   return result;
 };

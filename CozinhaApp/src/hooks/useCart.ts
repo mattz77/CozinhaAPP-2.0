@@ -130,12 +130,6 @@ export const useCart = () => {
     const isOpenChanged = isOpen !== prevIsOpenRef.current;
     
     if (itemsChanged || isOpenChanged) {
-      console.log('🔄 useCart: Carrinho mudou, notificando listeners...', {
-        itemsChanged,
-        isOpenChanged,
-        isOpen,
-        itemsLength: items.length
-      });
       cartEventManager.notify();
       prevItemsRef.current = [...items];
       prevIsOpenRef.current = isOpen;
@@ -269,13 +263,8 @@ export const useCart = () => {
   }, [isAuthenticated, token]);
 
   const toggleCart = useCallback(() => {
-    console.log('🛒 useCart: toggleCart chamado, isOpen atual:', isOpen);
-    setIsOpen(prev => {
-      const newValue = !prev;
-      console.log('🛒 useCart: toggleCart - mudando isOpen de', prev, 'para', newValue);
-      return newValue;
-    });
-  }, [isOpen]);
+    setIsOpen(prev => !prev);
+  }, []);
 
   const openCart = useCallback(() => {
     setIsOpen(true);
