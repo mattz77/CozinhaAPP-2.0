@@ -143,33 +143,6 @@ const Navigation = () => {
               </Link>
             </div>
 
-            {/* Carrinho sempre visível */}
-            {isAuthenticated && (
-              <div className="flex items-center space-x-4">
-                <motion.button
-                  onClick={() => toggleCart()}
-                  className="relative p-3 rounded-full bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:scale-105"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  animate={totalItems > 0 ? { 
-                    boxShadow: "0 0 20px rgba(245, 196, 66, 0.5)",
-                    backgroundColor: "rgba(245, 196, 66, 0.15)"
-                  } : {}}
-                >
-                  <ShoppingCart className="h-6 w-6 text-primary" />
-                  {totalItems > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      key={totalItems}
-                      className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg"
-                    >
-                      {totalItems}
-                    </motion.span>
-                  )}
-                </motion.button>
-              </div>
-            )}
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-6">
@@ -517,6 +490,62 @@ const Navigation = () => {
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeItem}
       />
+
+      {/* Carrinho Fixo no Canto Inferior Direito */}
+      {isAuthenticated && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, x: 100 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          exit={{ opacity: 0, scale: 0.8, x: 100 }}
+          transition={{ type: "spring", damping: 20, stiffness: 300 }}
+          className="fixed bottom-6 right-6 z-50"
+        >
+          <motion.button
+            onClick={() => toggleCart()}
+            className="relative w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl border-2 border-white/20 backdrop-blur-sm"
+            style={{
+              background: 'linear-gradient(135deg, #F5C442, #E6B800)',
+              boxShadow: '0 8px 32px rgba(245, 196, 66, 0.4)',
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            animate={totalItems > 0 ? { 
+              boxShadow: "0 8px 32px rgba(245, 196, 66, 0.6)",
+              scale: 1.02
+            } : {}}
+          >
+            <ShoppingCart className="h-6 w-6 mx-auto" />
+            
+            {/* Badge de quantidade */}
+            {totalItems > 0 && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                key={totalItems}
+                className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg border-2 border-white"
+              >
+                {totalItems}
+              </motion.span>
+            )}
+            
+            {/* Efeito de pulso quando há itens */}
+            {totalItems > 0 && (
+              <motion.div
+                className="absolute inset-0 rounded-full border-2 border-primary/50"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.7, 0, 0.7]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+            )}
+          </motion.button>
+        </motion.div>
+      )}
 
     </>
   );
