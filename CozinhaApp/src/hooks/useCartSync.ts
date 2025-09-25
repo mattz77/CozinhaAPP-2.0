@@ -63,6 +63,12 @@ export const useCartSync = () => {
     }
   }, [cart.items.length, cart.totalItems, cart.isLoading, syncKey]);
 
+  // Forçar re-render quando isOpen muda
+  useEffect(() => {
+    console.log('🔄 useCartSync: isOpen mudou para:', cart.isOpen);
+    setSyncKey(prev => prev + 1);
+  }, [cart.isOpen]);
+
   // Debug log para verificar o estado que está sendo retornado
   console.log('🔄 useCartSync: Retornando estado:', {
     isOpen: cart.isOpen,
@@ -72,8 +78,23 @@ export const useCartSync = () => {
     syncKey
   });
 
+  // Retornar estado diretamente sem spread para evitar problemas de sincronização
   return {
-    ...cart,
+    isOpen: cart.isOpen,
+    totalItems: cart.totalItems,
+    totalPrice: cart.totalPrice,
+    items: cart.items,
+    isLoading: cart.isLoading,
+    error: cart.error,
+    addItem: cart.addItem,
+    removeItem: cart.removeItem,
+    updateQuantity: cart.updateQuantity,
+    clearCart: cart.clearCart,
+    toggleCart: cart.toggleCart,
+    openCart: cart.openCart,
+    closeCart: cart.closeCart,
+    loadCarrinho: cart.loadCarrinho,
+    isAuthenticated: cart.isAuthenticated,
     syncKey: syncKey,
   };
 };
