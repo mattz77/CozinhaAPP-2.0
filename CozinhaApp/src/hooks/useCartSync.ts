@@ -63,6 +63,15 @@ export const useCartSync = () => {
     }
   }, [cart.items.length, cart.totalItems, cart.isLoading, syncKey]);
 
+  // Debug log para verificar o estado que está sendo retornado
+  console.log('🔄 useCartSync: Retornando estado:', {
+    isOpen: cart.isOpen,
+    totalItems: cart.totalItems,
+    items: cart.items.length,
+    isLoading: cart.isLoading,
+    syncKey
+  });
+
   return {
     ...cart,
     syncKey: syncKey,

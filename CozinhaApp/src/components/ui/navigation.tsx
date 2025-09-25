@@ -18,6 +18,14 @@ const Navigation = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const { user, isAuthenticated, logout } = useAuth();
   const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem, syncKey } = useCartSync();
+  
+  // Debug log para verificar o estado recebido
+  console.log('🛒 Navigation: Estado do carrinho recebido:', {
+    isCartOpen,
+    totalItems,
+    itemsLength: items.length,
+    syncKey
+  });
   const [key, setKey] = useState(0); // Força re-render quando necessário
   const location = useLocation();
   const cartButtonRef = useRef<HTMLButtonElement>(null);

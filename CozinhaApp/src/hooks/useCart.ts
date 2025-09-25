@@ -108,7 +108,10 @@ export const useCart = () => {
   useEffect(() => {
     const unsubscribe = cartEventManager.subscribe(() => {
       console.log('🔄 useCart: Evento recebido, recarregando carrinho...');
-      loadCarrinho();
+      // Só recarregar se não estiver carregando já
+      if (!isLoading) {
+        loadCarrinho();
+      }
     });
 
     console.log('🔄 useCart: Event listener registrado');
@@ -116,7 +119,7 @@ export const useCart = () => {
       console.log('🔄 useCart: Event listener removido');
       unsubscribe();
     };
-  }, []); // Removido loadCarrinho da dependência para evitar loops
+  }, [isLoading]); // Adicionar isLoading como dependência
 
   // Notificar mudanças no carrinho apenas quando necessário
   const prevItemsRef = useRef<CartItem[]>([]);
@@ -127,7 +130,12 @@ export const useCart = () => {
     const isOpenChanged = isOpen !== prevIsOpenRef.current;
     
     if (itemsChanged || isOpenChanged) {
-      console.log('🔄 useCart: Carrinho mudou, notificando listeners...');
+      console.log('🔄 useCart: Carrinho mudou, notificando listeners...', {
+        itemsChanged,
+        isOpenChanged,
+        isOpen,
+        itemsLength: items.length
+      });
       cartEventManager.notify();
       prevItemsRef.current = [...items];
       prevIsOpenRef.current = isOpen;
