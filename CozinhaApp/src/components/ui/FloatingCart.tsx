@@ -44,14 +44,24 @@ export const FloatingCart: React.FC<FloatingCartProps> = ({ cartButtonRef }) => 
 
   const handleCartClick = () => {
     console.log('🛒 FloatingCart: Botão clicado, totalItems:', totalItems);
-    if (totalItems > 0) {
-      // Se há itens, alternar mini carrinho
-      setShowMiniCart(!showMiniCart);
+    console.log('🛒 FloatingCart: Estado atual do carrinho:', { isOpen, totalItems, items: items.length });
+    
+    // Sempre fechar o mini carrinho primeiro
+    if (showMiniCart) {
+      console.log('🛒 FloatingCart: Fechando mini carrinho');
+      setShowMiniCart(false);
+    }
+    
+    // Forçar abertura do carrinho principal
+    console.log('🛒 FloatingCart: Forçando abertura do carrinho principal');
+    if (!isOpen) {
+      console.log('🛒 FloatingCart: Carrinho fechado, abrindo...');
+      toggleCart();
     } else {
-      // Se não há itens, abrir carrinho principal
-      console.log('🛒 FloatingCart: Abrindo carrinho principal');
+      console.log('🛒 FloatingCart: Carrinho já aberto, alternando...');
       toggleCart();
     }
+    console.log('🛒 FloatingCart: toggleCart chamado');
   };
 
   const getButtonPosition = () => {

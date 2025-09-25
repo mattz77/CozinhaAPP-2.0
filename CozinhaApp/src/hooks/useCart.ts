@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { carrinhoService } from '@/services/api';
 import { CarrinhoResponseDto, ItemCarrinhoResponseDto, AddItemCarrinhoDto, UpdateItemCarrinhoDto } from '@/types';
@@ -38,6 +38,10 @@ export const useCart = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Debounce para carregamento do carrinho
+  const loadCarrinhoTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastLoadTimeRef = useRef<number>(0);
+
   // Carregar carrinho da API quando o usuário muda
   const loadCarrinho = useCallback(async () => {
     if (!isAuthenticated || !token) {
@@ -46,39 +50,61 @@ export const useCart = () => {
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      console.log('🔄 useCart: Carregando carrinho da API...');
-      const carrinho = await carrinhoService.getCarrinho(token);
-      console.log('🔄 useCart: Resposta da API:', carrinho);
-      
-      const cartItems: CartItem[] = carrinho.itens.map(item => ({
-        id: item.pratoId,
-        nome: item.pratoNome,
-        preco: item.precoUnitario,
-        quantidade: item.quantidade,
-        imagemUrl: item.pratoImagemUrl,
-        categoria: { nome: 'Categoria' } // TODO: Buscar categoria real
-      }));
-      setItems(cartItems);
-      console.log('✅ useCart: Carrinho carregado:', cartItems.length, 'itens');
-    } catch (err) {
-      console.error('❌ useCart: Erro ao carregar carrinho:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao carregar carrinho');
-      setItems([]);
-    } finally {
-      setIsLoading(false);
+    // Debounce: evitar carregamentos muito frequentes
+    const now = Date.now();
+    if (now - lastLoadTimeRef.current < 1000) { // Mínimo 1 segundo entre carregamentos
+      console.log('🔄 useCart: Carregamento muito frequente, ignorando...');
+      return;
     }
+
+    // Limpar timeout anterior se existir
+    if (loadCarrinhoTimeoutRef.current) {
+      clearTimeout(loadCarrinhoTimeoutRef.current);
+    }
+
+    loadCarrinhoTimeoutRef.current = setTimeout(async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        console.log('🔄 useCart: Carregando carrinho da API...');
+        const carrinho = await carrinhoService.getCarrinho(token);
+        console.log('🔄 useCart: Resposta da API:', carrinho);
+        
+        const cartItems: CartItem[] = carrinho.itens.map(item => ({
+          id: item.pratoId,
+          nome: item.pratoNome,
+          preco: item.precoUnitario,
+          quantidade: item.quantidade,
+          imagemUrl: item.pratoImagemUrl,
+          categoria: { nome: 'Categoria' } // TODO: Buscar categoria real
+        }));
+        setItems(cartItems);
+        console.log('✅ useCart: Carrinho carregado:', cartItems.length, 'itens');
+        lastLoadTimeRef.current = Date.now();
+      } catch (err) {
+        console.error('❌ useCart: Erro ao carregar carrinho:', err);
+        setError(err instanceof Error ? err.message : 'Erro ao carregar carrinho');
+        setItems([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 100); // Debounce de 100ms
   }, [isAuthenticated, token]);
 
   // Carregar carrinho quando o usuário muda
   useEffect(() => {
     loadCarrinho();
+    
+    // Cleanup timeout ao desmontar
+    return () => {
+      if (loadCarrinhoTimeoutRef.current) {
+        clearTimeout(loadCarrinhoTimeoutRef.current);
+      }
+    };
   }, [loadCarrinho]);
 
-  // Escutar eventos de atualização do carrinho
+  // Escutar eventos de atualização do carrinho (apenas uma vez)
   useEffect(() => {
     const unsubscribe = cartEventManager.subscribe(() => {
       console.log('🔄 useCart: Evento recebido, recarregando carrinho...');
@@ -90,7 +116,23 @@ export const useCart = () => {
       console.log('🔄 useCart: Event listener removido');
       unsubscribe();
     };
-  }, [loadCarrinho]);
+  }, []); // Removido loadCarrinho da dependência para evitar loops
+
+  // Notificar mudanças no carrinho apenas quando necessário
+  const prevItemsRef = useRef<CartItem[]>([]);
+  const prevIsOpenRef = useRef<boolean>(false);
+  
+  useEffect(() => {
+    const itemsChanged = JSON.stringify(items) !== JSON.stringify(prevItemsRef.current);
+    const isOpenChanged = isOpen !== prevIsOpenRef.current;
+    
+    if (itemsChanged || isOpenChanged) {
+      console.log('🔄 useCart: Carrinho mudou, notificando listeners...');
+      cartEventManager.notify();
+      prevItemsRef.current = [...items];
+      prevIsOpenRef.current = isOpen;
+    }
+  }, [items, isOpen]);
 
   const addItem = useCallback(async (item: Omit<CartItem, 'quantidade'>) => {
     if (!isAuthenticated || !token) {
@@ -219,7 +261,11 @@ export const useCart = () => {
   }, [isAuthenticated, token]);
 
   const toggleCart = useCallback(() => {
-    setIsOpen(prev => !prev);
+    setIsOpen(prev => {
+      const newValue = !prev;
+      console.log('🛒 useCart: toggleCart - mudando isOpen de', prev, 'para', newValue);
+      return newValue;
+    });
   }, []);
 
   const openCart = useCallback(() => {

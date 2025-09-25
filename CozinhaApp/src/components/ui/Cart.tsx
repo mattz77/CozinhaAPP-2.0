@@ -45,6 +45,10 @@ export const Cart: React.FC<CartProps> = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
 
+  // Debug log para verificar se o componente está sendo renderizado
+  console.log('🛒 Cart: Componente renderizado, isOpen:', isOpen, 'items:', items.length);
+  console.log('🛒 Cart: Props recebidas:', { isOpen, itemsLength: items.length, totalItems });
+
   const total = items.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantidade, 0);
 
@@ -92,7 +96,7 @@ export const Cart: React.FC<CartProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60]"
             onClick={onClose}
           />
 
@@ -102,7 +106,7 @@ export const Cart: React.FC<CartProps> = ({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-background shadow-2xl z-50 flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-background shadow-2xl z-[70] flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
