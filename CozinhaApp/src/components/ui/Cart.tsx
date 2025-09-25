@@ -45,12 +45,12 @@ export const Cart: React.FC<CartProps> = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
 
+  const total = items.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+  const totalItems = items.reduce((sum, item) => sum + item.quantidade, 0);
+
   // Debug log para verificar se o componente está sendo renderizado
   console.log('🛒 Cart: Componente renderizado, isOpen:', isOpen, 'items:', items.length);
   console.log('🛒 Cart: Props recebidas:', { isOpen, itemsLength: items.length, totalItems });
-
-  const total = items.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
-  const totalItems = items.reduce((sum, item) => sum + item.quantidade, 0);
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
