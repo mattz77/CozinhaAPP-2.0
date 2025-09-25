@@ -24,9 +24,10 @@ BEGIN
     SELECT 
         @VendasDia = ISNULL(SUM(ValorTotal), 0),
         @PedidosDia = ISNULL(COUNT(*), 0)
-    FROM Pedidos 
-    WHERE UserId = '7207e60f-ea6e-4dad-abc1-143a2234115e'
-    AND CAST(DataPedido AS DATE) = @DataDia;
+    FROM Pedidos p
+    INNER JOIN Clientes c ON p.ClienteId = c.Id
+    WHERE c.UserId = '7207e60f-ea6e-4dad-abc1-143a2234115e'
+    AND CAST(p.DataPedido AS DATE) = @DataDia;
     
     -- Inserir dados do dia (mesmo que seja 0)
     INSERT INTO #VendasPorDia (Data, TotalVendas, TotalPedidos)
