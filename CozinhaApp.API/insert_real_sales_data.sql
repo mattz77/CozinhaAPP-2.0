@@ -11,17 +11,19 @@ PRINT '=== INICIANDO INSERÇÃO DE DADOS REAIS DE VENDAS ==='
 -- 1. Primeiro, inserir clientes se não existirem
 PRINT 'Verificando e inserindo clientes...'
 
--- Inserir cliente padrão se não existir
-IF NOT EXISTS (SELECT 1 FROM Clientes WHERE UserId = '7207e60f-ea6e-4dad-abc1-143a2234115e')
-BEGIN
-    INSERT INTO Clientes (Nome, Email, Telefone, Endereco, Cidade, Cep, DataCriacao, UserId)
-    VALUES 
-    ('Cliente Administrador', 'admin@cozinhaapp.com', '(11) 99999-0000', 'Rua das Flores, 123 - Centro', 'São Paulo', '01234-567', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e'),
-    ('João Silva', 'joao@email.com', '(11) 99999-1111', 'Av. Paulista, 456 - Bela Vista', 'São Paulo', '01310-100', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e'),
-    ('Maria Santos', 'maria@email.com', '(11) 99999-2222', 'Rua Augusta, 789 - Consolação', 'São Paulo', '01305-000', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e'),
-    ('Pedro Oliveira', 'pedro@email.com', '(11) 99999-3333', 'Rua Oscar Freire, 321 - Jardins', 'São Paulo', '01423-000', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e'),
-    ('Ana Costa', 'ana@email.com', '(11) 99999-4444', 'Rua da Consolação, 654 - Centro', 'São Paulo', '01302-000', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e');
-END
+-- Limpar clientes existentes para evitar duplicatas
+DELETE FROM Clientes WHERE UserId = '7207e60f-ea6e-4dad-abc1-143a2234115e';
+
+-- Inserir clientes
+INSERT INTO Clientes (Nome, Email, Telefone, Endereco, Cidade, Cep, DataCriacao, UserId)
+VALUES 
+('Cliente Administrador', 'admin@cozinhaapp.com', '(11) 99999-0000', 'Rua das Flores, 123 - Centro', 'São Paulo', '01234-567', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e'),
+('João Silva', 'joao@email.com', '(11) 99999-1111', 'Av. Paulista, 456 - Bela Vista', 'São Paulo', '01310-100', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e'),
+('Maria Santos', 'maria@email.com', '(11) 99999-2222', 'Rua Augusta, 789 - Consolação', 'São Paulo', '01305-000', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e'),
+('Pedro Oliveira', 'pedro@email.com', '(11) 99999-3333', 'Rua Oscar Freire, 321 - Jardins', 'São Paulo', '01423-000', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e'),
+('Ana Costa', 'ana@email.com', '(11) 99999-4444', 'Rua da Consolação, 654 - Centro', 'São Paulo', '01302-000', GETDATE(), '7207e60f-ea6e-4dad-abc1-143a2234115e');
+
+PRINT 'Clientes inseridos com sucesso!'
 
 -- Obter IDs dos clientes
 DECLARE @ClienteId1 INT, @ClienteId2 INT, @ClienteId3 INT, @ClienteId4 INT, @ClienteId5 INT;
@@ -30,6 +32,16 @@ SELECT @ClienteId2 = Id FROM Clientes WHERE UserId = '7207e60f-ea6e-4dad-abc1-14
 SELECT @ClienteId3 = Id FROM Clientes WHERE UserId = '7207e60f-ea6e-4dad-abc1-143a2234115e' AND Nome = 'Maria Santos';
 SELECT @ClienteId4 = Id FROM Clientes WHERE UserId = '7207e60f-ea6e-4dad-abc1-143a2234115e' AND Nome = 'Pedro Oliveira';
 SELECT @ClienteId5 = Id FROM Clientes WHERE UserId = '7207e60f-ea6e-4dad-abc1-143a2234115e' AND Nome = 'Ana Costa';
+
+-- Verificar se os clientes foram inseridos
+IF @ClienteId1 IS NULL OR @ClienteId2 IS NULL OR @ClienteId3 IS NULL OR @ClienteId4 IS NULL OR @ClienteId5 IS NULL
+BEGIN
+    PRINT 'ERRO: Não foi possível inserir todos os clientes!';
+    SELECT 'Clientes encontrados:' as Status, COUNT(*) as Total FROM Clientes WHERE UserId = '7207e60f-ea6e-4dad-abc1-143a2234115e';
+    RETURN;
+END
+
+PRINT 'IDs dos clientes obtidos com sucesso!'
 
 -- 2. Inserir Pedidos com datas variadas (últimos 90 dias)
 PRINT 'Inserindo pedidos com datas variadas...'
