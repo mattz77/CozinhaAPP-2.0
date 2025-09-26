@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +21,44 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/hooks/useCheckout';
 import { FormaPagamento } from '@/types/pedidos';
+
+// Componente separado para o Select de forma de pagamento
+const PaymentMethodSelect = React.memo(({ 
+  value, 
+  onValueChange, 
+  disabled, 
+  formasPagamento 
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+  disabled: boolean;
+  formasPagamento: { value: FormaPagamento; label: string }[];
+}) => {
+  console.log('🔍 PaymentMethodSelect: Renderizando com value:', value, 'disabled:', disabled);
+  
+  return (
+    <div className="relative">
+      <Select
+        value={value}
+        onValueChange={onValueChange}
+        disabled={disabled}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Selecione a forma de pagamento" />
+        </SelectTrigger>
+        <SelectContent className="z-[200]">
+          {formasPagamento.map((forma) => (
+            <SelectItem key={forma.value} value={forma.value}>
+              {forma.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+});
+
+PaymentMethodSelect.displayName = 'PaymentMethodSelect';
 
 interface CartItem {
   id: number;
@@ -51,21 +89,23 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
     observacoes: ''
   });
 
-  const formasPagamento: { value: FormaPagamento; label: string }[] = [
-    { value: 'PIX', label: 'PIX' },
-    { value: 'Cartão de Débito', label: 'Cartão de Débito' },
-    { value: 'Cartão de Crédito', label: 'Cartão de Crédito' },
-    { value: 'Dinheiro', label: 'Dinheiro' }
-  ];
+  // Memoizar as opções de pagamento para evitar re-renders
+  const formasPagamento = useMemo(() => [
+    { value: 'PIX' as FormaPagamento, label: 'PIX' },
+    { value: 'Cartão de Débito' as FormaPagamento, label: 'Cartão de Débito' },
+    { value: 'Cartão de Crédito' as FormaPagamento, label: 'Cartão de Crédito' },
+    { value: 'Dinheiro' as FormaPagamento, label: 'Dinheiro' }
+  ], []);
 
-  const handleInputChange = (field: string, value: string) => {
+  // Usar useCallback para evitar re-renders desnecessários
+  const handleInputChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validar dados
@@ -89,14 +129,14 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
       console.error('❌ CheckoutForm: Erro ao processar checkout:', error);
       toast.error(error.message || 'Erro ao criar pedido. Tente novamente.');
     }
-  };
+  }, [formData, validateCheckoutData, processCheckout, onSuccess]);
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = useCallback((value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
     }).format(value);
-  };
+  }, []);
 
   return (
     <motion.div
@@ -104,6 +144,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+      style={{ zIndex: 100 }}
     >
       <motion.div
         initial={{ scale: 0.95 }}
@@ -171,21 +212,12 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
                   <CreditCard className="h-4 w-4 mr-2" />
                   Forma de Pagamento *
                 </Label>
-                <Select
+                <PaymentMethodSelect
                   value={formData.formaPagamento}
                   onValueChange={(value) => handleInputChange('formaPagamento', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a forma de pagamento" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {formasPagamento.map((forma) => (
-                      <SelectItem key={forma.value} value={forma.value}>
-                        {forma.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  disabled={isProcessing}
+                  formasPagamento={formasPagamento}
+                />
               </div>
 
               {/* Observações */}
