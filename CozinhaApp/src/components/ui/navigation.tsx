@@ -16,6 +16,7 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const { isOpen: isCartOpen, toggleCart, totalItems, items, updateQuantity, removeItem, syncKey } = useCartSync();
   
@@ -489,10 +490,11 @@ const Navigation = () => {
         items={items}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeItem}
+        onCheckoutStateChange={setIsCheckoutOpen}
       />
 
       {/* Carrinho Fixo no Canto Inferior Direito */}
-      {isAuthenticated && (
+      {isAuthenticated && !isCheckoutOpen && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8, x: 100 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}

@@ -31,6 +31,7 @@ interface CartProps {
   items: CartItem[];
   onUpdateQuantity: (id: number, quantity: number) => void;
   onRemoveItem: (id: number) => void;
+  onCheckoutStateChange?: (isCheckoutOpen: boolean) => void;
 }
 
 export const Cart: React.FC<CartProps> = ({
@@ -38,7 +39,8 @@ export const Cart: React.FC<CartProps> = ({
   onClose,
   items,
   onUpdateQuantity,
-  onRemoveItem
+  onRemoveItem,
+  onCheckoutStateChange
 }) => {
   const { isAuthenticated } = useAuth();
   const { clearCart } = useCart();
@@ -67,6 +69,7 @@ export const Cart: React.FC<CartProps> = ({
     
     // Mostrar formulário de checkout
     setShowCheckout(true);
+    onCheckoutStateChange?.(true);
   };
 
   const handleCheckoutSuccess = async () => {
@@ -80,11 +83,13 @@ export const Cart: React.FC<CartProps> = ({
     
     // Fechar checkout e carrinho
     setShowCheckout(false);
+    onCheckoutStateChange?.(false);
     onClose();
   };
 
   const handleCheckoutClose = () => {
     setShowCheckout(false);
+    onCheckoutStateChange?.(false);
   };
 
   return (
