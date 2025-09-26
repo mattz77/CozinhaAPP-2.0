@@ -6,7 +6,12 @@ interface SalesChartProps {
   data: Array<{
     data: string;
     vendas: number;
-  }>;
+  }> | {
+    vendasPorDia: Array<{
+      data: string;
+      vendas: number;
+    }>;
+  };
   isLoading?: boolean;
   title?: string;
 }
@@ -37,7 +42,10 @@ export const SalesChart: React.FC<SalesChartProps> = ({
     );
   }
 
-  if (!data || data.length === 0) {
+  // Normalizar dados - pode ser array direto ou objeto com vendasPorDia
+  const chartData = Array.isArray(data) ? data : (data?.vendasPorDia || []);
+  
+  if (!chartData || chartData.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -56,12 +64,12 @@ export const SalesChart: React.FC<SalesChartProps> = ({
   }
 
   // Calcular estatísticas
-  const totalVendas = data.reduce((sum, item) => sum + item.vendas, 0);
-  const vendasMedias = totalVendas / data.length;
-  const maiorVenda = Math.max(...data.map(item => item.vendas));
-  const menorVenda = Math.min(...data.map(item => item.vendas));
-  const crescimento = data.length > 1 ? 
-    ((data[data.length - 1].vendas - data[0].vendas) / data[0].vendas) * 100 : 0;
+  const totalVendas = chartData.reduce((sum, item) => sum + item.vendas, 0);
+  const vendasMedias = totalVendas / chartData.length;
+  const maiorVenda = Math.max(...chartData.map(item => item.vendas));
+  const menorVenda = Math.min(...chartData.map(item => item.vendas));
+  const crescimento = chartData.length > 1 ? 
+    ((chartData[chartData.length - 1].vendas - chartData[0].vendas) / chartData[0].vendas) * 100 : 0;
 
   return (
     <Card>
@@ -118,7 +126,7 @@ export const SalesChart: React.FC<SalesChartProps> = ({
 
         {/* Gráfico Simples (Barra) */}
         <div className="space-y-2">
-          {data.map((item, index) => {
+          {chartData.map((item, index) => {
             const percentage = (item.vendas / maiorVenda) * 100;
             return (
               <div key={index} className="space-y-1">
